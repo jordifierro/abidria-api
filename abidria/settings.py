@@ -46,6 +46,7 @@ EXTERN_APPS = [
 
 PROJECT_APPS = [
     'experiences',
+    'scenes',
 ]
 
 INSTALLED_APPS = EXTERN_APPS + PROJECT_APPS
