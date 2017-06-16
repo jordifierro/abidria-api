@@ -27,20 +27,28 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ['DEBUG']))
 
-if LOCAL_DEPLOY:
+if not LOCAL_DEPLOY:
     ALLOWED_HOSTS = [os.environ['ALLOWED_HOSTS'], ]
 
 
 # Application definition
 
-INSTALLED_APPS = [
+EXTERN_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'stdimage',
+    'storages',
 ]
+
+PROJECT_APPS = [
+    'experiences',
+]
+
+INSTALLED_APPS = EXTERN_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -75,6 +83,7 @@ WSGI_APPLICATION = 'abidria.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
+
 if LOCAL_DEPLOY:
     DATABASES = {
         'default': {
@@ -89,6 +98,16 @@ if LOCAL_DEPLOY:
 else:
     db_from_env = dj_database_url.config()
     DATABASES = {'default': db_from_env}
+
+
+# S3 media storage
+
+if not LOCAL_DEPLOY:
+    AWS_STORAGE_BUCKET_NAME = 'abidria'
+    AWS_QUERYSTRING_AUTH = False
+    AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 
 # Password validation
@@ -139,3 +158,6 @@ STATICFILES_DIRS = (os.path.join(PROJECT_ROOT, 'static'),)
 # https://warehouse.python.org/project/whitenoise/
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+MEDIA_URL = '/media/'
