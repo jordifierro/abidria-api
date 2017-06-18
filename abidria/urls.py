@@ -18,8 +18,13 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+from experiences.views import ExperiencesView
+
+from .utils import ViewWrapper
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^experiences/$', ViewWrapper.as_view(view=ExperiencesView), name='experiences'),
 ]
 
 if settings.LOCAL_DEPLOY:
