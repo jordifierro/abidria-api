@@ -32,3 +32,21 @@ class ExperiencesTestCase(TestCase):
                                'picture': None
                            },
                        ]
+
+
+class ExperienceDetailTestCase(TestCase):
+
+    def test_experience_detail_returns_experience(self):
+        exp_c = ORMExperience.objects.create(title='Exp c', description='stuffs')
+
+        client = Client()
+        response = client.get(reverse('experience-detail', args=[exp_c.id]))
+
+        assert response.status_code == 200
+        body = json.loads(response.content)
+        assert body == {
+                           'id': exp_c.id,
+                           'title': 'Exp c',
+                           'description': 'stuffs',
+                           'picture': None
+                       }

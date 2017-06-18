@@ -11,9 +11,16 @@ class ExperienceRepoTestCase(TestCase):
         orm_exp_a = ORMExperience.objects.create(title='Exp a', description='some description')
         orm_exp_b = ORMExperience.objects.create(title='Exp b', description='other description')
 
-        result = ExperienceRepo(ORMExperience.objects).get_all_experiences()
+        result = ExperienceRepo().get_all_experiences()
 
         exp_a = Experience(id=orm_exp_a.id, title='Exp a', description='some description', picture=None)
         exp_b = Experience(id=orm_exp_b.id, title='Exp b', description='other description', picture=None)
-
         assert result == [exp_a, exp_b]
+
+    def test_get_experience_returns_experience(self):
+        orm_exp_a = ORMExperience.objects.create(title='Exp a', description='some description')
+
+        result = ExperienceRepo().get_experience(id=orm_exp_a.id)
+
+        exp_a = Experience(id=orm_exp_a.id, title='Exp a', description='some description', picture=None)
+        assert result == exp_a
