@@ -1,6 +1,7 @@
 from abidria.exceptions import EntityDoesNotExist
+from abidria.entities import Picture
 from .models import ORMExperience
-from .entities import Experience, Picture
+from .entities import Experience
 
 
 class ExperienceRepo(object):

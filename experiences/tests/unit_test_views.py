@@ -2,7 +2,8 @@ import sys
 
 from mock import Mock
 
-from experiences.entities import Experience, Picture
+from abidria.entities import Picture
+from experiences.entities import Experience
 
 
 class TestExperiencesView(object):

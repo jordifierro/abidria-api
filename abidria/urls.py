@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 
 from experiences.views import ExperiencesView, ExperienceDetailView
 
-from .utils import ViewWrapper
+from .views import ViewWrapper
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

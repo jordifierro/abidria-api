@@ -1,3 +1,6 @@
+from abidria.serializers import PictureSerializer
+
+
 class MultipleExperiencesSerializer(object):
 
     @staticmethod
@@ -20,20 +23,5 @@ class ExperienceSerializer(object):
         result['title'] = experience.title
         result['description'] = experience.description
         result['picture'] = PictureSerializer.serialize(experience.picture)
-
-        return result
-
-
-class PictureSerializer(object):
-
-    @staticmethod
-    def serialize(picture):
-        if picture is None:
-            result = None
-        else:
-            result = {}
-            result['small'] = picture.small
-            result['medium'] = picture.medium
-            result['large'] = picture.large
 
         return result
