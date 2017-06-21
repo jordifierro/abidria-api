@@ -1,5 +1,5 @@
 from .factories import GetAllExperiencesFactory, GetExperienceFactory
-from .serializers import MultipleExperiencesSerializer, ExperienceSerializer
+from .serializers import MultipleExperiencesSerializer, ExperienceWithScenesSerializer
 
 
 class ExperiencesView(object):
@@ -17,8 +17,8 @@ class ExperienceDetailView(object):
 
     def get(self, id=None):
         get_experience = GetExperienceFactory.get()
-        experience = get_experience.set_params(id=int(id)).execute()
+        experience, experience_scenes = get_experience.set_params(id=int(id)).execute()
 
-        body = ExperienceSerializer.serialize(experience)
+        body = ExperienceWithScenesSerializer.serialize(experience, experience_scenes)
         status = 200
         return body, status

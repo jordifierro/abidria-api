@@ -1,4 +1,5 @@
 from abidria.serializers import PictureSerializer
+from scenes.serializers import MultipleScenesSerializer
 
 
 class MultipleExperiencesSerializer(object):
@@ -9,6 +10,16 @@ class MultipleExperiencesSerializer(object):
 
         for experience in experiences:
             result.append(ExperienceSerializer.serialize(experience))
+
+        return result
+
+
+class ExperienceWithScenesSerializer(object):
+
+    @staticmethod
+    def serialize(experience, scenes):
+        result = ExperienceSerializer.serialize(experience)
+        result['scenes'] = MultipleScenesSerializer.serialize(scenes)
 
         return result
 
