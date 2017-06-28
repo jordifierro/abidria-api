@@ -104,7 +104,7 @@ else:
 # S3 media storage
 
 if not LOCAL_DEPLOY:
-    AWS_STORAGE_BUCKET_NAME = 'abidria'
+    AWS_STORAGE_BUCKET_NAME = os.environ['AWS_STORAGE_BUCKET_NAME']
     AWS_QUERYSTRING_AUTH = False
     AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
     AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
