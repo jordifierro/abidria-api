@@ -19,12 +19,12 @@ class SceneSerializer(object):
     def serialize(scene):
         result = {}
 
-        result['id'] = scene.id
+        result['id'] = str(scene.id)
         result['title'] = scene.title
         result['description'] = scene.description
         result['picture'] = PictureSerializer.serialize(scene.picture)
         result['latitude'] = float(scene.latitude)
         result['longitude'] = float(scene.longitude)
-        result['experience_id'] = scene.experience_id
+        result['experience_id'] = str(scene.experience_id)
 
         return result

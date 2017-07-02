@@ -30,7 +30,7 @@ class ExperienceSerializer(object):
     def serialize(experience):
         result = {}
 
-        result['id'] = experience.id
+        result['id'] = str(experience.id)
         result['title'] = experience.title
         result['description'] = experience.description
         result['picture'] = PictureSerializer.serialize(experience.picture)

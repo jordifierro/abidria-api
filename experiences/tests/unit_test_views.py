@@ -26,7 +26,7 @@ class TestExperiencesView(object):
         assert status == 200
         assert body == [
                            {
-                               'id': 1,
+                               'id': '1',
                                'title': 'A',
                                'description': 'some',
                                'picture': {'small': 'small.a',
@@ -34,7 +34,7 @@ class TestExperiencesView(object):
                                            'large': 'large.a'}
                            },
                            {
-                               'id': 2,
+                               'id': '2',
                                'title': 'B',
                                'description': 'other',
                                'picture': {'small': 'small.b',
@@ -72,7 +72,7 @@ class TestExperienceDetailView(object):
         get_experience_mock.set_params.assert_called_once_with(id=1)
         assert status == 200
         assert body == {
-                           'id': 1,
+                           'id': '1',
                            'title': 'A',
                            'description': 'some',
                            'picture': {
@@ -82,7 +82,7 @@ class TestExperienceDetailView(object):
                            },
                            'scenes': [
                                 {
-                                    'id': 1,
+                                    'id': '1',
                                     'title': 'B',
                                     'description': 'some',
                                     'picture': {
@@ -92,10 +92,10 @@ class TestExperienceDetailView(object):
                                     },
                                     'latitude': 1.2,
                                     'longitude': -3.4,
-                                    'experience_id': 1,
+                                    'experience_id': '1',
                                 },
                                 {
-                                    'id': 2,
+                                    'id': '2',
                                     'title': 'C',
                                     'description': 'other',
                                     'picture': {
@@ -105,7 +105,7 @@ class TestExperienceDetailView(object):
                                     },
                                     'latitude': 5.6,
                                     'longitude': -7.8,
-                                    'experience_id': 1,
+                                    'experience_id': '1',
                                 }
                            ]
                        }
