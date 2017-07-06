@@ -21,7 +21,7 @@ class SceneRepo(object):
                      longitude=db_scene.longitude,
                      experience_id=db_scene.experience_id)
 
-    def get_scenes(self, experience_id=None):
+    def get_scenes(self, experience_id):
         db_scenes = ORMScene.objects.filter(experience_id=experience_id)
         scenes = []
         for db_scene in db_scenes:

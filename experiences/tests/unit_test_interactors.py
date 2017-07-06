@@ -25,8 +25,8 @@ class TestGetExperience(object):
         experience_repo = Mock()
         experience_repo.get_experience = Mock(return_value=experience_a)
 
-        scene_a = Scene(id=2)
-        scene_b = Scene(id=3)
+        scene_a = Scene(id=2, title='', description='', picture=None, latitude=1, longitude=0, experience_id=1)
+        scene_b = Scene(id=3, title='', description='', picture=None, latitude=1, longitude=0, experience_id=1)
         scene_repo = Mock()
         scene_repo.get_scenes = Mock(return_value=[scene_a, scene_b])
 

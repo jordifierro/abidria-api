@@ -1,6 +1,6 @@
 class Picture(object):
 
-    def __init__(self, small=None, medium=None, large=None):
+    def __init__(self, small, medium, large):
         self._small = small
         self._medium = medium
         self._large = large

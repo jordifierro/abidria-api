@@ -15,7 +15,7 @@ class ExperiencesView(object):
 
 class ExperienceDetailView(object):
 
-    def get(self, id=None):
+    def get(self, id):
         get_experience = GetExperienceFactory.get()
         experience, experience_scenes = get_experience.set_params(id=int(id)).execute()
 

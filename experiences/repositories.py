@@ -26,7 +26,7 @@ class ExperienceRepo(object):
             experiences.append(self._decode_db_experience(db_experience))
         return experiences
 
-    def get_experience(self, id=None):
+    def get_experience(self, id):
         try:
             orm_experience = ORMExperience.objects.get(id=id)
         except ORMExperience.DoesNotExist:

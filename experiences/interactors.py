@@ -13,7 +13,7 @@ class GetExperience(object):
         self.experience_repo = experience_repo
         self.scene_repo = scene_repo
 
-    def set_params(self, id=None):
+    def set_params(self, id):
         self.id = id
         return self
 
