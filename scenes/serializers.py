@@ -5,26 +5,19 @@ class MultipleScenesSerializer(object):
 
     @staticmethod
     def serialize(scenes):
-        result = []
-
-        for scene in scenes:
-            result.append(SceneSerializer.serialize(scene))
-
-        return result
+        return [SceneSerializer.serialize(scene) for scene in scenes]
 
 
 class SceneSerializer(object):
 
     @staticmethod
     def serialize(scene):
-        result = {}
-
-        result['id'] = str(scene.id)
-        result['title'] = scene.title
-        result['description'] = scene.description
-        result['picture'] = PictureSerializer.serialize(scene.picture)
-        result['latitude'] = float(scene.latitude)
-        result['longitude'] = float(scene.longitude)
-        result['experience_id'] = str(scene.experience_id)
-
-        return result
+        return {
+                   'id': str(scene.id),
+                   'title': scene.title,
+                   'description': scene.description,
+                   'picture': PictureSerializer.serialize(scene.picture),
+                   'latitude': float(scene.latitude),
+                   'longitude': float(scene.longitude),
+                   'experience_id': str(scene.experience_id),
+               }

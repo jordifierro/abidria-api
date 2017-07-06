@@ -6,12 +6,7 @@ class MultipleExperiencesSerializer(object):
 
     @staticmethod
     def serialize(experiences):
-        result = []
-
-        for experience in experiences:
-            result.append(ExperienceSerializer.serialize(experience))
-
-        return result
+        return [ExperienceSerializer.serialize(experience) for experience in experiences]
 
 
 class ExperienceWithScenesSerializer(object):
@@ -28,11 +23,9 @@ class ExperienceSerializer(object):
 
     @staticmethod
     def serialize(experience):
-        result = {}
-
-        result['id'] = str(experience.id)
-        result['title'] = experience.title
-        result['description'] = experience.description
-        result['picture'] = PictureSerializer.serialize(experience.picture)
-
-        return result
+        return {
+                   'id': str(experience.id),
+                   'title': experience.title,
+                   'description': experience.description,
+                   'picture': PictureSerializer.serialize(experience.picture),
+               }
