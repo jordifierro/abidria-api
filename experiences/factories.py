@@ -15,3 +15,10 @@ class GetAllExperiencesFactory(object):
     def get():
         experience_repo = ExperienceRepoFactory.get()
         return GetAllExperiences(experience_repo)
+
+
+class ExperiencesViewInjector(object):
+
+    @staticmethod
+    def get_interactor():
+        return GetAllExperiencesFactory.get()

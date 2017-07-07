@@ -1,12 +1,13 @@
-from .factories import GetScenesFromExperienceFactory
 from .serializers import MultipleScenesSerializer
 
 
 class ScenesView(object):
 
+    def __init__(self, get_scenes_from_experience_interactor):
+        self.get_scenes_from_experience_interactor = get_scenes_from_experience_interactor
+
     def get(self, experience):
-        get_scenes_from_experience = GetScenesFromExperienceFactory.get()
-        scenes = get_scenes_from_experience.set_params(experience_id=experience).execute()
+        scenes = self.get_scenes_from_experience_interactor.set_params(experience_id=experience).execute()
 
         body = MultipleScenesSerializer.serialize(scenes)
         status = 200
