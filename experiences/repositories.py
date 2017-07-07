@@ -9,9 +9,9 @@ class ExperienceRepo(object):
         if not db_experience.picture:
             picture = None
         else:
-            picture = Picture(small=db_experience.picture.small.url,
-                              medium=db_experience.picture.medium.url,
-                              large=db_experience.picture.large.url)
+            picture = Picture(small_url=db_experience.picture.small.url,
+                              medium_url=db_experience.picture.medium.url,
+                              large_url=db_experience.picture.large.url)
 
         return Experience(id=db_experience.id,
                           title=db_experience.title,

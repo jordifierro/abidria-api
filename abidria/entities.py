@@ -1,18 +1,18 @@
 class Picture(object):
 
-    def __init__(self, small, medium, large):
-        self._small = small
-        self._medium = medium
-        self._large = large
+    def __init__(self, small_url, medium_url, large_url):
+        self._small_url = small_url
+        self._medium_url = medium_url
+        self._large_url = large_url
 
     @property
-    def small(self):
-        return self._small
+    def small_url(self):
+        return self._small_url
 
     @property
-    def medium(self):
-        return self._medium
+    def medium_url(self):
+        return self._medium_url
 
     @property
-    def large(self):
-        return self._large
+    def large_url(self):
+        return self._large_url

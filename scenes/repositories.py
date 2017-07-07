@@ -9,9 +9,9 @@ class SceneRepo(object):
         if not db_scene.picture:
             picture = None
         else:
-            picture = Picture(small=db_scene.picture.small.url,
-                              medium=db_scene.picture.medium.url,
-                              large=db_scene.picture.large.url)
+            picture = Picture(small_url=db_scene.picture.small.url,
+                              medium_url=db_scene.picture.medium.url,
+                              large_url=db_scene.picture.large.url)
 
         return Scene(id=db_scene.id,
                      title=db_scene.title,

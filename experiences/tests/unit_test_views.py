@@ -8,9 +8,9 @@ from experiences.views import ExperiencesView
 class TestExperiencesView(object):
 
     def test_returns_experiences_serialized_and_200(self):
-        picture_a = Picture(small='small.a', medium='medium.a', large='large.a')
+        picture_a = Picture(small_url='small.a', medium_url='medium.a', large_url='large.a')
         experience_a = Experience(id=1, title='A', description='some', picture=picture_a)
-        picture_b = Picture(small='small.b', medium='medium.b', large='large.b')
+        picture_b = Picture(small_url='small.b', medium_url='medium.b', large_url='large.b')
         experience_b = Experience(id=2, title='B', description='other', picture=picture_b)
 
         interactor_mock = Mock()
@@ -24,16 +24,16 @@ class TestExperiencesView(object):
                                'id': '1',
                                'title': 'A',
                                'description': 'some',
-                               'picture': {'small': 'small.a',
-                                           'medium': 'medium.a',
-                                           'large': 'large.a'}
+                               'picture': {'small_url': 'small.a',
+                                           'medium_url': 'medium.a',
+                                           'large_url': 'large.a'}
                            },
                            {
                                'id': '2',
                                'title': 'B',
                                'description': 'other',
-                               'picture': {'small': 'small.b',
-                                           'medium': 'medium.b',
-                                           'large': 'large.b'}
+                               'picture': {'small_url': 'small.b',
+                                           'medium_url': 'medium.b',
+                                           'large_url': 'large.b'}
                            },
                        ]

@@ -10,8 +10,8 @@ from scenes.views import ScenesView
 class TestScenesDetailView(object):
 
     def test_returns_scenes_serialized_and_200(self):
-        picture_b = Picture(small='small.b', medium='medium.b', large='large.b')
-        picture_c = Picture(small='small.c', medium='medium.c', large='large.c')
+        picture_b = Picture(small_url='small.b', medium_url='medium.b', large_url='large.b')
+        picture_c = Picture(small_url='small.c', medium_url='medium.c', large_url='large.c')
         scene_b = Scene(id=1, title='B', description='some', picture=picture_b,
                         latitude=Decimal('1.2'), longitude=Decimal('-3.4'), experience_id=1)
         scene_c = Scene(id=2, title='C', description='other', picture=picture_c,
@@ -31,9 +31,9 @@ class TestScenesDetailView(object):
                                'title': 'B',
                                'description': 'some',
                                'picture': {
-                                   'small': 'small.b',
-                                   'medium': 'medium.b',
-                                   'large': 'large.b',
+                                   'small_url': 'small.b',
+                                   'medium_url': 'medium.b',
+                                   'large_url': 'large.b',
                                },
                                'latitude': 1.2,
                                'longitude': -3.4,
@@ -44,9 +44,9 @@ class TestScenesDetailView(object):
                                'title': 'C',
                                'description': 'other',
                                'picture': {
-                                   'small': 'small.c',
-                                   'medium': 'medium.c',
-                                   'large': 'large.c',
+                                   'small_url': 'small.c',
+                                   'medium_url': 'medium.c',
+                                   'large_url': 'large.c',
                                },
                                'latitude': 5.6,
                                'longitude': -7.8,

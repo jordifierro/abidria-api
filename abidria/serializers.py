@@ -6,7 +6,7 @@ class PictureSerializer(object):
             return None
 
         return {
-                   'small': picture.small,
-                   'medium': picture.medium,
-                   'large': picture.large,
+                   'small_url': picture.small_url,
+                   'medium_url': picture.medium_url,
+                   'large_url': picture.large_url,
                }
