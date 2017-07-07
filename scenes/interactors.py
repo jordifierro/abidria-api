@@ -1,4 +1,4 @@
-class GetScenesFromExperience(object):
+class GetScenesFromExperienceInteractor(object):
 
     def __init__(self, scene_repo):
         self.scene_repo = scene_repo

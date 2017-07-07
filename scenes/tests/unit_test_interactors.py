@@ -1,6 +1,6 @@
 from mock import Mock
 
-from scenes.interactors import GetScenesFromExperience
+from scenes.interactors import GetScenesFromExperienceInteractor
 from scenes.entities import Scene
 
 
@@ -12,7 +12,7 @@ class TestGetScenesFromExperience(object):
         scene_repo = Mock()
         scene_repo.get_scenes = Mock(return_value=[scene_a, scene_b])
 
-        response = GetScenesFromExperience(scene_repo).set_params(experience_id=1).execute()
+        response = GetScenesFromExperienceInteractor(scene_repo).set_params(experience_id=1).execute()
 
         scene_repo.get_scenes.assert_called_once_with(experience_id=1)
         assert response == [scene_a, scene_b]

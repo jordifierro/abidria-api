@@ -1,5 +1,5 @@
 from .repositories import SceneRepo
-from .interactors import GetScenesFromExperience
+from .interactors import GetScenesFromExperienceInteractor
 
 
 class SceneRepoFactory(object):
@@ -9,16 +9,16 @@ class SceneRepoFactory(object):
         return SceneRepo()
 
 
-class GetScenesFromExperienceFactory(object):
+class GetScenesFromExperienceInteractorFactory(object):
 
     @staticmethod
     def get():
         scene_repo = SceneRepoFactory.get()
-        return GetScenesFromExperience(scene_repo=scene_repo)
+        return GetScenesFromExperienceInteractor(scene_repo=scene_repo)
 
 
 class ScenesViewInjector(object):
 
     @staticmethod
     def get_interactor():
-        return GetScenesFromExperienceFactory.get()
+        return GetScenesFromExperienceInteractorFactory.get()

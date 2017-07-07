@@ -1,7 +1,7 @@
 from mock import Mock
 
 from experiences.entities import Experience
-from experiences.interactors import GetAllExperiences
+from experiences.interactors import GetAllExperiencesInteractor
 
 
 class TestGetAllExperiences(object):
@@ -12,6 +12,6 @@ class TestGetAllExperiences(object):
         experiences_repo = Mock()
         experiences_repo.get_all_experiences = Mock(return_value=[experience_a, experience_b])
 
-        response = GetAllExperiences(experiences_repo).execute()
+        response = GetAllExperiencesInteractor(experiences_repo).execute()
 
         assert response == [experience_a, experience_b]
