@@ -1,24 +1,26 @@
 from .repositories import ExperienceRepo
 from .interactors import GetAllExperiencesInteractor
+from .views import ExperiencesView
 
 
 class ExperienceRepoFactory(object):
 
     @staticmethod
-    def get():
+    def create():
         return ExperienceRepo()
 
 
 class GetAllExperiencesInteractorFactory(object):
 
     @staticmethod
-    def get():
-        experience_repo = ExperienceRepoFactory.get()
+    def create():
+        experience_repo = ExperienceRepoFactory.create()
         return GetAllExperiencesInteractor(experience_repo)
 
 
-class ExperiencesViewInjector(object):
+class ExperiencesViewFactory(object):
 
     @staticmethod
-    def get_interactor():
-        return GetAllExperiencesInteractorFactory.get()
+    def create():
+        get_all_experiences_interactor = GetAllExperiencesInteractorFactory.create()
+        return ExperiencesView(get_all_experiences_interactor)

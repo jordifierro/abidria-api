@@ -1,24 +1,26 @@
 from .repositories import SceneRepo
 from .interactors import GetScenesFromExperienceInteractor
+from .views import ScenesView
 
 
 class SceneRepoFactory(object):
 
     @staticmethod
-    def get():
+    def create():
         return SceneRepo()
 
 
 class GetScenesFromExperienceInteractorFactory(object):
 
     @staticmethod
-    def get():
-        scene_repo = SceneRepoFactory.get()
+    def create():
+        scene_repo = SceneRepoFactory.create()
         return GetScenesFromExperienceInteractor(scene_repo=scene_repo)
 
 
-class ScenesViewInjector(object):
+class ScenesViewFactory(object):
 
     @staticmethod
-    def get_interactor():
-        return GetScenesFromExperienceInteractorFactory.get()
+    def create():
+        get_scenes_from_experience_interactor = GetScenesFromExperienceInteractorFactory.create()
+        return ScenesView(get_scenes_from_experience_interactor)
