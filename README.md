@@ -72,7 +72,8 @@ _Response:_
 This project has been developed using Django framework,
 with Postgres as database and S3 as storage service.
 
-Code structure follows the Clean Architecture approach,
+Code structure follows a Clean Architecture approach
+([explained in detail here](http://jordifierro.com/django-clean-architecture)),
 emphasizing on code readability, responsibility decoupling
 and unit testing.
 
