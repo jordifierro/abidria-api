@@ -16,7 +16,7 @@ A group of `scenes` are defined as an `experience`.
 ### `GET /experiences/`
 
 _Response:_
-```json
+```js
 [
     {
         id: "2",
@@ -40,7 +40,7 @@ _Response:_
 ### `GET /scenes/?experience=<experience_id>`
 
 _Response:_
-```json
+```js
 [
     {
         id: "5",
