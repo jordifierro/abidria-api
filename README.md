@@ -16,23 +16,23 @@ A group of `scenes` are defined as an `experience`.
 ### `GET /experiences/`
 
 _Response:_
-```js
+```json
 [
     {
-        id: "2",
-        title: "Baboon",
-        description: "Mystical place...",
-        picture: {
-            small_url: "https://experiences/8c29.small.jpg",
-            medium_url: "https://experiences/8c29.medium.jpg",
-            large_url: "https://experiences/8c29.large.jpg"
+        "id": "2",
+        "title": "Baboon",
+        "description": "Mystical place...",
+        "picture": {
+            "small_url": "https://experiences/8c29.small.jpg",
+            "medium_url": "https://experiences/8c29.medium.jpg",
+            "large_url": "https://experiences/8c29.large.jpg"
         }
     },
     {
-        id: "3",
-        title: "Magic Castle of Lost Swamps",
-        description: "Don't even try to go there!",
-        picture: null
+        "id": "3",
+        "title": "Magic Castle of Lost Swamps",
+        "description": "Don't even try to go there!",
+        "picture": null
     }
 ]
 ```
@@ -40,29 +40,29 @@ _Response:_
 ### `GET /scenes/?experience=<experience_id>`
 
 _Response:_
-```js
+```json
 [
     {
-        id: "5",
-        title: "Plaça Mundial",
-        description: "World wide square!",
-        picture: {
-            small_url: "https://scenes/37d6.small.jpeg",
-            medium_url: "https://scenes/37d6.medium.jpeg",
-            large_url: "https://scenes/37d6.large.jpeg"
+        "id": "5",
+        "title": "Plaça Mundial",
+        "description": "World wide square!",
+        "picture": {
+            "small_url": "https://scenes/37d6.small.jpeg",
+            "medium_url": "https://scenes/37d6.medium.jpeg",
+            "large_url": "https://scenes/37d6.large.jpeg"
         },
-        latitude: 1.000000,
-        longitude: 2.000000,
-        experience_id: "5"
+        "latitude": 1.000000,
+        "longitude": 2.000000,
+        "experience_id": "5"
     },
     {
-        id: "4",
-        title: "I've been here",
-        description: "",
-        picture: null,
-        latitude: 0.000000,
-        longitude: 1.000000,
-        experience_id: "5"
+        "id": "4",
+        "title": "I've been here",
+        "description": "",
+        "picture": null,
+        "latitude": 0.000000,
+        "longitude": 1.000000,
+        "experience_id": "5"
     },
 ]
 ```
