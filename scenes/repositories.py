@@ -5,6 +5,21 @@ from .entities import Scene
 
 class SceneRepo(object):
 
+    def get_scenes(self, experience_id):
+        db_scenes = ORMScene.objects.filter(experience_id=experience_id)
+        scenes = []
+        for db_scene in db_scenes:
+            scenes.append(self._decode_db_scene(db_scene))
+        return scenes
+
+    def save_scene(self, scene):
+        created_orm_scene = ORMScene.objects.create(title=scene.title,
+                                                    description=scene.description,
+                                                    latitude=scene.latitude,
+                                                    longitude=scene.longitude,
+                                                    experience_id=scene.experience_id)
+        return self._decode_db_scene(created_orm_scene)
+
     def _decode_db_scene(self, db_scene):
         if not db_scene.picture:
             picture = None
@@ -20,10 +35,3 @@ class SceneRepo(object):
                      latitude=db_scene.latitude,
                      longitude=db_scene.longitude,
                      experience_id=db_scene.experience_id)
-
-    def get_scenes(self, experience_id):
-        db_scenes = ORMScene.objects.filter(experience_id=experience_id)
-        scenes = []
-        for db_scene in db_scenes:
-            scenes.append(self._decode_db_scene(db_scene))
-        return scenes

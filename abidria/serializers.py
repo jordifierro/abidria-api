@@ -10,3 +10,16 @@ class PictureSerializer(object):
                    'medium_url': picture.medium_url,
                    'large_url': picture.large_url,
                }
+
+
+class InvalidEntitySerializer(object):
+
+    @staticmethod
+    def serialize(exception):
+        return {
+                   'error': {
+                       'source': exception.source,
+                       'code': exception.code,
+                       'message': str(exception)
+                    }
+               }

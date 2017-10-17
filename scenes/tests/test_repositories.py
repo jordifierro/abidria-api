@@ -26,3 +26,19 @@ class ExperienceRepoTestCase(TestCase):
         scene_2 = Scene(id=orm_sce_2.id, title='S2', description='desc 2', picture=None,
                         latitude=Decimal('5.6'), longitude=Decimal('-7.8'), experience_id=orm_exp.id)
         assert result == [scene_1, scene_2] or result == [scene_2, scene_1]
+
+    def test_create_new_scene(self):
+        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description')
+        scene = Scene(title='S1', description='desc 1', latitude=Decimal('0.1'),
+                      longitude=Decimal('1.2'), experience_id=str(orm_exp.id))
+
+        created_scene = SceneRepo().save_scene(scene)
+
+        orm_scene = ORMScene.objects.get(id=created_scene.id)
+
+        assert scene.title == orm_scene.title
+        assert scene.description == orm_scene.description
+        assert scene.latitude == orm_scene.latitude
+        assert scene.longitude == orm_scene.longitude
+        assert scene.experience_id == str(orm_scene.experience_id)
+        assert not orm_scene.picture

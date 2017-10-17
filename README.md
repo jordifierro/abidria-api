@@ -67,6 +67,44 @@ _Response:_
 ]
 ```
 
+### `POST /scenes`
+
+_Request:_
+```json
+{
+    "title": "Plaça Major",
+    "description": "The main square",
+    "latitude": 1.2,
+    "longitude": 0.3,
+    "experience_id": "3"
+}
+```
+
+_Response:_
+
+_400_
+```json
+{
+    "id": "8",
+    "title": "Plaça Major",
+    "description": "The main square",
+    "picture": null,
+    "latitude": 1.2,
+    "longitude": 0.3,
+    "experience_id": "3"
+}
+```
+
+_422_
+```json
+{
+    "error": {
+        "source": "title",
+        "code": "empty_attribute",
+        "message": "Title cannot be empty"
+    }
+}
+
 ## Documentation
 
 This project has been developed using Django framework,

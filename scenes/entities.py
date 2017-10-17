@@ -1,13 +1,13 @@
 class Scene(object):
 
-    def __init__(self, id, title, description, picture, latitude, longitude, experience_id):
-        self._id = id
+    def __init__(self, title, description, latitude, longitude, experience_id, id=None, picture=None):
         self._title = title
         self._description = description
         self._picture = picture
         self._latitude = latitude
         self._longitude = longitude
         self._experience_id = experience_id
+        self._id = id
 
     @property
     def id(self):
