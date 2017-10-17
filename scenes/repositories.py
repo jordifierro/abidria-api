@@ -20,6 +20,12 @@ class SceneRepo(object):
                                                     experience_id=scene.experience_id)
         return self._decode_db_scene(created_orm_scene)
 
+    def attach_picture_to_scene(self, scene_id, picture):
+        scene = ORMScene.objects.get(id=scene_id)
+        scene.picture = picture
+        scene.save()
+        return self._decode_db_scene(scene)
+
     def _decode_db_scene(self, db_scene):
         if not db_scene.picture:
             picture = None
