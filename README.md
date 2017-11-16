@@ -82,7 +82,7 @@ _Request:_
 
 _Response:_
 
-_400_
+_201_
 ```json
 {
     "id": "8",
@@ -104,6 +104,33 @@ _422_
         "message": "Title cannot be empty"
     }
 }
+```
+
+
+### `POST /scenes/<scene_id>/picture/`
+
+_Request(multipart/form-data):_
+
+Param name to send the file: `picture`
+
+_Response:_
+
+_200_
+```json
+{
+    "id": "8",
+    "title": "Plaça Major",
+    "description": "The main square",
+    "picture": {
+        "small_url": "https://scenes/37d6.small.jpeg",
+        "medium_url": "https://scenes/37d6.medium.jpeg",
+        "large_url": "https://scenes/37d6.large.jpeg"
+    },
+    "latitude": 1.2,
+    "longitude": 0.3,
+    "experience_id": "3"
+}
+```
 
 ## Documentation
 
