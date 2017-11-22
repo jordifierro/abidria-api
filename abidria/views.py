@@ -17,3 +17,9 @@ class ViewWrapper(View):
         kwargs.update(request.POST.dict())
         body, status = self.view_factory.create().post(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
+
+    def patch(self, request, *args, **kwargs):
+        data = json.loads(request.body.decode("utf-8").replace("'", "\"").replace("None", "null"))
+        kwargs.update(data)
+        body, status = self.view_factory.create().patch(**kwargs)
+        return HttpResponse(json.dumps(body), status=status, content_type='application/json')

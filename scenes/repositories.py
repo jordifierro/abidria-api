@@ -1,4 +1,5 @@
 from abidria.entities import Picture
+from abidria.exceptions import EntityDoesNotExist
 from .models import ORMScene
 from .entities import Scene
 
@@ -12,13 +13,33 @@ class SceneRepo(object):
             scenes.append(self._decode_db_scene(db_scene))
         return scenes
 
-    def save_scene(self, scene):
+    def get_scene(self, id):
+        try:
+            orm_scene = ORMScene.objects.get(id=id)
+        except ORMScene.DoesNotExist:
+            raise EntityDoesNotExist
+
+        return self._decode_db_scene(orm_scene)
+
+    def create_scene(self, scene):
         created_orm_scene = ORMScene.objects.create(title=scene.title,
                                                     description=scene.description,
                                                     latitude=scene.latitude,
                                                     longitude=scene.longitude,
                                                     experience_id=scene.experience_id)
         return self._decode_db_scene(created_orm_scene)
+
+    def update_scene(self, scene):
+        orm_scene = ORMScene.objects.get(id=scene.id)
+
+        orm_scene.title = scene.title
+        orm_scene.description = scene.description
+        orm_scene.latitude = scene.latitude
+        orm_scene.longitude = scene.longitude
+        orm_scene.experience_id = scene.experience_id
+
+        orm_scene.save()
+        return self._decode_db_scene(orm_scene)
 
     def attach_picture_to_scene(self, scene_id, picture):
         scene = ORMScene.objects.get(id=scene_id)

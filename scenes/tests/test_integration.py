@@ -45,9 +45,9 @@ class ExperienceDetailTestCase(TestCase):
                        ]
 
 
-class CreateExperienceTestCase(TestCase):
+class CreateSceneTestCase(TestCase):
 
-    def test_create_experience_creates_and_returns_experience(self):
+    def test_create_scene_creates_and_returns_scene(self):
         experience = ORMExperience.objects.create(title='Exp')
 
         client = Client()
@@ -82,6 +82,66 @@ class CreateExperienceTestCase(TestCase):
                                                    'latitude': 0.3,
                                                    'longitude': 1.2,
                                                    'experience_id': experience.id})
+
+        assert not ORMScene.objects.filter(title='',
+                                           description='Some description',
+                                           latitude=0.3,
+                                           longitude=1.2,
+                                           experience_id=experience.id).exists()
+        body = json.loads(response.content)
+        assert body == {
+                           'error': {
+                                        'source': 'title',
+                                        'code': 'wrong_size',
+                                        'message': 'Title must be between 1 and 30 chars'
+                                    }
+                       }
+
+
+class ModifySceneTestCase(TestCase):
+
+    def test_modifies_and_returns_scene(self):
+        experience = ORMExperience.objects.create(title='Exp')
+        orm_scene = ORMScene.objects.create(title='T', description='',
+                                            latitude=1, longitude=2, experience_id=experience.id)
+
+        client = Client()
+        response = client.patch(reverse('scene', args=[orm_scene.id]),
+                                data={"title": None,
+                                      "description": "New description",
+                                      "latitude": 0.3,
+                                      "longitude": 1.2},
+                                format='json')
+
+        body = json.loads(response.content)
+        updated_scene = ORMScene.objects.get(id=orm_scene.id,
+                                             title='T',
+                                             description='New description',
+                                             experience_id=experience.id)
+        assert updated_scene is not None
+        assert body == {
+                           'id': str(orm_scene.id),
+                           'title': 'T',
+                           'description': 'New description',
+                           'picture': None,
+                           'latitude': 0.3,
+                           'longitude': 1.2,
+                           'experience_id': str(experience.id),
+                       }
+
+    def test_wrong_attributes_doesnt_create_and_returns_error(self):
+        experience = ORMExperience.objects.create(title='Exp')
+        orm_scene = ORMScene.objects.create(title='T', description='',
+                                            latitude=1, longitude=2, experience_id=experience.id)
+
+        client = Client()
+        response = client.patch(reverse('scene', args=[orm_scene.id]),
+                                data={"title": "",
+                                      "description": "Some description",
+                                      "latitude": 0.3,
+                                      "longitude": 1.2,
+                                      "experience_id": experience.id},
+                                format='json')
 
         assert not ORMScene.objects.filter(title='',
                                            description='Some description',

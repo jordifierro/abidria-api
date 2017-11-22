@@ -32,7 +32,7 @@ class ExperienceRepoTestCase(TestCase):
         scene = Scene(title='S1', description='desc 1', latitude=Decimal('0.1'),
                       longitude=Decimal('1.2'), experience_id=str(orm_exp.id))
 
-        created_scene = SceneRepo().save_scene(scene)
+        created_scene = SceneRepo().create_scene(scene)
 
         orm_scene = ORMScene.objects.get(id=created_scene.id)
 
@@ -42,3 +42,35 @@ class ExperienceRepoTestCase(TestCase):
         assert scene.longitude == orm_scene.longitude
         assert scene.experience_id == str(orm_scene.experience_id)
         assert not orm_scene.picture
+
+    def test_update_scene(self):
+        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description')
+        scene = Scene(title='S1', description='desc 1', latitude=Decimal('0.1'),
+                      longitude=Decimal('1.2'), experience_id=str(orm_exp.id))
+        created_scene = SceneRepo().create_scene(scene)
+
+        updated_scene = Scene(id=created_scene.id, title='T2', description='updated',
+                              latitude=Decimal('3.5'), longitude=Decimal('-2.9'),
+                              experience_id=created_scene.experience_id)
+
+        SceneRepo().update_scene(updated_scene)
+
+        orm_scene = ORMScene.objects.get(id=created_scene.id)
+
+        assert updated_scene.title == orm_scene.title
+        assert updated_scene.description == orm_scene.description
+        assert updated_scene.latitude == orm_scene.latitude
+        assert updated_scene.longitude == orm_scene.longitude
+        assert updated_scene.experience_id == str(orm_scene.experience_id)
+        assert not orm_scene.picture
+
+    def test_get_scene(self):
+        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description')
+        orm_sce_1 = ORMScene.objects.create(title='S1', description='desc 1', latitude=Decimal('1.2'),
+                                            longitude=Decimal('-3.4'), experience=orm_exp)
+
+        result = SceneRepo().get_scene(id=orm_sce_1.id)
+
+        scene_1 = Scene(id=orm_sce_1.id, title='S1', description='desc 1', picture=None,
+                        latitude=Decimal('1.2'), longitude=Decimal('-3.4'), experience_id=orm_exp.id)
+        assert result == scene_1

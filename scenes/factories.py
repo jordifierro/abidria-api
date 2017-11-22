@@ -1,8 +1,8 @@
 from experiences.factories import ExperienceRepoFactory
 from .repositories import SceneRepo
-from .interactors import GetScenesFromExperienceInteractor, CreateNewSceneInteractor
+from .interactors import GetScenesFromExperienceInteractor, CreateNewSceneInteractor, ModifySceneInteractor
 from .validators import SceneValidator
-from .views import ScenesView
+from .views import ScenesView, SceneView
 
 
 class SceneRepoFactory(object):
@@ -37,6 +37,15 @@ class CreateNewSceneInteractorFactory(object):
         return CreateNewSceneInteractor(scene_repo=scene_repo, scene_validator=scene_validator)
 
 
+class ModifySceneInteractorFactory(object):
+
+    @staticmethod
+    def create():
+        scene_repo = SceneRepoFactory.create()
+        scene_validator = SceneValidatorFactory.create()
+        return ModifySceneInteractor(scene_repo=scene_repo, scene_validator=scene_validator)
+
+
 class ScenesViewFactory(object):
 
     @staticmethod
@@ -46,3 +55,12 @@ class ScenesViewFactory(object):
 
         return ScenesView(get_scenes_from_experience_interactor=get_scenes_from_experience_interactor,
                           create_new_scene_interactor=create_new_scene_interactor)
+
+
+class SceneViewFactory(object):
+
+    @staticmethod
+    def create():
+        modify_scene_interactor = ModifySceneInteractorFactory.create()
+
+        return SceneView(modify_scene_interactor=modify_scene_interactor)

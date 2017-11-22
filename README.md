@@ -106,6 +106,58 @@ _422_
 }
 ```
 
+### `PATCH /scenes/<scene_id>`
+
+_Request:_
+```json
+{
+    "title": null,
+    "description": "A new description",
+    "latitude": null,
+    "longitude": 0.56,
+}
+```
+Notice that `title` and `latitude` are left blank as example.
+It is also possible to not define some fields.
+
+_Response:_
+
+_200_
+```json
+{
+    "id": "8",
+    "title": "MainSquare",
+    "description": "A new description",
+    "picture": null,
+    "latitude": 1.2,
+    "longitude": 0.56,
+    "experience_id": "3"
+}
+```
+
+_404_
+```json
+{
+    "error": {
+        "source": "entity",
+        "code": "not_found",
+        "message": "Entity not found"
+    }
+}
+```
+
+_422_
+```json
+{
+    "error": {
+        "source": "title",
+        "code": "wrong_size",
+        "message": "Title must be between 1 and 30 chars"
+    }
+}
+```
+
+
 
 ### `POST /scenes/<scene_id>/picture/`
 

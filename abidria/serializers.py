@@ -23,3 +23,16 @@ class InvalidEntitySerializer(object):
                        'message': str(exception)
                     }
                }
+
+
+class EntityDoesNotExistSerializer(object):
+
+    @staticmethod
+    def serialize():
+        return {
+                   'error': {
+                       'source': 'entity',
+                       'code': 'not_found',
+                       'message': 'Entity not found',
+                    }
+               }
