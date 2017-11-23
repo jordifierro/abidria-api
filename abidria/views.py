@@ -1,4 +1,5 @@
 import json
+import urllib.parse
 
 from django.http import HttpResponse
 from django.views import View
@@ -19,7 +20,7 @@ class ViewWrapper(View):
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
     def patch(self, request, *args, **kwargs):
-        data = json.loads(request.body.decode("utf-8").replace("'", "\"").replace("None", "null"))
+        data = dict(urllib.parse.parse_qsl(request.body.decode("utf-8"), keep_blank_values=True))
         kwargs.update(data)
         body, status = self.view_factory.create().patch(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')

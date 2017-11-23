@@ -36,6 +36,8 @@ class SceneView(object):
         self.modify_scene_interactor = modify_scene_interactor
 
     def patch(self, scene_id, title=None, description=None, latitude=None, longitude=None, experience_id=None):
+        latitude = float(latitude) if latitude is not None else None
+        longitude = float(longitude) if longitude is not None else None
         try:
             scene = self.modify_scene_interactor.set_params(id=scene_id, title=title, description=description,
                                                             latitude=latitude, longitude=longitude,

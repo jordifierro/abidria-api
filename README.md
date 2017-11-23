@@ -69,7 +69,7 @@ _Response:_
 
 ### `POST /scenes`
 
-_Request:_
+_Request(application/x-www-form-urlencoded):_
 ```json
 {
     "title": "Plaça Major",
@@ -108,17 +108,17 @@ _422_
 
 ### `PATCH /scenes/<scene_id>`
 
-_Request:_
+_Request(application/x-www-form-urlencoded):_
 ```json
 {
-    "title": null,
+    "title": "",
     "description": "A new description",
-    "latitude": null,
+    "latitude": -0.3,
     "longitude": 0.56,
 }
 ```
-Notice that `title` and `latitude` are left blank as example.
-It is also possible to not define some fields.
+It is also allowed to not define some fields
+(if defined blank value will be set to blank).
 
 _Response:_
 

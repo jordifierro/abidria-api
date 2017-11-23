@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal
+import urllib.parse
 
 from django.test import TestCase
 from django.test import Client
@@ -107,16 +108,13 @@ class ModifySceneTestCase(TestCase):
 
         client = Client()
         response = client.patch(reverse('scene', args=[orm_scene.id]),
-                                data={"title": None,
-                                      "description": "New description",
-                                      "latitude": 0.3,
-                                      "longitude": 1.2},
-                                format='json')
+                                urllib.parse.urlencode({"description": "New description",
+                                                        "latitude": 0.3, "longitude": 1.2}),
+                                content_type='application/x-www-form-urlencoded')
 
         body = json.loads(response.content)
         updated_scene = ORMScene.objects.get(id=orm_scene.id,
-                                             title='T',
-                                             description='New description',
+                                             title='T', description='New description',
                                              experience_id=experience.id)
         assert updated_scene is not None
         assert body == {
@@ -136,12 +134,12 @@ class ModifySceneTestCase(TestCase):
 
         client = Client()
         response = client.patch(reverse('scene', args=[orm_scene.id]),
-                                data={"title": "",
-                                      "description": "Some description",
-                                      "latitude": 0.3,
-                                      "longitude": 1.2,
-                                      "experience_id": experience.id},
-                                format='json')
+                                urllib.parse.urlencode({"title": "",
+                                                        "description": "Some description",
+                                                        "latitude": 0.3,
+                                                        "longitude": 1.2,
+                                                        "experience_id": experience.id}),
+                                content_type='application/x-www-form-urlencoded')
 
         assert not ORMScene.objects.filter(title='',
                                            description='Some description',
