@@ -32,3 +32,36 @@ class ExperiencesTestCase(TestCase):
                                'picture': None
                            },
                        ]
+
+
+class CreateExperienceTestCase(TestCase):
+
+    def test_create_experience_creates_and_returns_experience(self):
+        client = Client()
+        response = client.post(reverse('experiences'), {'title': 'Experience title',
+                                                        'description': 'Some description'})
+
+        body = json.loads(response.content)
+        created_experience = ORMExperience.objects.get(id=body['id'], title='Experience title',
+                                                       description='Some description')
+        assert created_experience is not None
+        assert body == {
+                           'id': str(created_experience.id),
+                           'title': 'Experience title',
+                           'description': 'Some description',
+                           'picture': None,
+                       }
+
+    def test_wrong_attributes_doesnt_create_and_returns_error(self):
+        client = Client()
+        response = client.post(reverse('experiences'), {'title': '', 'description': 'Some description'})
+
+        assert not ORMExperience.objects.filter(title='', description='Some description').exists()
+        body = json.loads(response.content)
+        assert body == {
+                           'error': {
+                                        'source': 'title',
+                                        'code': 'wrong_size',
+                                        'message': 'Title must be between 1 and 30 chars'
+                                    }
+                       }

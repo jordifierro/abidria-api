@@ -32,3 +32,8 @@ class ExperienceRepo(object):
             return self._decode_db_experience(db_experience)
         except ORMExperience.DoesNotExist:
             raise EntityDoesNotExist()
+
+    def create_experience(self, experience):
+        db_experience = ORMExperience.objects.create(title=experience.title,
+                                                     description=experience.description)
+        return self._decode_db_experience(db_experience)

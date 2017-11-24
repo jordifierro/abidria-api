@@ -1,6 +1,7 @@
 from mock import Mock
 
 from abidria.entities import Picture
+from abidria.exceptions import InvalidEntityException
 from experiences.entities import Experience
 from experiences.views import ExperiencesView
 
@@ -16,7 +17,7 @@ class TestExperiencesView(object):
         interactor_mock = Mock()
         interactor_mock.execute.return_value = [experience_a, experience_b]
 
-        body, status = ExperiencesView(interactor_mock).get()
+        body, status = ExperiencesView(get_all_experiences_interactor=interactor_mock).get()
 
         assert status == 200
         assert body == [
@@ -37,3 +38,40 @@ class TestExperiencesView(object):
                                            'large_url': 'large.b'}
                            },
                        ]
+
+    def test_post_returns_experience_serialized_and_200(self):
+        experience = Experience(id='1', title='B', description='some')
+
+        interactor_mock = Mock()
+        interactor_mock.set_params.return_value = interactor_mock
+        interactor_mock.execute.return_value = experience
+
+        view = ExperiencesView(create_new_experience_interactor=interactor_mock)
+        body, status = view.post(title='B', description='some')
+
+        interactor_mock.set_params.assert_called_once_with(title='B', description='some')
+        assert status == 201
+        assert body == {
+                           'id': '1',
+                           'title': 'B',
+                           'description': 'some',
+                           'picture': None,
+                       }
+
+    def test_post_returns_error_serialized_and_422(self):
+        interactor_mock = Mock()
+        interactor_mock.set_params.return_value = interactor_mock
+        interactor_mock.execute.side_effect = \
+            InvalidEntityException(source='title', code='empty_attribute', message='Title must not be empty.')
+
+        view = ExperiencesView(create_new_experience_interactor=interactor_mock)
+        body, status = view.post(title='B', description='some')
+
+        assert status == 422
+        assert body == {
+                           'error': {
+                                        'source': 'title',
+                                        'code': 'empty_attribute',
+                                        'message': 'Title must not be empty.',
+                                    }
+                       }

@@ -1,6 +1,6 @@
 class Experience(object):
 
-    def __init__(self, id, title, description, picture=None):
+    def __init__(self, title, description, id=None, picture=None):
         self._id = id
         self._title = title
         self._description = description

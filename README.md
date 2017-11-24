@@ -37,6 +37,39 @@ _Response:_
 ]
 ```
 
+### `POST /experiences`
+
+_Request(application/x-www-form-urlencoded):_
+```json
+{
+    "title": "My travel",
+    "description": "and other adventures",
+}
+```
+
+_Response:_
+
+_201_
+```json
+{
+    "id": "8",
+    "title": "My travel",
+    "description": "and other adventures",
+    "picture": null,
+}
+```
+
+_422_
+```json
+{
+    "error": {
+        "source": "title",
+        "code": "empty_attribute",
+        "message": "Title cannot be empty"
+    }
+}
+```
+
 ### `GET /scenes/?experience=<experience_id>`
 
 _Response:_
