@@ -37,3 +37,9 @@ class ExperienceRepo(object):
         db_experience = ORMExperience.objects.create(title=experience.title,
                                                      description=experience.description)
         return self._decode_db_experience(db_experience)
+
+    def attach_picture_to_experience(self, experience_id, picture):
+        experience = ORMExperience.objects.get(id=experience_id)
+        experience.picture = picture
+        experience.save()
+        return self._decode_db_experience(experience)

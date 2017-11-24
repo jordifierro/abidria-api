@@ -70,6 +70,28 @@ _422_
 }
 ```
 
+### `POST /experiences/<experience_id>/picture/`
+
+_Request(multipart/form-data):_
+
+Param name to send the file: `picture`
+
+_Response:_
+
+_200_
+```json
+{
+    "id": "8",
+    "title": "My travel",
+    "description": "and other adventures",
+    "picture": {
+        "small_url": "https://scenes/37d6.small.jpeg",
+        "medium_url": "https://scenes/37d6.medium.jpeg",
+        "large_url": "https://scenes/37d6.large.jpeg"
+    },
+}
+```
+
 ### `GET /scenes/?experience=<experience_id>`
 
 _Response:_
