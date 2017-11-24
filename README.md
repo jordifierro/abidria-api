@@ -216,6 +216,10 @@ and run:
 ```bash
 virtualenv -p `which python3.6` ../env
 ```
+* Add this to the end of `../env/bin/activate` file:
+```bash
+source abidria/setup/envvars.sh
+```
 * Get into the environment:
 ```bash
 source ../env/bin/activate
