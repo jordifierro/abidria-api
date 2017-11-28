@@ -70,6 +70,52 @@ _422_
 }
 ```
 
+### `PATCH /experiences/<experience_id>`
+
+_Request(application/x-www-form-urlencoded):_
+```json
+{
+    "title": "",
+    "description": "A new description",
+}
+```
+It is also allowed to not define some fields
+(if defined blank value will be set to blank).
+
+_Response:_
+
+_200_
+```json
+{
+    "id": "8",
+    "title": "MainSquare",
+    "description": "A new description",
+    "picture": null,
+}
+```
+
+_404_
+```json
+{
+    "error": {
+        "source": "entity",
+        "code": "not_found",
+        "message": "Entity not found"
+    }
+}
+```
+
+_422_
+```json
+{
+    "error": {
+        "source": "title",
+        "code": "wrong_size",
+        "message": "Title must be between 1 and 30 chars"
+    }
+}
+```
+
 ### `POST /experiences/<experience_id>/picture/`
 
 _Request(multipart/form-data):_

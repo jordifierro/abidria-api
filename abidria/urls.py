@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from experiences.factories import ExperiencesViewFactory
+from experiences.factories import ExperiencesViewFactory, ExperienceViewFactory
 from experiences.django_views import UploadExperiencePictureView
 from scenes.factories import ScenesViewFactory, SceneViewFactory
 from scenes.django_views import UploadScenePictureView
@@ -16,6 +16,10 @@ urlpatterns = [
     url(r'^experiences/$',
         ViewWrapper.as_view(view_factory=ExperiencesViewFactory),
         name='experiences'),
+
+    url(r'^experiences/(?P<experience_id>[0-9]+)$',
+        ViewWrapper.as_view(view_factory=ExperienceViewFactory),
+        name='experience'),
 
     url(r'experiences/(?P<experience_id>[0-9]+)/picture/$',
         UploadExperiencePictureView.as_view(),

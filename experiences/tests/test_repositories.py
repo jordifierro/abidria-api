@@ -33,6 +33,14 @@ class ExperienceRepoTestCase(TestCase):
                 .then_should_return_this_experience() \
                 .then_should_save_this_experience_to_db()
 
+    def test_update_experience(self):
+        ExperienceRepoTestCase._ScenarioMaker() \
+                .given_an_experience_in_db() \
+                .given_an_updated_experience() \
+                .when_update_first_experience() \
+                .then_result_should_be_same_as_updated() \
+                .then_updated_experience_should_be_saved_on_db()
+
     class _ScenarioMaker(object):
 
         def __init__(self):
@@ -53,6 +61,10 @@ class ExperienceRepoTestCase(TestCase):
                                                                   description='some description')
             self._experience_a = Experience(id=self._orm_experience_a.id, title='Exp a',
                                             description='some description')
+            return self
+
+        def given_an_updated_experience(self):
+            self._updated_experience = Experience(id=self._experience_a.id, title='T2', description='updated')
             return self
 
         def given_another_experience_in_db(self):
@@ -81,6 +93,10 @@ class ExperienceRepoTestCase(TestCase):
             self._result = ExperienceRepo().create_experience(self._experience_to_create)
             return self
 
+        def when_update_first_experience(self):
+            self._result = ExperienceRepo().update_experience(self._updated_experience)
+            return self
+
         def then_repo_should_return_both_experiences(self):
             assert self._result == [self._experience_a, self._experience_b]
             return self
@@ -102,4 +118,17 @@ class ExperienceRepoTestCase(TestCase):
             exp = ExperienceRepo().get_experience(self._result.id)
             assert exp.title == self._experience_to_create.title
             assert exp.description == self._experience_to_create.description
+            return self
+
+        def then_result_should_be_same_as_updated(self):
+            assert self._updated_experience.title == self._result.title
+            assert self._updated_experience.description == self._result.description
+            assert not self._result.picture
+            return self
+
+        def then_updated_experience_should_be_saved_on_db(self):
+            orm_experience = ORMExperience.objects.get(id=self._result.id,
+                                                       title=self._updated_experience.title,
+                                                       description=self._updated_experience.description)
+            assert orm_experience is not None
             return self

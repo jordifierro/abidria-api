@@ -127,7 +127,7 @@ class ModifySceneTestCase(TestCase):
                            'experience_id': str(experience.id),
                        }
 
-    def test_wrong_attributes_doesnt_create_and_returns_error(self):
+    def test_wrong_attributes_doesnt_update_and_returns_error(self):
         experience = ORMExperience.objects.create(title='Exp')
         orm_scene = ORMScene.objects.create(title='T', description='',
                                             latitude=1, longitude=2, experience_id=experience.id)

@@ -43,3 +43,12 @@ class ExperienceRepo(object):
         experience.picture = picture
         experience.save()
         return self._decode_db_experience(experience)
+
+    def update_experience(self, experience):
+        orm_experience = ORMExperience.objects.get(id=experience.id)
+
+        orm_experience.title = experience.title
+        orm_experience.description = experience.description
+
+        orm_experience.save()
+        return self._decode_db_experience(orm_experience)
