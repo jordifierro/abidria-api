@@ -1,5 +1,4 @@
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExist
-from abidria.serializers import InvalidEntitySerializer, EntityDoesNotExistSerializer
+from abidria.decorators import serialize_exceptions
 from .serializers import MultipleExperiencesSerializer, ExperienceSerializer
 
 
@@ -9,6 +8,7 @@ class ExperiencesView(object):
         self.get_all_experiences_interactor = get_all_experiences_interactor
         self.create_new_experience_interactor = create_new_experience_interactor
 
+    @serialize_exceptions
     def get(self):
         experiences = self.get_all_experiences_interactor.execute()
 
@@ -16,16 +16,12 @@ class ExperiencesView(object):
         status = 200
         return body, status
 
+    @serialize_exceptions
     def post(self, title=None, description=None):
-        try:
-            experience = self.create_new_experience_interactor \
-                    .set_params(title=title, description=description).execute()
-            body = ExperienceSerializer.serialize(experience)
-            status = 201
-        except InvalidEntityException as e:
-            body = InvalidEntitySerializer.serialize(e)
-            status = 422
-
+        experience = self.create_new_experience_interactor \
+                .set_params(title=title, description=description).execute()
+        body = ExperienceSerializer.serialize(experience)
+        status = 201
         return body, status
 
 
@@ -34,17 +30,10 @@ class ExperienceView(object):
     def __init__(self, modify_experience_interactor=None):
         self.modify_experience_interactor = modify_experience_interactor
 
+    @serialize_exceptions
     def patch(self, experience_id, title=None, description=None):
-        try:
-            experience = self.modify_experience_interactor \
-                    .set_params(id=experience_id, title=title, description=description).execute()
-            body = ExperienceSerializer.serialize(experience)
-            status = 200
-        except InvalidEntityException as e:
-            body = InvalidEntitySerializer.serialize(e)
-            status = 422
-        except EntityDoesNotExist:
-            body = EntityDoesNotExistSerializer.serialize()
-            status = 404
-
+        experience = self.modify_experience_interactor \
+                .set_params(id=experience_id, title=title, description=description).execute()
+        body = ExperienceSerializer.serialize(experience)
+        status = 200
         return body, status
