@@ -1,5 +1,5 @@
 from abidria.entities import Picture
-from abidria.exceptions import EntityDoesNotExist
+from abidria.exceptions import EntityDoesNotExistException
 from .models import ORMScene
 from .entities import Scene
 
@@ -17,7 +17,7 @@ class SceneRepo(object):
         try:
             orm_scene = ORMScene.objects.get(id=id)
         except ORMScene.DoesNotExist:
-            raise EntityDoesNotExist
+            raise EntityDoesNotExistException
 
         return self._decode_db_scene(orm_scene)
 

@@ -1,5 +1,5 @@
 from abidria.entities import Picture
-from abidria.exceptions import EntityDoesNotExist
+from abidria.exceptions import EntityDoesNotExistException
 from .models import ORMExperience
 from .entities import Experience
 
@@ -31,7 +31,7 @@ class ExperienceRepo(object):
             db_experience = ORMExperience.objects.get(id=id)
             return self._decode_db_experience(db_experience)
         except ORMExperience.DoesNotExist:
-            raise EntityDoesNotExist()
+            raise EntityDoesNotExistException()
 
     def create_experience(self, experience):
         db_experience = ORMExperience.objects.create(title=experience.title,

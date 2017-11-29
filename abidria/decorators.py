@@ -1,4 +1,4 @@
-from .exceptions import InvalidEntityException, EntityDoesNotExist
+from .exceptions import InvalidEntityException, EntityDoesNotExistException
 from .serializers import InvalidEntitySerializer, EntityDoesNotExistSerializer
 
 
@@ -9,7 +9,7 @@ def serialize_exceptions(func):
         except InvalidEntityException as e:
             body = InvalidEntitySerializer.serialize(e)
             status = 422
-        except EntityDoesNotExist:
+        except EntityDoesNotExistException:
             body = EntityDoesNotExistSerializer.serialize()
             status = 404
 

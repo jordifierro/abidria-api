@@ -1,6 +1,6 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExist
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 from scenes.validators import SceneValidator
 from scenes.entities import Scene
 
@@ -129,7 +129,7 @@ class TestSceneValidator(object):
             self._error = None
 
         def given_an_unexistent_experience(self):
-            self._experience_repo.get_experience.side_effect = EntityDoesNotExist()
+            self._experience_repo.get_experience.side_effect = EntityDoesNotExistException()
             return self
 
         def given_a_scene(self, title='Valid Title', description=None, latitude=1, longitude=1, experience_id=1):

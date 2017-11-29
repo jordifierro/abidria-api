@@ -1,6 +1,6 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExist
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 from experiences.entities import Experience
 from experiences.interactors import GetAllExperiencesInteractor, CreateNewExperienceInteractor, \
         ModifyExperienceInteractor
@@ -97,12 +97,12 @@ class TestModifyExperience(object):
 
     def test_unexistent_experience_returns_entity_does_not_exist_error(self):
         experience_repo = Mock()
-        experience_repo.get_experience.side_effect = EntityDoesNotExist
+        experience_repo.get_experience.side_effect = EntityDoesNotExistException
         experience_validator = Mock()
 
         try:
             ModifyExperienceInteractor(experience_repo, experience_validator) \
                 .set_params(id='1', title='Other', description='some').execute()
             assert False
-        except EntityDoesNotExist:
+        except EntityDoesNotExistException:
             pass

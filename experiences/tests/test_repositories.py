@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from abidria.exceptions import EntityDoesNotExist
+from abidria.exceptions import EntityDoesNotExistException
 from experiences.entities import Experience
 from experiences.models import ORMExperience
 from experiences.repositories import ExperienceRepo
@@ -85,7 +85,7 @@ class ExperienceRepoTestCase(TestCase):
         def when_get_unexistent_experience(self):
             try:
                 ExperienceRepo().get_experience(0)
-            except EntityDoesNotExist as e:
+            except EntityDoesNotExistException as e:
                 self._entity_does_not_exist_error = e
             return self
 

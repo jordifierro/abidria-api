@@ -1,4 +1,4 @@
-class EntityDoesNotExist(Exception):
+class EntityDoesNotExistException(Exception):
     pass
 
 

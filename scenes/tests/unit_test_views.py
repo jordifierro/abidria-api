@@ -3,7 +3,7 @@ from decimal import Decimal
 from mock import Mock
 
 from abidria.entities import Picture
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExist
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 from scenes.entities import Scene
 from scenes.views import ScenesView, SceneView
 
@@ -145,7 +145,7 @@ class TestSceneView(object):
     def test_patch_returns_not_exists_error_serialized_and_404(self):
         interactor_mock = Mock()
         interactor_mock.set_params.return_value = interactor_mock
-        interactor_mock.execute.side_effect = EntityDoesNotExist
+        interactor_mock.execute.side_effect = EntityDoesNotExistException
 
         view = SceneView(modify_scene_interactor=interactor_mock)
         body, status = view.patch(scene_id='33')

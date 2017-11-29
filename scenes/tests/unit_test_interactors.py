@@ -1,6 +1,6 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExist
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 from scenes.interactors import GetScenesFromExperienceInteractor, CreateNewSceneInteractor, ModifySceneInteractor
 from scenes.entities import Scene
 
@@ -98,7 +98,7 @@ class TestModifyScene(object):
 
     def test_unexistent_scene_returns_entity_does_not_exist_error(self):
         scene_repo = Mock()
-        scene_repo.get_scene.side_effect = EntityDoesNotExist
+        scene_repo.get_scene.side_effect = EntityDoesNotExistException
         scene_validator = Mock()
 
         try:
@@ -106,5 +106,5 @@ class TestModifyScene(object):
                 .set_params(id='1', title='Other', description='some',
                             latitude=3, longitude=8, experience_id=1).execute()
             assert False
-        except EntityDoesNotExist:
+        except EntityDoesNotExistException:
             pass

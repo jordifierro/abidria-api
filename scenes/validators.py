@@ -1,4 +1,4 @@
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExist
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 
 
 class SceneValidator(object):
@@ -47,7 +47,7 @@ class SceneValidator(object):
                                          message='Experience id cannot be empty')
         try:
             self.experience_repo.get_experience(scene.experience_id)
-        except EntityDoesNotExist:
+        except EntityDoesNotExistException:
             raise InvalidEntityException(source='experience_id', code='does_not_exist',
                                          message='Experience does not exist')
 
