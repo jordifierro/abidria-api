@@ -1,7 +1,6 @@
 from mock import Mock
 
 from abidria.entities import Picture
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 from experiences.entities import Experience
 from experiences.views import ExperiencesView, ExperienceView
 
@@ -58,24 +57,6 @@ class TestExperiencesView(object):
                            'picture': None,
                        }
 
-    def test_post_returns_error_serialized_and_422(self):
-        interactor_mock = Mock()
-        interactor_mock.set_params.return_value = interactor_mock
-        interactor_mock.execute.side_effect = \
-            InvalidEntityException(source='title', code='empty_attribute', message='Title must not be empty.')
-
-        view = ExperiencesView(create_new_experience_interactor=interactor_mock)
-        body, status = view.post(title='B', description='some')
-
-        assert status == 422
-        assert body == {
-                           'error': {
-                                        'source': 'title',
-                                        'code': 'empty_attribute',
-                                        'message': 'Title must not be empty.',
-                                    }
-                       }
-
 
 class TestExperienceView(object):
 
@@ -96,39 +77,4 @@ class TestExperienceView(object):
                            'title': 'B',
                            'description': 'some',
                            'picture': None,
-                       }
-
-    def test_patch_returns_error_serialized_and_422(self):
-        interactor_mock = Mock()
-        interactor_mock.set_params.return_value = interactor_mock
-        interactor_mock.execute.side_effect = \
-            InvalidEntityException(source='title', code='empty_attribute', message='Title must not be empty')
-
-        view = ExperienceView(modify_experience_interactor=interactor_mock)
-        body, status = view.patch(experience_id='1')
-
-        assert status == 422
-        assert body == {
-                           'error': {
-                                        'source': 'title',
-                                        'code': 'empty_attribute',
-                                        'message': 'Title must not be empty',
-                                    }
-                       }
-
-    def test_patch_returns_not_exists_error_serialized_and_404(self):
-        interactor_mock = Mock()
-        interactor_mock.set_params.return_value = interactor_mock
-        interactor_mock.execute.side_effect = EntityDoesNotExistException
-
-        view = ExperienceView(modify_experience_interactor=interactor_mock)
-        body, status = view.patch(experience_id='33')
-
-        assert status == 404
-        assert body == {
-                           'error': {
-                                        'source': 'entity',
-                                        'code': 'not_found',
-                                        'message': 'Entity not found',
-                                    }
                        }
