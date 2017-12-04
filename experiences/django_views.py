@@ -3,7 +3,7 @@ import json
 from django.http import HttpResponse
 from django.views import View
 
-from .factories import ExperienceRepoFactory
+from .factories import create_experience_repo
 from .serializers import ExperienceSerializer
 
 
@@ -11,7 +11,7 @@ class UploadExperiencePictureView(View):
 
     def post(self, request, experience_id):
         picture = request.FILES['picture']
-        experience = ExperienceRepoFactory.create().attach_picture_to_experience(experience_id, picture)
+        experience = create_experience_repo().attach_picture_to_experience(experience_id, picture)
 
         body = ExperienceSerializer.serialize(experience)
         status = 200

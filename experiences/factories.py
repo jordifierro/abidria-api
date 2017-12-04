@@ -5,61 +5,31 @@ from .interactors import GetAllExperiencesInteractor, CreateNewExperienceInterac
 from .views import ExperiencesView, ExperienceView
 
 
-class ExperienceRepoFactory(object):
-
-    @staticmethod
-    def create():
-        return ExperienceRepo()
+def create_experience_repo():
+    return ExperienceRepo()
 
 
-class ExperienceValidatorFactory(object):
-
-    @staticmethod
-    def create():
-        return ExperienceValidator()
+def create_experience_validator():
+    return ExperienceValidator()
 
 
-class GetAllExperiencesInteractorFactory(object):
-
-    @staticmethod
-    def create():
-        experience_repo = ExperienceRepoFactory.create()
-        return GetAllExperiencesInteractor(experience_repo)
+def create_get_all_experiences_interactor():
+    return GetAllExperiencesInteractor(create_experience_repo())
 
 
-class CreateNewExperienceInteractorFactory(object):
-
-    @staticmethod
-    def create():
-        experience_repo = ExperienceRepoFactory.create()
-        experience_validator = ExperienceValidatorFactory.create()
-        return CreateNewExperienceInteractor(experience_repo, experience_validator)
+def create_create_new_experience_interactor():
+    return CreateNewExperienceInteractor(create_experience_repo(), create_experience_validator())
 
 
-class ModifyExperienceInteractorFactory(object):
-
-    @staticmethod
-    def create():
-        experience_repo = ExperienceRepoFactory.create()
-        experience_validator = ExperienceValidatorFactory.create()
-        return ModifyExperienceInteractor(experience_repo=experience_repo,
-                                          experience_validator=experience_validator)
+def create_modify_experience_interactor():
+    return ModifyExperienceInteractor(experience_repo=create_experience_repo(),
+                                      experience_validator=create_experience_validator())
 
 
-class ExperiencesViewFactory(object):
-
-    @staticmethod
-    def create():
-        get_all_experiences_interactor = GetAllExperiencesInteractorFactory.create()
-        create_new_experience_interactor = CreateNewExperienceInteractorFactory.create()
-        return ExperiencesView(get_all_experiences_interactor=get_all_experiences_interactor,
-                               create_new_experience_interactor=create_new_experience_interactor)
+def create_experiences_view():
+    return ExperiencesView(get_all_experiences_interactor=create_get_all_experiences_interactor(),
+                           create_new_experience_interactor=create_create_new_experience_interactor())
 
 
-class ExperienceViewFactory(object):
-
-    @staticmethod
-    def create():
-        modify_experience_interactor = ModifyExperienceInteractorFactory.create()
-
-        return ExperienceView(modify_experience_interactor=modify_experience_interactor)
+def create_experience_view():
+    return ExperienceView(modify_experience_interactor=create_modify_experience_interactor())
