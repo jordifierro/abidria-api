@@ -1,4 +1,4 @@
-class CreateGuestPersonAndReturnAuthToken(object):
+class CreateGuestPersonAndReturnAuthTokenInteractor(object):
 
     def __init__(self, client_secret_key_validator, person_repo, auth_token_repo):
         self.client_secret_key_validator = client_secret_key_validator

@@ -24,6 +24,9 @@ LOCAL_DEPLOY = bool(int(os.environ['LOCAL_DEPLOY']))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['SECRET_KEY']
 
+# SECURITY WARNING: keep the client secret key secret both in server and client!
+CLIENT_SECRET_KEY = os.environ['CLIENT_SECRET_KEY']
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ['DEBUG']))
 

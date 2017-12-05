@@ -7,6 +7,7 @@ from experiences.factories import create_experiences_view, create_experience_vie
 from experiences.django_views import UploadExperiencePictureView
 from scenes.factories import create_scenes_view, create_scene_view
 from scenes.django_views import UploadScenePictureView
+from people.factories import create_people_view
 
 from .views import ViewWrapper
 
@@ -35,7 +36,11 @@ urlpatterns = [
 
     url(r'scenes/(?P<scene_id>[0-9]+)/picture/$',
         UploadScenePictureView.as_view(),
-        name='upload-scene-picture')
+        name='upload-scene-picture'),
+
+    url(r'^people/$',
+        ViewWrapper.as_view(view_creator_func=create_people_view),
+        name='people'),
 ]
 
 if settings.LOCAL_DEPLOY:

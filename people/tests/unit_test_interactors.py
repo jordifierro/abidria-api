@@ -2,7 +2,7 @@ from mock import Mock
 
 from abidria.exceptions import InvalidEntityException
 from people.entities import Person, AuthToken
-from people.interactors import CreateGuestPersonAndReturnAuthToken
+from people.interactors import CreateGuestPersonAndReturnAuthTokenInteractor
 
 
 class TestCreateGuestPersonAndReturnAuthToken(object):
@@ -73,7 +73,7 @@ class TestCreateGuestPersonAndReturnAuthToken(object):
 
         def when_execute_interactor(self):
             try:
-                interactor = CreateGuestPersonAndReturnAuthToken(
+                interactor = CreateGuestPersonAndReturnAuthTokenInteractor(
                         client_secret_key_validator=self.client_secret_key_validator,
                         person_repo=self.person_repo,
                         auth_token_repo=self.auth_token_repo)

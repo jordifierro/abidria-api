@@ -39,7 +39,7 @@ class TestPeopleView(object):
             return self
 
         def when_post_is_called_with_that_key(self):
-            view = PeopleView(create_guest_person_and_return_auth_token=self.interactor_mock)
+            view = PeopleView(create_guest_person_and_return_auth_token_interactor=self.interactor_mock)
             self.body, self.status = view.post(client_secret_key=self.client_secret_key)
             return self
 
