@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ORMPerson
+from .models import ORMPerson, ORMAuthToken
 
 
 class PersonAdmin(admin.ModelAdmin):
@@ -8,3 +8,11 @@ class PersonAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ORMPerson, PersonAdmin)
+
+
+class AuthTokenAdmin(admin.ModelAdmin):
+    list_display = ('person', 'access_token', 'refresh_token')
+    search_fields = ('person__username', )
+
+
+admin.site.register(ORMAuthToken, AuthTokenAdmin)
