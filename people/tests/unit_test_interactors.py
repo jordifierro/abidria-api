@@ -1,8 +1,8 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 from people.entities import Person, AuthToken
-from people.interactors import CreateGuestPersonAndReturnAuthTokenInteractor
+from people.interactors import CreateGuestPersonAndReturnAuthTokenInteractor, AuthenticateInteractor
 
 
 class TestCreateGuestPersonAndReturnAuthToken(object):
@@ -110,4 +110,65 @@ class TestCreateGuestPersonAndReturnAuthToken(object):
 
         def then_create_auth_token_should_not_be_called(self):
             self.auth_token_repo.create_auth_token.assert_not_called()
+            return self
+
+
+class TestAuthenticateInteractor(object):
+
+    def test_correct_access_token_returns_person_id(self):
+        TestAuthenticateInteractor.ScenarioMaker() \
+                .given_an_access_token() \
+                .given_an_auth_token() \
+                .given_an_auth_repo_that_returns_that_auth_token() \
+                .when_authenticate_interactor_is_executed() \
+                .then_should_call_repo_get_auth_token_with_access_token() \
+                .then_should_return_auth_token_person_id()
+
+    def test_wrong_access_token_returns_none(self):
+        TestAuthenticateInteractor.ScenarioMaker() \
+                .given_an_access_token() \
+                .given_an_auth_repo_that_raises_entity_does_not_exist() \
+                .when_authenticate_interactor_is_executed() \
+                .then_should_return_none()
+
+    class ScenarioMaker(object):
+
+        def __init__(self):
+            self.result = None
+            self.repo = None
+            self.access_token = None
+            self.auth_token = None
+
+        def given_an_access_token(self):
+            self.access_token = 'A_T'
+            return self
+
+        def given_an_auth_token(self):
+            self.auth_token = AuthToken(person_id='1', access_token='A', refresh_token='R')
+            return self
+
+        def given_an_auth_repo_that_returns_that_auth_token(self):
+            self.repo = Mock()
+            self.repo.get_auth_token.return_value = self.auth_token
+            return self
+
+        def given_an_auth_repo_that_raises_entity_does_not_exist(self):
+            self.repo = Mock()
+            self.repo.get_auth_token.side_effect = EntityDoesNotExistException
+            return self
+
+        def when_authenticate_interactor_is_executed(self):
+            self.result = AuthenticateInteractor(self.repo).set_params(access_token=self.access_token).execute()
+            return self
+
+        def then_should_call_repo_get_auth_token_with_access_token(self):
+            self.repo.get_auth_token.assert_called_once_with(access_token=self.access_token)
+            return self
+
+        def then_should_return_auth_token_person_id(self):
+            assert self.result == self.auth_token.person_id
+            return self
+
+        def then_should_return_none(self):
+            assert self.result is None
             return self
