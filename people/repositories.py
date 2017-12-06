@@ -9,6 +9,18 @@ class PersonRepo(object):
         created_orm_person = ORMPerson.objects.create()
         return self._decode_db_person(created_orm_person)
 
+    def update_person(self, person):
+        orm_person = ORMPerson.objects.get(id=person.id)
+
+        orm_person.is_registered = person.is_registered
+        orm_person.username = person.username
+        orm_person.email = person.email
+        orm_person.is_email_confirmed = person.is_email_confirmed
+
+        orm_person.save()
+
+        return self._decode_db_person(orm_person)
+
     def _decode_db_person(self, db_person):
         return Person(id=db_person.id, is_registered=db_person.is_registered,
                       username=db_person.username, email=db_person.email,

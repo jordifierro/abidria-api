@@ -5,6 +5,7 @@ from django.test import TestCase
 from abidria.exceptions import EntityDoesNotExistException
 from people.models import ORMPerson, ORMAuthToken
 from people.repositories import PersonRepo, AuthTokenRepo
+from people.entities import Person
 
 
 class PersonRepoTestCase(TestCase):
@@ -15,13 +16,36 @@ class PersonRepoTestCase(TestCase):
                 .then_response_should_be_a_guest_person() \
                 .then_that_person_should_be_saved_in_db()
 
+    def test_update_person(self):
+        PersonRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
+                .given_a_person_entity_with_db_person_id() \
+                .when_update_person_entity() \
+                .then_result_should_be_person_entity() \
+                .then_db_person_should_be_same_as_entity()
+
     class _ScenarioMaker(object):
 
         def __init__(self):
             self.response = None
+            self.orm_person = None
+            self.person = None
+
+        def given_a_person_in_db(self):
+            self.orm_person = ORMPerson.objects.create()
+            return self
+
+        def given_a_person_entity_with_db_person_id(self):
+            self.person = Person(id=self.orm_person.id, is_registered=True,
+                                 username='U', email='E', is_email_confirmed=True)
+            return self
 
         def when_create_guest_person(self):
             self.result = PersonRepo().create_guest_person()
+            return self
+
+        def when_update_person_entity(self):
+            self.result = PersonRepo().update_person(self.person)
             return self
 
         def then_response_should_be_a_guest_person(self):
@@ -34,6 +58,19 @@ class PersonRepoTestCase(TestCase):
 
         def then_that_person_should_be_saved_in_db(self):
             assert ORMPerson.objects.filter(id=self.result.id).exists()
+            return self
+
+        def then_result_should_be_person_entity(self):
+            assert self.result == self.person
+            return self
+
+        def then_db_person_should_be_same_as_entity(self):
+            updated_orm_person = ORMPerson.objects.get(id=self.orm_person.id)
+            assert updated_orm_person.is_registered == self.person.is_registered
+            assert updated_orm_person.username == self.person.username
+            assert updated_orm_person.email == self.person.email
+            assert updated_orm_person.is_email_confirmed == self.person.is_email_confirmed
+            return self
 
 
 class AuthTokenRepoTestCase(TestCase):
