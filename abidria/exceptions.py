@@ -2,6 +2,10 @@ class EntityDoesNotExistException(Exception):
     pass
 
 
+class ConflictException(Exception):
+    pass
+
+
 class InvalidEntityException(Exception):
 
     def __init__(self, source, code, message):
