@@ -1,3 +1,4 @@
+from abidria.exceptions import EntityDoesNotExistException
 from .models import ORMPerson, ORMAuthToken
 from .entities import Person, AuthToken
 
@@ -19,6 +20,13 @@ class AuthTokenRepo(object):
     def create_auth_token(self, person_id):
         created_orm_auth_token = ORMAuthToken.objects.create(person_id=person_id)
         return self._decode_db_auth_token(created_orm_auth_token)
+
+    def get_auth_token(self, access_token):
+        try:
+            orm_auth_token = ORMAuthToken.objects.get(access_token=access_token)
+            return self._decode_db_auth_token(orm_auth_token)
+        except ORMAuthToken.DoesNotExist:
+            raise EntityDoesNotExistException
 
     def _decode_db_auth_token(self, db_auth_token):
         return AuthToken(person_id=db_auth_token.person_id,
