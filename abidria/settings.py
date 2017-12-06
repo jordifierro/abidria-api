@@ -13,6 +13,9 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 import dj_database_url
 
+PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
+PROJECT_NAME = os.path.basename(PROJECT_ROOT)
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
