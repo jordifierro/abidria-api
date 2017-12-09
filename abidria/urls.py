@@ -41,6 +41,10 @@ urlpatterns = [
     url(r'^people/$',
         ViewWrapper.as_view(view_creator_func=create_people_view),
         name='people'),
+
+    url(r'^people/me/email-confirmation$',
+        ViewWrapper.as_view(view_creator_func=None),
+        name='email-confirmation'),
 ]
 
 if settings.LOCAL_DEPLOY:

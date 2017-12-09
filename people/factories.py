@@ -6,6 +6,7 @@ from .repositories import PersonRepo, AuthTokenRepo
 from .validators import ClientSecretKeyValidator, PersonValidator
 from .interactors import CreateGuestPersonAndReturnAuthTokenInteractor
 from .views import PeopleView
+from .services import MailerService
 
 
 def create_person_repo():
@@ -46,3 +47,7 @@ def create_person_validator():
 
     return PersonValidator(project_name=project_name, forbidden_usernames=forbidden_usernames,
                            forbidden_email_domains=forbidden_email_domains)
+
+
+def create_mailer_service(request):
+    return MailerService(request)

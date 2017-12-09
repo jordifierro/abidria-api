@@ -1,0 +1,7 @@
+Hi {{ username }}, welcome to Abidria!
+
+Click this link to confirm your email and finish your register process:
+
+{{ confirmation_url }}
+
+If you haven't registered on Abidria app, just ignore this mail. We won't mail you again.
