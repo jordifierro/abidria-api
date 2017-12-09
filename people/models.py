@@ -36,3 +36,17 @@ class ORMAuthToken(models.Model):
 
     def __str__(self):
         return str(self.access_token)
+
+
+class ORMConfirmationToken(models.Model):
+    person = models.ForeignKey('ORMPerson', db_index=True, on_delete=models.CASCADE)
+    token = models.UUIDField(db_index=True, default=uuid.uuid4, editable=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Confirmation token'
+        verbose_name_plural = 'Confirmation tokens'
+
+    def __str__(self):
+        return str(self.token)

@@ -1,5 +1,5 @@
 from abidria.exceptions import EntityDoesNotExistException
-from .models import ORMPerson, ORMAuthToken
+from .models import ORMPerson, ORMAuthToken, ORMConfirmationToken
 from .entities import Person, AuthToken
 
 
@@ -44,3 +44,14 @@ class AuthTokenRepo(object):
         return AuthToken(person_id=db_auth_token.person_id,
                          access_token=str(db_auth_token.access_token),
                          refresh_token=str(db_auth_token.refresh_token))
+
+
+class ConfirmationTokenRepo(object):
+
+    def create_confirmation_token(self, person_id):
+        created_orm_confirmation_token = ORMConfirmationToken.objects.create(person_id=person_id)
+        return str(created_orm_confirmation_token.token)
+
+    def delete_confirmation_tokens(self, person_id):
+        ORMConfirmationToken.objects.filter(person_id=person_id).delete()
+        return True
