@@ -22,6 +22,12 @@ class ConflictException(AbidriaException):
     pass
 
 
+class UnauthorizedException(AbidriaException):
+
+    def __init__(self):
+        super().__init__(source='authentication', code='required', message='Authentication required')
+
+
 class EntityDoesNotExistException(AbidriaException):
 
     def __init__(self):

@@ -1,6 +1,7 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException, ConflictException
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException, ConflictException, \
+        UnauthorizedException
 from people.entities import Person, AuthToken
 from people.interactors import CreateGuestPersonAndReturnAuthTokenInteractor, AuthenticateInteractor, \
         RegisterUsernameAndEmailInteractor
@@ -234,6 +235,19 @@ class TestRegisterUsernameAndEmailInteractor(object):
                 .then_should_not_send_email_with_confirmation_token() \
                 .then_should_raise_conflict_exception()
 
+    def test_no_logged_person_id_raises_unauthorized(self):
+        TestRegisterUsernameAndEmailInteractor.ScenarioMaker() \
+                .given_a_person_repo() \
+                .given_confirmation_token_repo() \
+                .given_a_mailer_service() \
+                .when_register_interactor_is_called() \
+                .then_should_raise_unauthorized_exception() \
+                .then_should_not_call_repo_update() \
+                .then_should_not_delete_previous_person_confirmation_tokens() \
+                .then_should_not_create_confirmation_token() \
+                .then_should_not_send_email_with_confirmation_token() \
+
+
     class ScenarioMaker(object):
 
         def __init__(self):
@@ -389,4 +403,8 @@ class TestRegisterUsernameAndEmailInteractor(object):
             assert self.error.source == 'person'
             assert self.error.code == 'already_registered'
             assert str(self.error) == 'Person already registered'
+            return self
+
+        def then_should_raise_unauthorized_exception(self):
+            assert type(self.error) is UnauthorizedException
             return self

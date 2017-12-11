@@ -1,4 +1,4 @@
-from abidria.exceptions import EntityDoesNotExistException, ConflictException
+from abidria.exceptions import EntityDoesNotExistException, ConflictException, UnauthorizedException
 from people.entities import Person
 
 
@@ -53,6 +53,9 @@ class RegisterUsernameAndEmailInteractor(object):
         return self
 
     def execute(self):
+        if self.logged_person_id is None:
+            raise UnauthorizedException()
+
         person = self.person_repo.get_person(id=self.logged_person_id)
         if person.is_email_confirmed:
             raise ConflictException(source='person', code='already_registered', message='Person already registered')
