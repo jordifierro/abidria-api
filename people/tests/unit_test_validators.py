@@ -50,19 +50,19 @@ class TestPersonValidator(object):
 
     def test_valid_person(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('a') \
+                .given_a_username('usr') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_result_should_be_true()
 
-    def test_empty_username(self):
+    def test_short_username(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('') \
+                .given_a_username('aa') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['a', 'b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_size_username()
 
@@ -71,7 +71,7 @@ class TestPersonValidator(object):
                 .given_a_username('a'*21) \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['a', 'b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_size_username()
 
@@ -84,16 +84,16 @@ class TestPersonValidator(object):
                 .given_a_username(username) \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['a', 'b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_username()
 
     def test_forbidden_username(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('a') \
+                .given_a_username('ban') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['a', 'b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_username()
 
@@ -102,52 +102,52 @@ class TestPersonValidator(object):
                 .given_a_username('asdf_abidria_asdf') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['a', 'b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_username()
 
     def test_mail_with_more_than_one_at(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('a') \
+                .given_a_username('usr') \
                 .given_an_email('e@@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
 
     def test_empty_email(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('a') \
+                .given_a_username('usr') \
                 .given_an_email('') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
 
     def test_mail_without_dots(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('a') \
+                .given_a_username('usr') \
                 .given_an_email('e@m') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
 
     def test_mail_without_ats(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('a') \
+                .given_a_username('usr') \
                 .given_an_email('em.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['b'], ['i.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
 
     def test_forbidden_email(self):
         TestPersonValidator.ScenarioMaker() \
-                .given_a_username('a') \
+                .given_a_username('usr') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
-                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['b'], ['i.c', 'm.c']) \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c', 'm.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_not_allowed_email()
 
