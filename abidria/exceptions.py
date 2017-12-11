@@ -1,4 +1,4 @@
-class InvalidEntityException(Exception):
+class AbidriaException(Exception):
 
     def __init__(self, source, code, message):
         super().__init__(message)
@@ -14,31 +14,15 @@ class InvalidEntityException(Exception):
         return self._code
 
 
-class EntityDoesNotExistException(Exception):
-
-    @property
-    def source(self):
-        return 'entity'
-
-    @property
-    def code(self):
-        return 'not_found'
-
-    def __str__(self):
-        return 'Entity not found'
+class InvalidEntityException(AbidriaException):
+    pass
 
 
-class ConflictException(Exception):
+class ConflictException(AbidriaException):
+    pass
 
-    def __init__(self, source, code, message):
-        super().__init__(message)
-        self._source = source
-        self._code = code
 
-    @property
-    def source(self):
-        return self._source
+class EntityDoesNotExistException(AbidriaException):
 
-    @property
-    def code(self):
-        return self._code
+    def __init__(self):
+        super().__init__(source='entity', code='not_found', message='Entity not found')

@@ -1,20 +1,19 @@
-from .exceptions import InvalidEntityException, EntityDoesNotExistException, ConflictException
-from .serializers import InvalidEntitySerializer, EntityDoesNotExistSerializer, ConflictExceptionSerializer
+from .exceptions import InvalidEntityException, EntityDoesNotExistException, ConflictException, AbidriaException
+from .serializers import AbidriaExceptionSerializer
+
+exception_status_code_mapper = {
+        InvalidEntityException: 422,
+        EntityDoesNotExistException: 404,
+        ConflictException: 409,
+        }
 
 
 def serialize_exceptions(func):
     def func_wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except InvalidEntityException as e:
-            body = InvalidEntitySerializer.serialize(e)
-            status = 422
-        except EntityDoesNotExistException:
-            body = EntityDoesNotExistSerializer.serialize()
-            status = 404
-        except ConflictException as e:
-            body = ConflictExceptionSerializer.serialize(e)
-            status = 409
-
+        except AbidriaException as e:
+            body = AbidriaExceptionSerializer.serialize(e)
+            status = exception_status_code_mapper[type(e)]
         return body, status
     return func_wrapper

@@ -12,33 +12,7 @@ class PictureSerializer(object):
                }
 
 
-class InvalidEntitySerializer(object):
-
-    @staticmethod
-    def serialize(exception):
-        return {
-                   'error': {
-                       'source': exception.source,
-                       'code': exception.code,
-                       'message': str(exception)
-                    }
-               }
-
-
-class EntityDoesNotExistSerializer(object):
-
-    @staticmethod
-    def serialize():
-        return {
-                   'error': {
-                       'source': 'entity',
-                       'code': 'not_found',
-                       'message': 'Entity not found',
-                    }
-               }
-
-
-class ConflictExceptionSerializer(object):
+class AbidriaExceptionSerializer(object):
 
     @staticmethod
     def serialize(exception):
