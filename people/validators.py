@@ -20,6 +20,7 @@ class PersonValidator(object):
 
     USERNAME_MIN_LENGTH = 1
     USERNAME_MAX_LENGTH = 20
+    USERNAME_REGEX = '(?!\.)(?!\_)(?!.*?\.\.)(?!.*?\.\_)(?!.*?\_\.)(?!.*?\_\_)(?!.*\.$)(?!.*\_$)[a-z0-9_.]+$'
 
     def __init__(self, project_name, forbidden_usernames, forbidden_email_domains):
         self.project_name = project_name
@@ -31,6 +32,8 @@ class PersonValidator(object):
                 len(person.username) > PersonValidator.USERNAME_MAX_LENGTH:
             raise InvalidEntityException(source='username', code='wrong_size',
                                          message='Username length should be between 1 and 20 chars')
+        if not re.match(PersonValidator.USERNAME_REGEX, person.username):
+            raise InvalidEntityException(source='username', code='not_allowed', message='Username not allowed')
         if self.project_name in person.username:
             raise InvalidEntityException(source='username', code='not_allowed', message='Username not allowed')
         if person.username in self.forbidden_usernames:

@@ -75,6 +75,19 @@ class TestPersonValidator(object):
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_size_username()
 
+    def test_wrong_characters_or_order_usernames(self):
+        wrong_usernames = ['.asdf', 'asdf.', '_asdf', 'asdf_', 'as..df', 'as_.df', 'as._df', 'as__df',
+                           'asdf.', 'asdf_', 'asdfA', 'asdf#', 'asdf?', 'asdf/']
+        for username in wrong_usernames:
+            print(username)
+            TestPersonValidator.ScenarioMaker() \
+                .given_a_username(username) \
+                .given_an_email('e@m.c') \
+                .given_a_person_with_that_params() \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['a', 'b'], ['i.c']) \
+                .when_person_is_validated() \
+                .then_should_raise_invalid_entity_exception_for_username()
+
     def test_forbidden_username(self):
         TestPersonValidator.ScenarioMaker() \
                 .given_a_username('a') \
