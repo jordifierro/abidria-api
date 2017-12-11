@@ -55,7 +55,7 @@ class RegisterUsernameAndEmailInteractor(object):
     def execute(self):
         person = self.person_repo.get_person(id=self.logged_person_id)
         if person.is_email_confirmed:
-            raise ConflictException()
+            raise ConflictException(source='person', code='already_registered', message='Person already registered')
 
         updated_person = Person(id=person.id, is_registered=True,
                                 username=self.username, email=self.email, is_email_confirmed=False)

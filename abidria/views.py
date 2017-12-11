@@ -4,6 +4,8 @@ import urllib.parse
 from django.http import HttpResponse
 from django.views import View
 
+from people.factories import create_authenticate_interactor
+
 
 class ViewWrapper(View):
 
@@ -11,16 +13,36 @@ class ViewWrapper(View):
 
     def get(self, request, *args, **kwargs):
         kwargs.update(request.GET.dict())
-        body, status = self.view_creator_func().get(**kwargs)
+
+        logged_person_id = self.authenticate(request, **kwargs)
+        kwargs.update({'logged_person_id': logged_person_id})
+
+        body, status = self.view_creator_func(request, *args, **kwargs).get(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
     def post(self, request, *args, **kwargs):
         kwargs.update(request.POST.dict())
-        body, status = self.view_creator_func().post(**kwargs)
+
+        logged_person_id = self.authenticate(request, **kwargs)
+        kwargs.update({'logged_person_id': logged_person_id})
+
+        body, status = self.view_creator_func(request, *args, **kwargs).post(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
     def patch(self, request, *args, **kwargs):
         data = dict(urllib.parse.parse_qsl(request.body.decode("utf-8"), keep_blank_values=True))
         kwargs.update(data)
-        body, status = self.view_creator_func().patch(**kwargs)
+
+        logged_person_id = self.authenticate(request, **kwargs)
+        kwargs.update({'logged_person_id': logged_person_id})
+
+        body, status = self.view_creator_func(request, *args, **kwargs).patch(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
+
+    def authenticate(self, request, **kwargs):
+        authentication_header = request.META.get('Authorization')
+        if authentication_header is None:
+            return None
+
+        access_token = authentication_header.replace('Token ', '')
+        return create_authenticate_interactor().set_params(access_token=access_token).execute()

@@ -10,13 +10,13 @@ from people.services import MailerService
 
 class TestMailerService(TestCase):
 
-    def test_send_ask_confirmation_email(self):
+    def test_send_ask_confirmation_mail(self):
         TestMailerService._ScenarioMaker() \
                 .given_a_confirmation_token() \
                 .given_a_username() \
                 .given_an_email() \
                 .given_a_request_that_builds_absolute_uri() \
-                .when_send_ask_confirmation_email_is_called() \
+                .when_send_ask_confirmation_mail_is_called() \
                 .then_django_send_mail_should_be_called_with_correct_processed_params()
 
     class _ScenarioMaker(object):
@@ -46,9 +46,9 @@ class TestMailerService(TestCase):
             self.request.build_absolute_uri.return_value = self.url
             return self
 
-        def when_send_ask_confirmation_email_is_called(self):
-            MailerService(self.request).send_ask_confirmation_email(confirmation_token=self.confirmation_token,
-                                                                    email=self.email, username=self.username)
+        def when_send_ask_confirmation_mail_is_called(self):
+            MailerService(self.request).send_ask_confirmation_mail(confirmation_token=self.confirmation_token,
+                                                                   email=self.email, username=self.username)
             return self
 
         def then_django_send_mail_should_be_called_with_correct_processed_params(self):

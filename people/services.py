@@ -9,7 +9,7 @@ class MailerService(object):
     def __init__(self, request):
         self.request = request
 
-    def send_ask_confirmation_email(self, confirmation_token, email, username):
+    def send_ask_confirmation_mail(self, confirmation_token, email, username):
         confirmation_url = "{}?token={}".format(self.request.build_absolute_uri(reverse('email-confirmation')),
                                                 confirmation_token)
 

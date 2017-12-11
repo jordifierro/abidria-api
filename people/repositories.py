@@ -5,6 +5,12 @@ from .entities import Person, AuthToken
 
 class PersonRepo(object):
 
+    def get_person(self, id):
+        try:
+            return self._decode_db_person(ORMPerson.objects.get(id=id))
+        except ORMPerson.DoesNotExist:
+            raise EntityDoesNotExistException
+
     def create_guest_person(self):
         created_orm_person = ORMPerson.objects.create()
         return self._decode_db_person(created_orm_person)

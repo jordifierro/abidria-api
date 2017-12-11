@@ -24,6 +24,13 @@ class PersonRepoTestCase(TestCase):
                 .then_result_should_be_person_entity() \
                 .then_db_person_should_be_same_as_entity()
 
+    def test_get_person(self):
+        PersonRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
+                .when_get_person_with_her_id() \
+                .then_result_should_be_that_person() \
+
+
     class _ScenarioMaker(object):
 
         def __init__(self):
@@ -42,6 +49,10 @@ class PersonRepoTestCase(TestCase):
 
         def when_create_guest_person(self):
             self.result = PersonRepo().create_guest_person()
+            return self
+
+        def when_get_person_with_her_id(self):
+            self.result = PersonRepo().get_person(id=self.orm_person.id)
             return self
 
         def when_update_person_entity(self):
@@ -70,6 +81,14 @@ class PersonRepoTestCase(TestCase):
             assert updated_orm_person.username == self.person.username
             assert updated_orm_person.email == self.person.email
             assert updated_orm_person.is_email_confirmed == self.person.is_email_confirmed
+            return self
+
+        def then_result_should_be_that_person(self):
+            assert self.orm_person.id == self.result.id
+            assert self.orm_person.is_registered == self.result.is_registered
+            assert self.orm_person.username == self.result.username
+            assert self.orm_person.email == self.result.email
+            assert self.orm_person.is_email_confirmed == self.result.is_email_confirmed
             return self
 
 

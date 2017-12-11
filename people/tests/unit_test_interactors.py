@@ -386,4 +386,7 @@ class TestRegisterUsernameAndEmailInteractor(object):
 
         def then_should_raise_conflict_exception(self):
             assert type(self.error) is ConflictException
+            assert self.error.source == 'person'
+            assert self.error.code == 'already_registered'
+            assert str(self.error) == 'Person already registered'
             return self

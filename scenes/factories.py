@@ -25,10 +25,10 @@ def create_modify_scene_interactor():
     return ModifySceneInteractor(scene_repo=create_scene_repo(), scene_validator=create_scene_validator())
 
 
-def create_scenes_view():
+def create_scenes_view(request, *args, **kwargs):
     return ScenesView(get_scenes_from_experience_interactor=create_get_scenes_from_experience_interactor(),
                       create_new_scene_interactor=create_create_new_scene_interactor())
 
 
-def create_scene_view():
+def create_scene_view(request, *args, **kwargs):
     return SceneView(modify_scene_interactor=create_modify_scene_interactor())

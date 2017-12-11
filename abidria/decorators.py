@@ -1,5 +1,5 @@
-from .exceptions import InvalidEntityException, EntityDoesNotExistException
-from .serializers import InvalidEntitySerializer, EntityDoesNotExistSerializer
+from .exceptions import InvalidEntityException, EntityDoesNotExistException, ConflictException
+from .serializers import InvalidEntitySerializer, EntityDoesNotExistSerializer, ConflictExceptionSerializer
 
 
 def serialize_exceptions(func):
@@ -12,6 +12,9 @@ def serialize_exceptions(func):
         except EntityDoesNotExistException:
             body = EntityDoesNotExistSerializer.serialize()
             status = 404
+        except ConflictException as e:
+            body = ConflictExceptionSerializer.serialize(e)
+            status = 409
 
         return body, status
     return func_wrapper

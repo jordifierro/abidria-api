@@ -26,10 +26,10 @@ def create_modify_experience_interactor():
                                       experience_validator=create_experience_validator())
 
 
-def create_experiences_view():
+def create_experiences_view(request, *args, **kwargs):
     return ExperiencesView(get_all_experiences_interactor=create_get_all_experiences_interactor(),
                            create_new_experience_interactor=create_create_new_experience_interactor())
 
 
-def create_experience_view():
+def create_experience_view(request, *args, **kwargs):
     return ExperienceView(modify_experience_interactor=create_modify_experience_interactor())

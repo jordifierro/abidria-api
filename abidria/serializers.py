@@ -36,3 +36,16 @@ class EntityDoesNotExistSerializer(object):
                        'message': 'Entity not found',
                     }
                }
+
+
+class ConflictExceptionSerializer(object):
+
+    @staticmethod
+    def serialize(exception):
+        return {
+                   'error': {
+                       'source': exception.source,
+                       'code': exception.code,
+                       'message': str(exception)
+                    }
+               }
