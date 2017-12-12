@@ -1,4 +1,5 @@
-from abidria.exceptions import EntityDoesNotExistException, ConflictException, UnauthorizedException
+from abidria.exceptions import EntityDoesNotExistException, ConflictException, UnauthorizedException, \
+        InvalidEntityException
 from people.entities import Person
 
 
@@ -69,4 +70,40 @@ class RegisterUsernameAndEmailInteractor(object):
         confirmation_token = self.confirmation_token_repo.create_confirmation_token(person_id=updated_person.id)
         self.mailer_service.send_ask_confirmation_mail(confirmation_token=confirmation_token,
                                                        username=updated_person.username, email=updated_person.email)
+        return updated_person
+
+
+class ConfirmEmailInteractor(object):
+
+    def __init__(self, person_repo, confirmation_token_repo):
+        self.person_repo = person_repo
+        self.confirmation_token_repo = confirmation_token_repo
+
+    def set_params(self, logged_person_id, confirmation_token):
+        self.logged_person_id = logged_person_id
+        self.confirmation_token = confirmation_token
+        return self
+
+    def execute(self):
+        if self.logged_person_id is None:
+            raise UnauthorizedException()
+
+        try:
+            person_id = self.confirmation_token_repo.get_person_id(confirmation_token=self.confirmation_token)
+        except EntityDoesNotExistException:
+            raise InvalidEntityException(source='confirmation_token', code='invalid',
+                                         message='Invalid confirmation token')
+
+        if person_id != self.logged_person_id:
+            raise InvalidEntityException(source='confirmation_token', code='invalid',
+                                         message='Invalid confirmation token')
+
+        self.confirmation_token_repo.delete_confirmation_tokens(person_id=person_id)
+
+        person = self.person_repo.get_person(id=self.logged_person_id)
+        updated_person = Person(id=person.id, is_registered=person.is_registered,
+                                username=person.username, email=person.email,
+                                is_email_confirmed=True)
+        updated_person = self.person_repo.update_person(updated_person)
+
         return updated_person

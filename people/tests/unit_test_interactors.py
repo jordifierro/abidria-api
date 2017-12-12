@@ -4,7 +4,7 @@ from abidria.exceptions import InvalidEntityException, EntityDoesNotExistExcepti
         UnauthorizedException
 from people.entities import Person, AuthToken
 from people.interactors import CreateGuestPersonAndReturnAuthTokenInteractor, AuthenticateInteractor, \
-        RegisterUsernameAndEmailInteractor
+        RegisterUsernameAndEmailInteractor, ConfirmEmailInteractor
 
 
 class TestCreateGuestPersonAndReturnAuthToken(object):
@@ -407,4 +407,147 @@ class TestRegisterUsernameAndEmailInteractor(object):
 
         def then_should_raise_unauthorized_exception(self):
             assert type(self.error) is UnauthorizedException
+            return self
+
+
+class TestConfirmEmailInteractor(object):
+
+    def test_confirm_email_returns_person_confirmed(self):
+        TestConfirmEmailInteractor.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_confirmation_token() \
+                .given_a_confirmation_token_repo_that_returns_that_confirmation_token() \
+                .given_an_updated_person() \
+                .given_a_person() \
+                .given_a_person_repo_that_returns_those_persons_on_get_and_update() \
+                .when_confirm_email_interactor_is_executed() \
+                .then_should_call_confirmation_token_repo_get_person_id_with_confirmation_token() \
+                .then_should_delete_all_confirmation_tokens_for_that_person() \
+                .then_should_call_person_repo_get() \
+                .then_should_call_person_repo_update_with_is_email_confirmed_true() \
+                .then_should_return_person_confirmed()
+
+    def test_unauthenticated_raises_unauthorized(self):
+        TestConfirmEmailInteractor.ScenarioMaker() \
+                .when_confirm_email_interactor_is_executed() \
+                .then_should_raise_unauthorized() \
+                .then_should_not_delete_all_confirmation_tokens_for_that_person() \
+                .then_should_not_call_person_repo_update()
+
+    def test_no_confirmation_token_raises_unauthorized(self):
+        TestConfirmEmailInteractor.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_confirmation_token_repo_that_raises_entity_does_not_exist() \
+                .when_confirm_email_interactor_is_executed() \
+                .then_should_raise_invalid_params_for_wrong_confirmation_token() \
+                .then_should_not_delete_all_confirmation_tokens_for_that_person() \
+                .then_should_not_call_person_repo_update()
+
+    def test_not_coincident_person_id_raises_unauthorized(self):
+        TestConfirmEmailInteractor.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_confirmation_token_repo_that_returns_another_person_id() \
+                .when_confirm_email_interactor_is_executed() \
+                .then_should_raise_invalid_params_for_wrong_confirmation_token() \
+                .then_should_not_delete_all_confirmation_tokens_for_that_person() \
+                .then_should_not_call_person_repo_update()
+
+    class ScenarioMaker(object):
+
+        def __init__(self):
+            self.result = None
+            self.error = None
+            self.updated_person = None
+            self.person = None
+            self.logged_person_id = None
+            self.confirmation_token = None
+            self.confirmation_token_repo = Mock()
+            self.person_repo = Mock()
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '2'
+            return self
+
+        def given_a_confirmation_token(self):
+            self.confirmation_token = 'ABC'
+            return self
+
+        def given_a_confirmation_token_repo_that_returns_that_confirmation_token(self):
+            self.confirmation_token_repo.get_person_id.return_value = self.logged_person_id
+            return self
+
+        def given_a_confirmation_token_repo_that_returns_another_person_id(self):
+            self.confirmation_token_repo.get_person_id.return_value = '99'
+            return self
+
+        def given_a_confirmation_token_repo_that_raises_entity_does_not_exist(self):
+            self.confirmation_token_repo.get_person_id.side_effect = EntityDoesNotExistException()
+            return self
+
+        def given_a_person(self):
+            self.person = Person(id='4', is_registered=True, username='usr', email='e@m.c', is_email_confirmed=False)
+            return self
+
+        def given_an_updated_person(self):
+            self.updated_person = Person(id='4', is_registered=True, username='usr',
+                                         email='e@m.c', is_email_confirmed=True)
+            return self
+
+        def given_a_person_repo_that_returns_those_persons_on_get_and_update(self):
+            self.person_repo.update_person.return_value = self.updated_person
+            self.person_repo.get_person.return_value = self.person
+            return self
+
+        def when_confirm_email_interactor_is_executed(self):
+            try:
+                interactor = ConfirmEmailInteractor(confirmation_token_repo=self.confirmation_token_repo,
+                                                    person_repo=self.person_repo)
+                self.result = interactor.set_params(logged_person_id=self.logged_person_id,
+                                                    confirmation_token=self.confirmation_token).execute()
+            except Exception as e:
+                print(e)
+                self.error = e
+            return self
+
+        def then_should_call_confirmation_token_repo_get_person_id_with_confirmation_token(self):
+            self.confirmation_token_repo.get_person_id \
+                    .assert_called_once_with(confirmation_token=self.confirmation_token)
+            return self
+
+        def then_should_delete_all_confirmation_tokens_for_that_person(self):
+            self.confirmation_token_repo.delete_confirmation_tokens \
+                    .assert_called_once_with(person_id=self.logged_person_id)
+            return self
+
+        def then_should_call_person_repo_get(self):
+            self.person_repo.get_person.assert_called_once_with(id=self.logged_person_id)
+            return self
+
+        def then_should_call_person_repo_update_with_is_email_confirmed_true(self):
+            update_person = Person(id=self.person.id, is_registered=self.person.is_registered,
+                                   username=self.person.username, email=self.person.email, is_email_confirmed=True)
+            self.person_repo.update_person.assert_called_once_with(update_person)
+            return self
+
+        def then_should_return_person_confirmed(self):
+            assert self.result == self.updated_person
+            return self
+
+        def then_should_raise_unauthorized(self):
+            assert type(self.error) is UnauthorizedException
+            return self
+
+        def then_should_not_delete_all_confirmation_tokens_for_that_person(self):
+            self.confirmation_token_repo.delete_confirmation_tokens.assert_not_called()
+            return self
+
+        def then_should_not_call_person_repo_update(self):
+            self.person_repo.update_person.assert_not_called()
+            return self
+
+        def then_should_raise_invalid_params_for_wrong_confirmation_token(self):
+            assert type(self.error) is InvalidEntityException
+            assert self.error.source == 'confirmation_token'
+            assert self.error.code == 'invalid'
+            assert str(self.error) == 'Invalid confirmation token'
             return self
