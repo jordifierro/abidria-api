@@ -11,6 +11,14 @@ which are defined as something that happened
 or can be done/seen in a located place.
 A group of `scenes` are defined as an `experience`.
 
+A `person` can use api as anonymous guest.
+Later, she can register specifying just username and email.
+Posterior email confirmation is required to create content.
+There is no password, so login will be implemented using email token system.
+
+For the moment, the api is only consumed by
+[abidria-android](https://github.com/jordifierro/abidria-android) project.
+
 ## API Endpoints
 
 ### `GET /experiences/`
@@ -285,6 +293,88 @@ _200_
 }
 ```
 
+### `POST /people/`
+
+This endpoint is to create a `person` instance.
+This `person` will be anonymous guest (until registration)
+and has limited permissions (basically get information).
+The response of this endpoint will be `auth_token` credentials,
+composed by `access_token` and `refresh_token`,
+that have to be persisted on the client.
+
+_Request(application/x-www-form-urlencoded):_
+```json
+{
+    "client_secret_key": "XXXX",
+}
+```
+
+_Response:_
+
+_201_
+```json
+{
+    "access_token": "A_T_12345",
+    "refresh_token": "R_T_67890",
+}
+```
+
+### `PATCH /people/me`
+
+This endpoint is to register a guest `person`.
+Username and email is required.
+`person` status change to registered
+but will not have full permissions until email confirmation
+(an email is sent with confirmation token).
+
+_Request(application/x-www-form-urlencoded):_
+
+_(http headers)_
+
+`Authorization: Token ABXZ` (previous endpoint `access_token` response)
+
+```json
+{
+    "username": "user.name",
+    "email": "email@example.com"
+}
+```
+
+_Response:_
+
+_200_
+```json
+{
+    "is_registered": true,
+    "username": "user.name",
+    "email": "email@example.com",
+    "is_email_confirmed": false
+}
+```
+
+### `POST /people/me/email-confirmation`
+
+This endpoint is to confirm email and finish `person` register.
+On previous endpoint, an email is sent with a confirmation token.
+That token has to be sent as parameter.
+
+_Request(application/x-www-form-urlencoded):_
+
+_(http headers)_
+
+`Authorization: Token ABXZ`
+
+```json
+{
+    "confirmation_token": "C_T_ABXZ",
+}
+```
+
+_Response:_
+
+_204_
+
+
 ## Documentation
 
 This project has been developed using Django framework,
@@ -294,6 +384,19 @@ Code structure follows a Clean Architecture approach
 ([explained in detail here](http://jordifierro.com/django-clean-architecture)),
 emphasizing on code readability, responsibility decoupling
 and unit testing.
+
+Authentication part is a little bit custom (to better fit requirements and also with learning purposes).
+It doesn't uses Django `User` model nor django-rest-framework, everything is handmade
+(everything but cryptography, obviously :) ) and framework untied.
+Special things are described here:
+* There is anonymous guest user status. That allow users to enter to the app without register
+but we can track and analyze them. That also helps making app more secure because
+calls are made from guest users but authenticated and we can also control the number of registrations.
+* There is no password. Guest user can register just with username and email,
+which makes registration process easier. Login will be implemented using token validation via email.
+* User is called person. Developer tends to treat a user like a model or a number,
+`person` naming aims to remember who is really behind the screen.
+
 
 ## Setup
 
