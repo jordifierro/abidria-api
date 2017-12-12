@@ -5,8 +5,8 @@ from django.conf import settings
 from .repositories import PersonRepo, AuthTokenRepo, ConfirmationTokenRepo
 from .validators import ClientSecretKeyValidator, PersonValidator
 from .interactors import CreateGuestPersonAndReturnAuthTokenInteractor, RegisterUsernameAndEmailInteractor, \
-        AuthenticateInteractor
-from .views import PeopleView, PersonView
+        AuthenticateInteractor, ConfirmEmailInteractor
+from .views import PeopleView, PersonView, EmailConfirmationView
 from .services import MailerService
 
 
@@ -68,6 +68,11 @@ def create_register_username_and_email_interactor(request):
                                               mailer_service=mailer_service)
 
 
+def create_confirm_email_interactor():
+    return ConfirmEmailInteractor(confirmation_token_repo=create_confirmation_token_repo(),
+                                  person_repo=create_person_repo())
+
+
 def create_people_view(request, *args, **kwargs):
     return PeopleView(
             create_guest_person_and_return_auth_token_interactor=create_guest_person_and_return_auth_token_interactor())
@@ -75,3 +80,7 @@ def create_people_view(request, *args, **kwargs):
 
 def create_person_view(request, *args, **kwargs):
     return PersonView(register_username_and_email_interactor=create_register_username_and_email_interactor(request))
+
+
+def create_email_confirmation_view(request, *args, **kwargs):
+    return EmailConfirmationView(confirm_email_interactor=create_confirm_email_interactor())

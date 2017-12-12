@@ -1,5 +1,6 @@
 import json
 import urllib.parse
+import uuid
 
 from django.conf import settings
 from django.test import TestCase, Client
@@ -222,4 +223,94 @@ class ModifyPersonTestCase(TestCase):
 
         def then_ask_confirmation_email_should_not_be_sent(self):
             assert len(mail.outbox) == 0
+            return self
+
+
+class PostEmailConfirmationTestCase(TestCase):
+
+    def test_post_email_confirmations_confirms_person_email(self):
+        PostEmailConfirmationTestCase.ScenarioMaker() \
+                .given_an_unconfirmed_registered_person() \
+                .given_an_auth_token_for_that_person() \
+                .given_a_confirmation_token_for_that_person() \
+                .when_post_email_confirmation() \
+                .then_response_should_be_204_empty_body() \
+                .then_person_should_have_is_email_confirmed_true() \
+                .then_confirmation_token_should_be_removed()
+
+    def test_post_email_confirmation_with_invalid_token_returns_error(self):
+        PostEmailConfirmationTestCase.ScenarioMaker() \
+                .given_an_unconfirmed_registered_person() \
+                .given_an_auth_token_for_that_person() \
+                .given_a_fake_confirmation_token() \
+                .when_post_email_confirmation() \
+                .then_response_code_should_be_422() \
+                .then_response_body_should_be_invalide_token_error() \
+                .then_person_should_have_is_email_confirmed_false()
+
+    class ScenarioMaker(object):
+
+        def __init__(self):
+            self.orm_person = None
+            self.orm_auth_token = None
+            self.orm_confirmation_token = None
+            self.result = None
+
+        def given_an_unconfirmed_registered_person(self):
+            self.orm_person = ORMPerson.objects.create(is_registered=True, username='usr',
+                                                       email='e@m.c', is_email_confirmed=False)
+            return self
+
+        def given_an_auth_token_for_that_person(self):
+            self.orm_auth_token = ORMAuthToken.objects.create(person_id=self.orm_person.id)
+            return self
+
+        def given_a_confirmation_token_for_that_person(self):
+            self.orm_confirmation_token = ORMConfirmationToken.objects.create(person_id=self.orm_person.id)
+            self.confirmation_token = self.orm_confirmation_token.token
+            return self
+
+        def given_a_fake_confirmation_token(self):
+            self.confirmation_token = uuid.uuid4()
+            return self
+
+        def when_post_email_confirmation(self):
+            client = Client()
+            auth_headers = {'Authorization': 'Token {}'.format(self.orm_auth_token.access_token), }
+            self.response = client.post(reverse('email-confirmation'),
+                                        urllib.parse.urlencode({'confirmation_token': self.confirmation_token}),
+                                        content_type='application/x-www-form-urlencoded',
+                                        **auth_headers)
+            return self
+
+        def then_response_should_be_204_empty_body(self):
+            self.response.status_code == 204
+            self.response.content == ''
+            return self
+
+        def then_person_should_have_is_email_confirmed_true(self):
+            assert ORMPerson.objects.get(id=self.orm_person.id).is_email_confirmed is True
+            return self
+
+        def then_confirmation_token_should_be_removed(self):
+            assert not ORMConfirmationToken.objects.filter(token=self.orm_confirmation_token.token).exists()
+            return self
+
+        def then_response_code_should_be_422(self):
+            assert self.response.status_code == 422
+            return self
+
+        def then_response_body_should_be_invalide_token_error(self):
+            body = json.loads(self.response.content)
+            assert body == {
+                    'error': {
+                        'source': 'confirmation_token',
+                        'code': 'invalid',
+                        'message': 'Invalid confirmation token'
+                        }
+                    }
+            return self
+
+        def then_person_should_have_is_email_confirmed_false(self):
+            assert ORMPerson.objects.get(id=self.orm_person.id).is_email_confirmed is False
             return self

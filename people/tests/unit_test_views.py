@@ -1,7 +1,7 @@
 from mock import Mock
 
 from people.entities import AuthToken, Person
-from people.views import PeopleView, PersonView
+from people.views import PeopleView, PersonView, EmailConfirmationView
 from people.serializers import AuthTokenSerializer, PersonSerializer
 
 
@@ -118,4 +118,52 @@ class TestPersonView(object):
 
         def then_response_body_should_be_that_person_serialized(self):
             assert self.body == PersonSerializer.serialize(self.person)
+            return self
+
+
+class TestEmailConfirmationView(object):
+
+    def test_post_returns_204(self):
+        TestEmailConfirmationView._ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_confirmation_token() \
+                .when_post_is_called_with_that_params() \
+                .then_interactor_receives_that_params() \
+                .then_response_status_is_204() \
+                .then_response_body_should_be_empty()
+
+    class _ScenarioMaker(object):
+
+        def __init__(self):
+            self.interactor_mock = Mock()
+            self.interactor_mock.set_params.return_value = self.interactor_mock
+            self.logged_person_id = None
+            self.confirmation_token = None
+            self.response = None
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '4'
+            return self
+
+        def given_a_confirmation_token(self):
+            self.confirmation_token = 'ABC'
+            return self
+
+        def when_post_is_called_with_that_params(self):
+            view = EmailConfirmationView(confirm_email_interactor=self.interactor_mock)
+            self.body, self.status = view.post(logged_person_id=self.logged_person_id,
+                                               confirmation_token=self.confirmation_token)
+            return self
+
+        def then_interactor_receives_that_params(self):
+            self.interactor_mock.set_params.assert_called_once_with(logged_person_id=self.logged_person_id,
+                                                                    confirmation_token=self.confirmation_token)
+            return self
+
+        def then_response_status_is_204(self):
+            assert self.status == 204
+            return self
+
+        def then_response_body_should_be_empty(self):
+            assert self.body == ''
             return self

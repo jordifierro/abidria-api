@@ -30,3 +30,18 @@ class PersonView(object):
         body = PersonSerializer.serialize(person)
         status = 200
         return body, status
+
+
+class EmailConfirmationView(object):
+
+    def __init__(self, confirm_email_interactor=None):
+        self.confirm_email_interactor = confirm_email_interactor
+
+    @serialize_exceptions
+    def post(self, logged_person_id, confirmation_token):
+        self.confirm_email_interactor.set_params(logged_person_id=logged_person_id,
+                                                 confirmation_token=confirmation_token).execute()
+
+        body = ''
+        status = 204
+        return body, status

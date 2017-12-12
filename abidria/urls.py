@@ -7,7 +7,7 @@ from experiences.factories import create_experiences_view, create_experience_vie
 from experiences.django_views import UploadExperiencePictureView
 from scenes.factories import create_scenes_view, create_scene_view
 from scenes.django_views import UploadScenePictureView
-from people.factories import create_people_view, create_person_view
+from people.factories import create_people_view, create_person_view, create_email_confirmation_view
 
 from .views import ViewWrapper
 
@@ -47,7 +47,7 @@ urlpatterns = [
         name='person'),
 
     url(r'^people/me/email-confirmation$',
-        ViewWrapper.as_view(view_creator_func=None),
+        ViewWrapper.as_view(view_creator_func=create_email_confirmation_view),
         name='email-confirmation'),
 ]
 
