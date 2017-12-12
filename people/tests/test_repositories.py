@@ -188,14 +188,43 @@ class ConfirmationTokenRepoTestCase(TestCase):
                 .then_response_should_be_true() \
                 .then_there_should_be_no_confirmation_tokens_for_that_person()
 
+    def test_get_person_id_from_confirmation_token(self):
+        ConfirmationTokenRepoTestCase._ScenarioMaker() \
+                .given_a_person() \
+                .given_a_confirmation_token_for_that_person() \
+                .when_get_person_id_for_that_confirmation_token() \
+                .then_response_should_be_person_id()
+
+    def test_get_person_id_when_has_no_tokens(self):
+        ConfirmationTokenRepoTestCase._ScenarioMaker() \
+                .given_a_random_confirmation_token_not_in_db() \
+                .when_get_person_id_for_that_confirmation_token() \
+                .then_should_raise_entity_does_not_exist()
+
     class _ScenarioMaker(object):
 
         def __init__(self):
             self.person = None
             self.response = None
+            self.error = None
 
         def given_a_person(self):
             self.person = PersonRepo().create_guest_person()
+            return self
+
+        def given_a_confirmation_token_for_that_person(self):
+            self.confirmation_token = ConfirmationTokenRepo().create_confirmation_token(person_id=self.person.id)
+            return self
+
+        def given_a_random_confirmation_token_not_in_db(self):
+            self.confirmation_token = uuid.uuid4()
+            return self
+
+        def when_get_person_id_for_that_confirmation_token(self):
+            try:
+                self.result = ConfirmationTokenRepo().get_person_id(confirmation_token=self.confirmation_token)
+            except Exception as e:
+                self.error = e
             return self
 
         def when_create_confirmation_token_for_that_person(self):
@@ -221,3 +250,11 @@ class ConfirmationTokenRepoTestCase(TestCase):
 
         def then_there_should_be_no_confirmation_tokens_for_that_person(self):
             assert not ORMConfirmationToken.objects.filter(person_id=self.person.id).exists()
+
+        def then_response_should_be_person_id(self):
+            assert self.result == self.person.id
+            return self
+
+        def then_should_raise_entity_does_not_exist(self):
+            assert type(self.error) is EntityDoesNotExistException
+            return self

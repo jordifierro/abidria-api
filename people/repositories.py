@@ -54,6 +54,12 @@ class AuthTokenRepo(object):
 
 class ConfirmationTokenRepo(object):
 
+    def get_person_id(self, confirmation_token):
+        try:
+            return ORMConfirmationToken.objects.get(token=confirmation_token).person_id
+        except ORMConfirmationToken.DoesNotExist:
+            raise EntityDoesNotExistException
+
     def create_confirmation_token(self, person_id):
         created_orm_confirmation_token = ORMConfirmationToken.objects.create(person_id=person_id)
         return str(created_orm_confirmation_token.token)
