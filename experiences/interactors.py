@@ -16,13 +16,14 @@ class CreateNewExperienceInteractor(object):
         self.experience_repo = experience_repo
         self.experience_validator = experience_validator
 
-    def set_params(self, title, description):
+    def set_params(self, title, description, logged_person_id):
         self.title = title
         self.description = description
+        self.logged_person_id = logged_person_id
         return self
 
     def execute(self):
-        experience = Experience(title=self.title, description=self.description)
+        experience = Experience(title=self.title, description=self.description, author_id=self.logged_person_id)
         self.experience_validator.validate_experience(experience)
         return self.experience_repo.create_experience(experience)
 
@@ -33,10 +34,11 @@ class ModifyExperienceInteractor(object):
         self.experience_repo = experience_repo
         self.experience_validator = experience_validator
 
-    def set_params(self, id, title, description):
+    def set_params(self, id, title, description, logged_person_id):
         self.id = id
         self.title = title
         self.description = description
+        self.logged_person_id = logged_person_id
         return self
 
     def execute(self):
@@ -44,7 +46,8 @@ class ModifyExperienceInteractor(object):
 
         new_title = self.title if self.title is not None else experience.title
         new_description = self.description if self.description is not None else experience.description
-        updated_experience = Experience(id=experience.id, title=new_title, description=new_description)
+        updated_experience = Experience(id=experience.id, title=new_title,
+                                        description=new_description, author_id=experience.author_id)
 
         self.experience_validator.validate_experience(updated_experience)
 

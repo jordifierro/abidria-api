@@ -4,12 +4,14 @@ from abidria.exceptions import EntityDoesNotExistException
 from experiences.entities import Experience
 from experiences.models import ORMExperience
 from experiences.repositories import ExperienceRepo
+from people.models import ORMPerson
 
 
 class ExperienceRepoTestCase(TestCase):
 
     def test_get_all_experiences_returns_all_experiences(self):
         ExperienceRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
                 .given_an_experience_in_db() \
                 .given_another_experience_in_db() \
                 .when_get_all_experiences() \
@@ -17,6 +19,7 @@ class ExperienceRepoTestCase(TestCase):
 
     def test_get_experience_returns_experience(self):
         ExperienceRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
                 .given_an_experience_in_db() \
                 .when_get_experience_with_its_id() \
                 .then_repo_should_return_experience()
@@ -28,6 +31,7 @@ class ExperienceRepoTestCase(TestCase):
 
     def test_create_experience_creates_and_returns_experience(self):
         ExperienceRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
                 .given_an_experience_to_create() \
                 .when_create_this_experience() \
                 .then_should_return_this_experience() \
@@ -35,6 +39,7 @@ class ExperienceRepoTestCase(TestCase):
 
     def test_update_experience(self):
         ExperienceRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
                 .given_an_experience_in_db() \
                 .given_an_updated_experience() \
                 .when_update_first_experience() \
@@ -44,6 +49,7 @@ class ExperienceRepoTestCase(TestCase):
     class _ScenarioMaker(object):
 
         def __init__(self):
+            self._orm_person = None
             self._orm_experience_a = None
             self._orm_experience_b = None
             self._experience_a = None
@@ -52,26 +58,34 @@ class ExperienceRepoTestCase(TestCase):
             self._entity_does_not_exist_error = None
             self._experience_to_create = None
 
+        def given_a_person_in_db(self):
+            self._orm_person = ORMPerson.objects.create(username='usr')
+            return self
+
         def given_an_experience_to_create(self):
-            self._experience_to_create = Experience(id="", title='Exp a', description='some description')
+            self._experience_to_create = Experience(id="", title='Exp a', description='some description',
+                                                    author_id=self._orm_person.id)
             return self
 
         def given_an_experience_in_db(self):
-            self._orm_experience_a = ORMExperience.objects.create(title='Exp a',
-                                                                  description='some description')
-            self._experience_a = Experience(id=self._orm_experience_a.id, title='Exp a',
-                                            description='some description')
+            self._orm_experience_a = ORMExperience.objects.create(title='Exp a', description='some description',
+                                                                  author=self._orm_person)
+            self._experience_a = Experience(id=self._orm_experience_a.id, title='Exp a', description='some description',
+                                            author_id=self._orm_person.id, author_username=self._orm_person.username)
             return self
 
         def given_an_updated_experience(self):
-            self._updated_experience = Experience(id=self._experience_a.id, title='T2', description='updated')
+            self._updated_experience = Experience(id=self._experience_a.id, title='T2', description='updated',
+                                                  author_id=self._orm_person.id,
+                                                  author_username=self._orm_person.username)
             return self
 
         def given_another_experience_in_db(self):
-            self._orm_experience_b = ORMExperience.objects.create(title='Exp b',
-                                                                  description='other description')
+            self._orm_experience_b = ORMExperience.objects.create(title='Exp b', description='other description',
+                                                                  author=self._orm_person)
             self._experience_b = Experience(id=self._orm_experience_b.id, title='Exp b',
-                                            description='other description')
+                                            description='other description',
+                                            author_id=self._orm_person.id, author_username=self._orm_person.username)
             return self
 
         def when_get_all_experiences(self):

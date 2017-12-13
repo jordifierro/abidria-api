@@ -17,4 +17,6 @@ class ExperienceSerializer(object):
                    'title': experience.title,
                    'description': experience.description,
                    'picture': PictureSerializer.serialize(experience.picture),
+                   'author_id': experience.author_id,
+                   'author_username': experience.author_username
                }

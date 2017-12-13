@@ -6,12 +6,14 @@ from experiences.models import ORMExperience
 from scenes.models import ORMScene
 from scenes.repositories import SceneRepo
 from scenes.entities import Scene
+from people.models import ORMPerson
 
 
 class ExperienceRepoTestCase(TestCase):
 
     def test_get_all_scenes_of_an_experience(self):
-        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description')
+        orm_person = ORMPerson.objects.create(username='usr')
+        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
         orm_sce_1 = ORMScene.objects.create(title='S1', description='desc 1', latitude=Decimal('1.2'),
                                             longitude=Decimal('-3.4'), experience=orm_exp)
         orm_sce_2 = ORMScene.objects.create(title='S2', description='desc 2', latitude=Decimal('5.6'),
@@ -28,7 +30,8 @@ class ExperienceRepoTestCase(TestCase):
         assert result == [scene_1, scene_2] or result == [scene_2, scene_1]
 
     def test_create_new_scene(self):
-        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description')
+        orm_person = ORMPerson.objects.create(username='usr')
+        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
         scene = Scene(title='S1', description='desc 1', latitude=Decimal('0.1'),
                       longitude=Decimal('1.2'), experience_id=str(orm_exp.id))
 
@@ -44,7 +47,8 @@ class ExperienceRepoTestCase(TestCase):
         assert not orm_scene.picture
 
     def test_update_scene(self):
-        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description')
+        orm_person = ORMPerson.objects.create(username='usr')
+        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
         scene = Scene(title='S1', description='desc 1', latitude=Decimal('0.1'),
                       longitude=Decimal('1.2'), experience_id=str(orm_exp.id))
         created_scene = SceneRepo().create_scene(scene)
@@ -65,7 +69,8 @@ class ExperienceRepoTestCase(TestCase):
         assert not orm_scene.picture
 
     def test_get_scene(self):
-        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description')
+        orm_person = ORMPerson.objects.create(username='usr')
+        orm_exp = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
         orm_sce_1 = ORMScene.objects.create(title='S1', description='desc 1', latitude=Decimal('1.2'),
                                             longitude=Decimal('-3.4'), experience=orm_exp)
 

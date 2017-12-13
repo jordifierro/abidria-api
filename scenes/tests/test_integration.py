@@ -8,12 +8,14 @@ from django.core.urlresolvers import reverse
 
 from experiences.models import ORMExperience
 from scenes.models import ORMScene
+from people.models import ORMPerson
 
 
 class ExperienceDetailTestCase(TestCase):
 
     def test_scenes_from_experience_returns_experience(self):
-        exp_c = ORMExperience.objects.create(title='Exp c', description='stuffs')
+        orm_person = ORMPerson.objects.create(username='usr')
+        exp_c = ORMExperience.objects.create(title='Exp c', description='stuffs', author=orm_person)
         scene_d = ORMScene.objects.create(title='Scene d', description='D',
                                           latitude=Decimal('1.2'), longitude=Decimal('-3.4'), experience=exp_c)
         scene_e = ORMScene.objects.create(title='Scene e', description='E',
@@ -49,7 +51,8 @@ class ExperienceDetailTestCase(TestCase):
 class CreateSceneTestCase(TestCase):
 
     def test_create_scene_creates_and_returns_scene(self):
-        experience = ORMExperience.objects.create(title='Exp')
+        orm_person = ORMPerson.objects.create(username='usr')
+        experience = ORMExperience.objects.create(title='Exp', author=orm_person)
 
         client = Client()
         response = client.post(reverse('scenes'), {'title': 'Scene title',
@@ -75,7 +78,8 @@ class CreateSceneTestCase(TestCase):
                        }
 
     def test_wrong_attributes_doesnt_create_and_returns_error(self):
-        experience = ORMExperience.objects.create(title='Exp')
+        orm_person = ORMPerson.objects.create(username='usr')
+        experience = ORMExperience.objects.create(title='Exp', author=orm_person)
 
         client = Client()
         response = client.post(reverse('scenes'), {'title': '',
@@ -102,7 +106,8 @@ class CreateSceneTestCase(TestCase):
 class ModifySceneTestCase(TestCase):
 
     def test_modifies_and_returns_scene(self):
-        experience = ORMExperience.objects.create(title='Exp')
+        orm_person = ORMPerson.objects.create(username='usr')
+        experience = ORMExperience.objects.create(title='Exp', author=orm_person)
         orm_scene = ORMScene.objects.create(title='T', description='',
                                             latitude=1, longitude=2, experience_id=experience.id)
 
@@ -128,7 +133,8 @@ class ModifySceneTestCase(TestCase):
                        }
 
     def test_wrong_attributes_doesnt_update_and_returns_error(self):
-        experience = ORMExperience.objects.create(title='Exp')
+        orm_person = ORMPerson.objects.create(username='usr')
+        experience = ORMExperience.objects.create(title='Exp', author=orm_person)
         orm_scene = ORMScene.objects.create(title='T', description='',
                                             latitude=1, longitude=2, experience_id=experience.id)
 

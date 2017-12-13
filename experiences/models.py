@@ -2,6 +2,8 @@ from django.db import models
 from stdimage.models import StdImageField
 from stdimage.utils import UploadToUUID, pre_delete_delete_callback, pre_save_delete_callback
 
+from people.models import ORMPerson
+
 
 class ORMExperience(models.Model):
     title = models.CharField(max_length=30, blank=False)
@@ -11,6 +13,7 @@ class ORMExperience(models.Model):
                                         'medium': (640, 640),
                                         'small': (320, 320)},
                             blank=True)
+    author = models.ForeignKey(ORMPerson, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Experience'

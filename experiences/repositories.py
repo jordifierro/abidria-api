@@ -17,10 +17,12 @@ class ExperienceRepo(object):
         return Experience(id=db_experience.id,
                           title=db_experience.title,
                           description=db_experience.description,
-                          picture=picture)
+                          picture=picture,
+                          author_id=db_experience.author.id,
+                          author_username=db_experience.author.username)
 
     def get_all_experiences(self):
-        db_experiences = ORMExperience.objects.all()
+        db_experiences = ORMExperience.objects.select_related('author').all()
         experiences = []
         for db_experience in db_experiences:
             experiences.append(self._decode_db_experience(db_experience))
@@ -28,14 +30,15 @@ class ExperienceRepo(object):
 
     def get_experience(self, id):
         try:
-            db_experience = ORMExperience.objects.get(id=id)
+            db_experience = ORMExperience.objects.select_related('author').get(id=id)
             return self._decode_db_experience(db_experience)
         except ORMExperience.DoesNotExist:
             raise EntityDoesNotExistException()
 
     def create_experience(self, experience):
         db_experience = ORMExperience.objects.create(title=experience.title,
-                                                     description=experience.description)
+                                                     description=experience.description,
+                                                     author_id=experience.author_id)
         return self._decode_db_experience(db_experience)
 
     def attach_picture_to_experience(self, experience_id, picture):

@@ -48,6 +48,13 @@ class TestExperienceValidator(object):
                 .then_error_should_be_raised(source='description', code='wrong_type',
                                              message='Description must be string')
 
+    def test_no_author_returns_error(self):
+        TestExperienceValidator._ScenarioMaker() \
+                .given_an_experience(author_id=None) \
+                .when_experience_is_validated() \
+                .then_error_should_be_raised(source='author', code='empty_attribute',
+                                             message='Author cannot be empty')
+
     class _ScenarioMaker(object):
 
         def __init__(self):
@@ -57,8 +64,8 @@ class TestExperienceValidator(object):
             self._response = None
             self._error = None
 
-        def given_an_experience(self, title='Valid Title', description=None):
-            self._experience = Experience(title=title, description=description)
+        def given_an_experience(self, title='Valid Title', description=None, author_id='2'):
+            self._experience = Experience(title=title, description=description, author_id=author_id)
             return self
 
         def when_experience_is_validated(self):

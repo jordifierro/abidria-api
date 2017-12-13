@@ -7,6 +7,8 @@ class ExperienceValidator(object):
     MAX_TITLE_LENGHT = 30
 
     def validate_experience(self, experience):
+        if experience.author_id is None:
+            raise InvalidEntityException(source='author', code='empty_attribute', message='Author cannot be empty')
         if experience.title is None:
             raise InvalidEntityException(source='title', code='empty_attribute', message='Title cannot be empty')
         if type(experience.title) is not str:
