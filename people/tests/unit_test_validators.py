@@ -1,5 +1,7 @@
-from abidria.exceptions import InvalidEntityException
-from people.validators import ClientSecretKeyValidator, PersonValidator
+from mock import Mock
+
+from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
+from people.validators import ClientSecretKeyValidator, PersonValidator, PersonPermissionsValidator
 from people.entities import Person
 
 
@@ -215,4 +217,90 @@ class TestPersonValidator(object):
             assert self.error.source == 'email'
             assert self.error.code == 'wrong'
             assert str(self.error) == 'Email is wrong'
+            return self
+
+
+class TestPermissionsValidator(object):
+
+    def test_no_logged_person(self):
+        TestPermissionsValidator.ScenarioMaker() \
+                .when_permission_is_validated() \
+                .then_should_raise_no_logged_exception()
+
+    def test_logged_with_no_experience_returns_true(self):
+        TestPermissionsValidator.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .when_permission_is_validated() \
+                .then_should_return_true()
+
+    def test_wants_to_create_content_but_doesnt_confirmed_email(self):
+        TestPermissionsValidator.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_wants_to_create_contents() \
+                .given_a_person_repo_that_returns_a_person_without_email_confirmed() \
+                .when_permission_is_validated() \
+                .then_should_call_person_repo_get_with_logged_person_id() \
+                .then_should_raise_no_permission_exception()
+
+    def test_wants_to_create_content_and_has_email_confirmed_returns_true(self):
+        TestPermissionsValidator.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_wants_to_create_contents() \
+                .given_a_person_repo_that_returns_a_person_with_email_confirmed() \
+                .when_permission_is_validated() \
+                .then_should_call_person_repo_get_with_logged_person_id() \
+                .then_should_return_true()
+
+    class ScenarioMaker(object):
+
+        def __init__(self):
+            self.logged_person_id = None
+            self.person_repo = None
+            self.wants_to_create_content = False
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '4'
+            return self
+
+        def given_wants_to_create_contents(self):
+            self.wants_to_create_content = True
+            return self
+
+        def given_a_person_repo_that_returns_a_person_without_email_confirmed(self):
+            self.person_repo = Mock()
+            person_without_confirmation = Person(id='2', is_registered=True, username='usr',
+                                                 email='e@m.c', is_email_confirmed=False)
+            self.person_repo.get_person.return_value = person_without_confirmation
+            return self
+
+        def given_a_person_repo_that_returns_a_person_with_email_confirmed(self):
+            self.person_repo = Mock()
+            person_with_confirmation = Person(id='2', is_registered=True, username='usr',
+                                                 email='e@m.c', is_email_confirmed=True)
+            self.person_repo.get_person.return_value = person_with_confirmation
+            return self
+
+        def when_permission_is_validated(self):
+            validator = PersonPermissionsValidator(person_repo=self.person_repo)
+            try:
+                self.result = validator.validate_permissions(self.logged_person_id,
+                                                             wants_to_create_content=self.wants_to_create_content)
+            except Exception as e:
+                self.error = e
+            return self
+
+        def then_should_return_true(self):
+            assert self.result is True
+            return self
+
+        def then_should_raise_no_logged_exception(self):
+            assert type(self.error) is NoLoggedException
+            return self
+
+        def then_should_raise_no_permission_exception(self):
+            assert type(self.error) is NoPermissionException
+            return self
+
+        def then_should_call_person_repo_get_with_logged_person_id(self):
+            self.person_repo.get_person.assert_called_once_with(id=self.logged_person_id)
             return self

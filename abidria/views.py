@@ -10,6 +10,7 @@ from people.factories import create_authenticate_interactor
 class ViewWrapper(View):
 
     view_creator_func = None
+    upload_picture_name = None
 
     def get(self, request, *args, **kwargs):
         kwargs.update(request.GET.dict())
@@ -26,6 +27,10 @@ class ViewWrapper(View):
         logged_person_id = self.authenticate(request, **kwargs)
         kwargs.update({'logged_person_id': logged_person_id})
 
+        if self.upload_picture_name is not None:
+            picture = request.FILES[self.upload_picture_name]
+            kwargs.update({'picture', picture})
+
         body, status = self.view_creator_func(request, *args, **kwargs).post(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
@@ -35,6 +40,10 @@ class ViewWrapper(View):
 
         logged_person_id = self.authenticate(request, **kwargs)
         kwargs.update({'logged_person_id': logged_person_id})
+
+        if self.upload_picture_name is not None:
+            picture = request.FILES[self.upload_picture_name]
+            kwargs.update({'picture', picture})
 
         body, status = self.view_creator_func(request, *args, **kwargs).patch(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')

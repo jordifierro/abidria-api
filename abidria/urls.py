@@ -3,10 +3,8 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
-from experiences.factories import create_experiences_view, create_experience_view
-from experiences.django_views import UploadExperiencePictureView
-from scenes.factories import create_scenes_view, create_scene_view
-from scenes.django_views import UploadScenePictureView
+from experiences.factories import create_experiences_view, create_experience_view, create_upload_experience_picture_view
+from scenes.factories import create_scenes_view, create_scene_view, create_upload_scene_picture_view
 from people.factories import create_people_view, create_person_view, create_email_confirmation_view
 
 from .views import ViewWrapper
@@ -23,7 +21,8 @@ urlpatterns = [
         name='experience'),
 
     url(r'experiences/(?P<experience_id>[0-9]+)/picture/$',
-        UploadExperiencePictureView.as_view(),
+        ViewWrapper.as_view(view_creator_func=create_upload_experience_picture_view,
+                            upload_picture_name='picture'),
         name='upload-experience-picture'),
 
     url(r'^scenes/$',
@@ -35,7 +34,8 @@ urlpatterns = [
         name='scene'),
 
     url(r'scenes/(?P<scene_id>[0-9]+)/picture/$',
-        UploadScenePictureView.as_view(),
+        ViewWrapper.as_view(view_creator_func=create_upload_scene_picture_view,
+                            upload_picture_name='picture'),
         name='upload-scene-picture'),
 
     url(r'^people/$',

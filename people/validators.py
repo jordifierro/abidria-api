@@ -1,6 +1,6 @@
 import re
 
-from abidria.exceptions import InvalidEntityException
+from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
 
 
 class ClientSecretKeyValidator(object):
@@ -43,5 +43,21 @@ class PersonValidator(object):
             raise InvalidEntityException(source='email', code='wrong', message='Email is wrong')
         if person.email.split('@')[-1] in self.forbidden_email_domains:
             raise InvalidEntityException(source='email', code='not_allowed', message='Email not allowed')
+
+        return True
+
+
+class PersonPermissionsValidator(object):
+
+    def __init__(self, person_repo):
+        self.person_repo = person_repo
+
+    def validate_permissions(self, logged_person_id, wants_to_create_content=False):
+        if logged_person_id is None:
+            raise NoLoggedException()
+
+        if wants_to_create_content:
+            if not self.person_repo.get_person(id=logged_person_id).is_email_confirmed:
+                raise NoPermissionException()
 
         return True

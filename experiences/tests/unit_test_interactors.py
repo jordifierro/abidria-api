@@ -4,7 +4,7 @@ from abidria.exceptions import InvalidEntityException, EntityDoesNotExistExcepti
         NoPermissionException
 from experiences.entities import Experience
 from experiences.interactors import GetAllExperiencesInteractor, CreateNewExperienceInteractor, \
-        ModifyExperienceInteractor
+        ModifyExperienceInteractor, UploadExperiencePictureInteractor
 
 
 class TestGetAllExperiences(object):
@@ -412,6 +412,104 @@ class TestModifyExperience(object):
             self.permissions_validator.validate_permissions \
                     .assert_called_once_with(logged_person_id=self.logged_person_id,
                                              has_permissions_to_modify_experience=self.id)
+            return self
+
+        def then_should_raise_no_permissions_exception(self):
+            assert type(self.error) is NoPermissionException
+            return self
+
+
+class TestUploadExperiencePictureInteractor(object):
+
+    def test_validates_permissions_and_attach_picture_to_experience(self):
+        TestUploadExperiencePictureInteractor.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
+                .given_an_experience() \
+                .given_an_experience_repo_that_returns_that_experience_on_attach() \
+                .given_an_experience_id() \
+                .given_a_picture() \
+                .when_interactor_is_executed() \
+                .then_should_validate_permissions() \
+                .then_should_call_repo_attach_picture_to_experience() \
+                .then_should_return_experience()
+
+    def test_invalid_permissions_doesnt_attach_picture(self):
+        TestUploadExperiencePictureInteractor.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_raises_no_permissions_exception() \
+                .given_an_experience_repo() \
+                .given_an_experience_id() \
+                .given_a_picture() \
+                .when_interactor_is_executed() \
+                .then_should_validate_permissions() \
+                .then_should_not_call_repo_attach_picture_to_experience() \
+                .then_should_raise_no_permissions_exception()
+
+    class ScenarioMaker(object):
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '9'
+            return self
+
+        def given_a_permissions_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permissions_validator_that_raises_no_permissions_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoPermissionException
+            return self
+
+        def given_an_experience(self):
+            self.experience = Experience(id='2', title='T', description='s', author_id='4')
+            return self
+
+        def given_an_experience_repo_that_returns_that_experience_on_attach(self):
+            self.experience_repo = Mock()
+            self.experience_repo.attach_picture_to_experience.return_value = self.experience
+            return self
+
+        def given_an_experience_repo(self):
+            self.experience_repo = Mock()
+            return self
+
+        def given_an_experience_id(self):
+            self.experience_id = '5'
+            return self
+
+        def given_a_picture(self):
+            self.picture = 'pic'
+            return self
+
+        def when_interactor_is_executed(self):
+            try:
+                interactor = UploadExperiencePictureInteractor(experience_repo=self.experience_repo,
+                                                               permissions_validator=self.permissions_validator)
+                self.result = interactor.set_params(experience_id=self.experience_id, picture=self.picture,
+                                                    logged_person_id=self.logged_person_id).execute()
+            except Exception as e:
+                self.error = e
+            return self
+
+        def then_should_validate_permissions(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id,
+                                             has_permissions_to_modify_experience=self.experience_id)
+            return self
+
+        def then_should_call_repo_attach_picture_to_experience(self):
+            self.experience_repo.attach_picture_to_experience.assert_called_once_with(experience_id=self.experience_id,
+                                                                                      picture=self.picture)
+            return self
+
+        def then_should_return_experience(self):
+            assert self.result == self.experience
+            return self
+
+        def then_should_not_call_repo_attach_picture_to_experience(self):
+            self.experience_repo.attach_picture_to_experience.assert_not_called()
             return self
 
         def then_should_raise_no_permissions_exception(self):

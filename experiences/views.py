@@ -38,3 +38,17 @@ class ExperienceView(object):
         body = ExperienceSerializer.serialize(experience)
         status = 200
         return body, status
+
+
+class UploadExperiencePictureView(object):
+
+    def __init__(self, upload_experience_picture_interactor=None):
+        self.upload_experience_picture_interactor = upload_experience_picture_interactor
+
+    @serialize_exceptions
+    def post(self, experience_id, picture, logged_person_id):
+        experience = self.upload_experience_picture_interactor.set_params(experience_id=experience_id, picture=picture,
+                                                                          logged_person_id=logged_person_id).execute()
+        body = ExperienceSerializer.serialize(experience)
+        status = 200
+        return body, status

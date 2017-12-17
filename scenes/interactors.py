@@ -76,3 +76,21 @@ class ModifySceneInteractor(object):
         self.scene_validator.validate_scene(updated_scene)
 
         return self.scene_repo.update_scene(updated_scene)
+
+
+class UploadScenePictureInteractor(object):
+
+    def __init__(self, scene_repo, permissions_validator):
+        self.scene_repo = scene_repo
+        self.permissions_validator = permissions_validator
+
+    def set_params(self, scene_id, picture, logged_person_id):
+        self.scene_id = scene_id
+        self.picture = picture
+        self.logged_person_id = logged_person_id
+        return self
+
+    def execute(self):
+        self.permissions_validator.validate_permissions(logged_person_id=self.logged_person_id,
+                                                        has_permissions_to_modify_scene=self.scene_id)
+        return self.scene_repo.attach_picture_to_scene(scene_id=self.scene_id, picture=self.picture)

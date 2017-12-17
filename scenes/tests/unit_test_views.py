@@ -4,7 +4,7 @@ from mock import Mock
 
 from abidria.entities import Picture
 from scenes.entities import Scene
-from scenes.views import ScenesView, SceneView
+from scenes.views import ScenesView, SceneView, UploadScenePictureView
 from scenes.serializers import SceneSerializer, MultipleScenesSerializer
 
 
@@ -200,6 +200,71 @@ class TestSceneView(object):
                                                                      description=self._description,
                                                                      latitude=None, longitude=float(self._longitude),
                                                                      experience_id=None,
+                                                                     logged_person_id=self._logged_person_id)
+            return self
+
+        def then_response_status_is_200(self):
+            assert self._status == 200
+            return self
+
+        def then_response_body_is_scene_serialized(self):
+            assert self._body == SceneSerializer.serialize(self._scene)
+
+
+class TestUploadScenePictureView(object):
+
+    def test_post_returns_scene_serialized_and_200(self):
+        TestUploadScenePictureView._ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_an_scene() \
+                .given_an_interactor_that_returns_that_scene() \
+                .given_an_id() \
+                .given_a_picture() \
+                .when_post_is_called() \
+                .then_interactor_receives_params() \
+                .then_response_status_is_200() \
+                .then_response_body_is_scene_serialized()
+
+    class _ScenarioMaker(object):
+
+        def __init__(self):
+            self._interactor_mock = Mock()
+            self._interactor_mock.set_params.return_value = self._interactor_mock
+            self._scene = None
+            self._id = None
+            self._picture = None
+            self._response = None
+            self._logged_person_id = None
+
+        def given_a_logged_person_id(self):
+            self._logged_person_id = '5'
+            return self
+
+        def given_an_scene(self):
+            self._scene = Scene(id='1', title='B', description='some',
+                                latitude=Decimal('1.2'), longitude=Decimal('-3.4'), experience_id='1')
+            return self
+
+        def given_an_interactor_that_returns_that_scene(self):
+            self._interactor_mock.execute.return_value = self._scene
+            return self
+
+        def given_an_id(self):
+            self._id = '2'
+            return self
+
+        def given_a_picture(self):
+            self._picture = 'pic'
+            return self
+
+        def when_post_is_called(self):
+            view = UploadScenePictureView(upload_scene_picture_interactor=self._interactor_mock)
+            self._body, self._status = view.post(scene_id=self._id, picture=self._picture,
+                                                 logged_person_id=self._logged_person_id)
+            return self
+
+        def then_interactor_receives_params(self):
+            self._interactor_mock.set_params.assert_called_once_with(scene_id=self._id, picture=self._picture,
                                                                      logged_person_id=self._logged_person_id)
             return self
 

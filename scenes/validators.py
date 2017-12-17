@@ -52,3 +52,16 @@ class SceneValidator(object):
                                          message='Experience does not exist')
 
         return True
+
+
+class ScenePermissionsValidator(object):
+
+    def __init__(self, scene_repo, experience_permissions_validator):
+        self.scene_repo = scene_repo
+        self.experience_permissions_validator = experience_permissions_validator
+
+    def validate_permissions(self, logged_person_id, has_permissions_to_modify_scene):
+        scene = self.scene_repo.get_scene(id=has_permissions_to_modify_scene)
+        return self.experience_permissions_validator.validate_permissions(
+                logged_person_id=logged_person_id,
+                has_permissions_to_modify_experience=scene.experience_id)

@@ -1,4 +1,4 @@
-from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
+from abidria.exceptions import InvalidEntityException, NoPermissionException
 
 
 class ExperienceValidator(object):
@@ -24,20 +24,14 @@ class ExperienceValidator(object):
         return True
 
 
-class PermissionsValidator(object):
+class ExperiencePermissionsValidator(object):
 
-    def __init__(self, experience_repo, person_repo):
+    def __init__(self, experience_repo, person_permissions_validator):
         self.experience_repo = experience_repo
-        self.person_repo = person_repo
+        self.person_permissions_validator = person_permissions_validator
 
-    def validate_permissions(self, logged_person_id, wants_to_create_content=False,
-                             has_permissions_to_modify_experience=None):
-        if logged_person_id is None:
-            raise NoLoggedException()
-
-        if wants_to_create_content:
-            if not self.person_repo.get_person(id=logged_person_id).is_email_confirmed:
-                raise NoPermissionException()
+    def validate_permissions(self, logged_person_id, has_permissions_to_modify_experience=None):
+        self.person_permissions_validator.validate_permissions(logged_person_id=logged_person_id)
 
         if has_permissions_to_modify_experience is not None:
             experience = self.experience_repo.get_experience(id=has_permissions_to_modify_experience)

@@ -1,7 +1,7 @@
 from mock import Mock
 
 from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
-from scenes.validators import SceneValidator
+from scenes.validators import SceneValidator, ScenePermissionsValidator
 from scenes.entities import Scene
 
 
@@ -154,4 +154,70 @@ class TestSceneValidator(object):
             assert self._error.source == source
             assert self._error.code == code
             assert str(self._error) == message
+            return self
+
+
+class TestScenePermissionsValidator(object):
+
+    def test_get_scene_and_calls_experience_permissions_validator(self):
+        TestScenePermissionsValidator.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_an_scene_id() \
+                .given_an_experience_id() \
+                .given_an_scene_with_that_experience_id() \
+                .given_an_scene_repo_that_returns_that_scene() \
+                .given_an_experience_permissions_validator_that_returns_true() \
+                .when_permissions_validated() \
+                .then_should_get_scene_from_repo_with_scene_id() \
+                .then_should_call_experience_permissions_validator_with_experience_id_and_logged_person_id() \
+                .then_should_return_true()
+
+    class ScenarioMaker(object):
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '5'
+            return self
+
+        def given_an_scene_id(self):
+            self.scene_id = '6'
+            return self
+
+        def given_an_experience_id(self):
+            self.experience_id = '7'
+            return self
+
+        def given_an_scene_with_that_experience_id(self):
+            self.scene = Scene(id='2', title='T', description='s',
+                               latitude=2, longitude=8, experience_id=self.experience_id)
+            return self
+
+        def given_an_scene_repo_that_returns_that_scene(self):
+            self.scene_repo = Mock()
+            self.scene_repo.get_scene.return_value = self.scene
+            return self
+
+        def given_an_experience_permissions_validator_that_returns_true(self):
+            self.experience_permissions_validator = Mock()
+            self.experience_permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def when_permissions_validated(self):
+            validator = ScenePermissionsValidator(
+                    scene_repo=self.scene_repo, experience_permissions_validator=self.experience_permissions_validator)
+            self.result = validator.validate_permissions(logged_person_id=self.logged_person_id,
+                                                         has_permissions_to_modify_scene=self.scene_id)
+            return self
+
+        def then_should_get_scene_from_repo_with_scene_id(self):
+            self.scene_repo.get_scene.assert_called_once_with(id=self.scene_id)
+            return self
+
+        def then_should_call_experience_permissions_validator_with_experience_id_and_logged_person_id(self):
+            self.experience_permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id,
+                                             has_permissions_to_modify_experience=self.experience_id)
+            return self
+
+        def then_should_return_true(self):
+            assert self.result is True
             return self

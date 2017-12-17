@@ -65,3 +65,21 @@ class ModifyExperienceInteractor(object):
         self.experience_validator.validate_experience(updated_experience)
 
         return self.experience_repo.update_experience(updated_experience)
+
+
+class UploadExperiencePictureInteractor(object):
+
+    def __init__(self, experience_repo, permissions_validator):
+        self.experience_repo = experience_repo
+        self.permissions_validator = permissions_validator
+
+    def set_params(self, experience_id, picture, logged_person_id):
+        self.experience_id = experience_id
+        self.picture = picture
+        self.logged_person_id = logged_person_id
+        return self
+
+    def execute(self):
+        self.permissions_validator.validate_permissions(logged_person_id=self.logged_person_id,
+                                                        has_permissions_to_modify_experience=self.experience_id)
+        return self.experience_repo.attach_picture_to_experience(experience_id=self.experience_id, picture=self.picture)

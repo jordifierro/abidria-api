@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 
 from .repositories import PersonRepo, AuthTokenRepo, ConfirmationTokenRepo
-from .validators import ClientSecretKeyValidator, PersonValidator
+from .validators import ClientSecretKeyValidator, PersonValidator, PersonPermissionsValidator
 from .interactors import CreateGuestPersonAndReturnAuthTokenInteractor, RegisterUsernameAndEmailInteractor, \
         AuthenticateInteractor, ConfirmEmailInteractor
 from .views import PeopleView, PersonView, EmailConfirmationView
@@ -24,6 +24,10 @@ def create_confirmation_token_repo():
 
 def create_client_secret_key_validator():
     return ClientSecretKeyValidator(valid_client_secret_key=settings.CLIENT_SECRET_KEY)
+
+
+def create_person_permissions_validator():
+    return PersonPermissionsValidator(person_repo=create_person_repo())
 
 
 def create_person_validator():

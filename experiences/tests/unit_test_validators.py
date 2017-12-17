@@ -1,9 +1,8 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
-from experiences.validators import ExperienceValidator, PermissionsValidator
+from abidria.exceptions import InvalidEntityException, NoPermissionException
+from experiences.validators import ExperienceValidator, ExperiencePermissionsValidator
 from experiences.entities import Experience
-from people.entities import Person
 
 
 class TestExperienceValidator(object):
@@ -90,51 +89,36 @@ class TestExperienceValidator(object):
 
 class TestPermissionsValidator(object):
 
-    def test_no_logged_person(self):
-        TestPermissionsValidator.ScenarioMaker() \
-                .when_permission_is_validated() \
-                .then_should_raise_no_logged_exception()
-
-    def test_logged_with_no_experience_returns_true(self):
+    def test_no_person_permissions(self):
         TestPermissionsValidator.ScenarioMaker() \
                 .given_a_logged_person_id() \
+                .given_a_person_permission_validator_that_raises_no_permission_exception() \
                 .when_permission_is_validated() \
-                .then_should_return_true()
-
-    def test_wants_to_create_content_but_doesnt_confirmed_email(self):
-        TestPermissionsValidator.ScenarioMaker() \
-                .given_a_logged_person_id() \
-                .given_wants_to_create_contents() \
-                .given_a_person_repo_that_returns_a_person_without_email_confirmed() \
-                .when_permission_is_validated() \
-                .then_should_call_person_repo_get_with_logged_person_id() \
+                .then_should_call_person_permission_validator_with_logged_person_id() \
                 .then_should_raise_no_permission_exception()
 
-    def test_wants_to_create_content_and_has_email_confirmed_returns_true(self):
+    def test_person_permission_but_different_person_id_raises_no_permission(self):
         TestPermissionsValidator.ScenarioMaker() \
                 .given_a_logged_person_id() \
-                .given_wants_to_create_contents() \
-                .given_a_person_repo_that_returns_a_person_with_email_confirmed() \
-                .when_permission_is_validated() \
-                .then_should_call_person_repo_get_with_logged_person_id() \
-                .then_should_return_true()
-
-    def test_no_experience_author_raises_no_permission_exception(self):
-        TestPermissionsValidator.ScenarioMaker() \
-                .given_a_logged_person_id() \
+                .given_a_person_permission_validator_that_returns_true() \
                 .given_an_experience_id() \
-                .given_a_repo_that_returns_experience_with_other_author() \
+                .given_an_experience_with_different_author_than_logged_person_id() \
+                .given_an_experience_repo_that_returns_that_experience() \
                 .when_permission_is_validated() \
-                .then_should_call_repo_with_experience_id() \
+                .then_should_call_person_permission_validator_with_logged_person_id() \
+                .then_should_call_repo_get_experience_with_experience_id() \
                 .then_should_raise_no_permission_exception()
 
-    def test_is_experience_author_returns_true(self):
+    def test_person_permission_with_same_person_id(self):
         TestPermissionsValidator.ScenarioMaker() \
                 .given_a_logged_person_id() \
+                .given_a_person_permission_validator_that_returns_true() \
                 .given_an_experience_id() \
-                .given_a_repo_that_returns_experience_with_logged_person_as_author() \
+                .given_an_experience_with_same_author_than_logged_person_id() \
+                .given_an_experience_repo_that_returns_that_experience() \
                 .when_permission_is_validated() \
-                .then_should_call_repo_with_experience_id() \
+                .then_should_call_person_permission_validator_with_logged_person_id() \
+                .then_should_call_repo_get_experience_with_experience_id() \
                 .then_should_return_true()
 
     class ScenarioMaker(object):
@@ -144,7 +128,6 @@ class TestPermissionsValidator(object):
             self.logged_person_id = None
             self.experience_id = None
             self.person_repo = None
-            self.wants_to_create_content = False
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '4'
@@ -154,43 +137,35 @@ class TestPermissionsValidator(object):
             self.experience_id = '9'
             return self
 
-        def given_wants_to_create_contents(self):
-            self.wants_to_create_content = True
+        def given_an_experience_with_same_author_than_logged_person_id(self):
+            self.experience = Experience(id='1', title='t', description='d', author_id=self.logged_person_id)
             return self
 
-        def given_a_repo_that_returns_experience_with_other_author(self):
-            experience = Experience(id='1', title='t', description='d', author_id='999')
+        def given_an_experience_with_different_author_than_logged_person_id(self):
+            self.experience = Experience(id='1', title='t', description='d', author_id='33')
+            return self
+
+        def given_a_person_permission_validator_that_raises_no_permission_exception(self):
+            self.person_permissions_validator = Mock()
+            self.person_permissions_validator.validate_permissions.side_effect = NoPermissionException()
+            return self
+
+        def given_a_person_permission_validator_that_returns_true(self):
+            self.person_permissions_validator = Mock()
+            self.person_permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_an_experience_repo_that_returns_that_experience(self):
             self.experience_repo = Mock()
-            self.experience_repo.get_experience.return_value = experience
-            return self
-
-        def given_a_repo_that_returns_experience_with_logged_person_as_author(self):
-            experience = Experience(id='1', title='t', description='d', author_id=self.logged_person_id)
-            self.experience_repo = Mock()
-            self.experience_repo.get_experience.return_value = experience
-            return self
-
-        def given_a_person_repo_that_returns_a_person_without_email_confirmed(self):
-            self.person_repo = Mock()
-            person_without_confirmation = Person(id='2', is_registered=True, username='usr',
-                                                 email='e@m.c', is_email_confirmed=False)
-            self.person_repo.get_person.return_value = person_without_confirmation
-            return self
-
-        def given_a_person_repo_that_returns_a_person_with_email_confirmed(self):
-            self.person_repo = Mock()
-            person_with_confirmation = Person(id='2', is_registered=True, username='usr',
-                                                 email='e@m.c', is_email_confirmed=True)
-            self.person_repo.get_person.return_value = person_with_confirmation
+            self.experience_repo.get_experience.return_value = self.experience
             return self
 
         def when_permission_is_validated(self):
-            validator = PermissionsValidator(experience_repo=self.experience_repo, person_repo=self.person_repo)
+            validator = ExperiencePermissionsValidator(experience_repo=self.experience_repo,
+                                                       person_permissions_validator=self.person_permissions_validator)
             try:
-                self.result = validator \
-                        .validate_permissions(self.logged_person_id,
-                                              wants_to_create_content=self.wants_to_create_content,
-                                              has_permissions_to_modify_experience=self.experience_id)
+                self.result = validator.validate_permissions(self.logged_person_id,
+                                                             has_permissions_to_modify_experience=self.experience_id)
             except Exception as e:
                 self.error = e
             return self
@@ -199,18 +174,15 @@ class TestPermissionsValidator(object):
             assert self.result is True
             return self
 
-        def then_should_call_repo_with_experience_id(self):
+        def then_should_call_repo_get_experience_with_experience_id(self):
             self.experience_repo.get_experience.assert_called_once_with(id=self.experience_id)
-            return self
-
-        def then_should_raise_no_logged_exception(self):
-            assert type(self.error) is NoLoggedException
             return self
 
         def then_should_raise_no_permission_exception(self):
             assert type(self.error) is NoPermissionException
             return self
 
-        def then_should_call_person_repo_get_with_logged_person_id(self):
-            self.person_repo.get_person.assert_called_once_with(id=self.logged_person_id)
+        def then_should_call_person_permission_validator_with_logged_person_id(self):
+            self.person_permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id)
             return self

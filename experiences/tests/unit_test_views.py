@@ -2,7 +2,8 @@ from mock import Mock
 
 from abidria.entities import Picture
 from experiences.entities import Experience
-from experiences.views import ExperiencesView, ExperienceView
+from experiences.views import ExperiencesView, ExperienceView, UploadExperiencePictureView
+from experiences.serializers import ExperienceSerializer
 
 
 class TestExperiencesView(object):
@@ -90,3 +91,67 @@ class TestExperienceView(object):
                            'author_id': '8',
                            'author_username': 'usrnm'
                        }
+
+
+class TestUploadExperiencePictureView(object):
+
+    def test_post_returns_experience_serialized_and_200(self):
+        TestUploadExperiencePictureView._ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_an_experience() \
+                .given_an_interactor_that_returns_that_experience() \
+                .given_an_id() \
+                .given_a_picture() \
+                .when_post_is_called() \
+                .then_interactor_receives_params() \
+                .then_response_status_is_200() \
+                .then_response_body_is_experience_serialized()
+
+    class _ScenarioMaker(object):
+
+        def __init__(self):
+            self._interactor_mock = Mock()
+            self._interactor_mock.set_params.return_value = self._interactor_mock
+            self._experience = None
+            self._id = None
+            self._picture = None
+            self._response = None
+            self._logged_person_id = None
+
+        def given_a_logged_person_id(self):
+            self._logged_person_id = '5'
+            return self
+
+        def given_an_experience(self):
+            self._experience = Experience(id='1', title='B', description='some', author_id='3')
+            return self
+
+        def given_an_interactor_that_returns_that_experience(self):
+            self._interactor_mock.execute.return_value = self._experience
+            return self
+
+        def given_an_id(self):
+            self._id = '2'
+            return self
+
+        def given_a_picture(self):
+            self._picture = 'pic'
+            return self
+
+        def when_post_is_called(self):
+            view = UploadExperiencePictureView(upload_experience_picture_interactor=self._interactor_mock)
+            self._body, self._status = view.post(experience_id=self._id, picture=self._picture,
+                                                 logged_person_id=self._logged_person_id)
+            return self
+
+        def then_interactor_receives_params(self):
+            self._interactor_mock.set_params.assert_called_once_with(experience_id=self._id, picture=self._picture,
+                                                                     logged_person_id=self._logged_person_id)
+            return self
+
+        def then_response_status_is_200(self):
+            assert self._status == 200
+            return self
+
+        def then_response_body_is_experience_serialized(self):
+            assert self._body == ExperienceSerializer.serialize(self._experience)
