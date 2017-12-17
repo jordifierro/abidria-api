@@ -10,7 +10,7 @@ class ExperiencesView(object):
 
     @serialize_exceptions
     def get(self, logged_person_id=None):
-        experiences = self.get_all_experiences_interactor.execute()
+        experiences = self.get_all_experiences_interactor.set_params(logged_person_id=logged_person_id).execute()
 
         body = MultipleExperiencesSerializer.serialize(experiences)
         status = 200

@@ -16,10 +16,12 @@ class TestExperiencesView(object):
                                   author_id='5', author_username='nms')
 
         interactor_mock = Mock()
+        interactor_mock.set_params.return_value = interactor_mock
         interactor_mock.execute.return_value = [experience_a, experience_b]
 
-        body, status = ExperiencesView(get_all_experiences_interactor=interactor_mock).get()
+        body, status = ExperiencesView(get_all_experiences_interactor=interactor_mock).get(logged_person_id='4')
 
+        interactor_mock.set_params.assert_called_once_with(logged_person_id='4')
         assert status == 200
         assert body == [
                            {

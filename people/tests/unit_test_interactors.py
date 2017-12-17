@@ -1,7 +1,7 @@
 from mock import Mock
 
 from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException, ConflictException, \
-        UnauthorizedException
+        NoLoggedException
 from people.entities import Person, AuthToken
 from people.interactors import CreateGuestPersonAndReturnAuthTokenInteractor, AuthenticateInteractor, \
         RegisterUsernameAndEmailInteractor, ConfirmEmailInteractor
@@ -406,7 +406,7 @@ class TestRegisterUsernameAndEmailInteractor(object):
             return self
 
         def then_should_raise_unauthorized_exception(self):
-            assert type(self.error) is UnauthorizedException
+            assert type(self.error) is NoLoggedException
             return self
 
 
@@ -534,7 +534,7 @@ class TestConfirmEmailInteractor(object):
             return self
 
         def then_should_raise_unauthorized(self):
-            assert type(self.error) is UnauthorizedException
+            assert type(self.error) is NoLoggedException
             return self
 
         def then_should_not_delete_all_confirmation_tokens_for_that_person(self):

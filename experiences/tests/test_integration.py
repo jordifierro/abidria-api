@@ -13,11 +13,13 @@ class ExperiencesTestCase(TestCase):
 
     def test_experiences_returns_all_experiences(self):
         orm_person = ORMPerson.objects.create(username='usr')
+        orm_auth_token = ORMAuthToken.objects.create(person=orm_person)
         exp_a = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
         exp_b = ORMExperience.objects.create(title='Exp b', description='other description', author=orm_person)
 
         client = Client()
-        response = client.get(reverse('experiences'))
+        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        response = client.get(reverse('experiences'), **auth_headers)
 
         assert response.status_code == 200
         body = json.loads(response.content)
@@ -44,7 +46,7 @@ class ExperiencesTestCase(TestCase):
 class CreateExperienceTestCase(TestCase):
 
     def test_create_experience_creates_and_returns_experience(self):
-        orm_person = ORMPerson.objects.create(username='usr.nm')
+        orm_person = ORMPerson.objects.create(username='usr.nm', is_email_confirmed=True)
         orm_auth_token = ORMAuthToken.objects.create(person_id=orm_person.id)
         auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
         client = Client()
@@ -66,7 +68,7 @@ class CreateExperienceTestCase(TestCase):
                        }
 
     def test_wrong_attributes_doesnt_create_and_returns_error(self):
-        orm_person = ORMPerson.objects.create()
+        orm_person = ORMPerson.objects.create(is_email_confirmed=True)
         orm_auth_token = ORMAuthToken.objects.create(person_id=orm_person.id)
         auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
         client = Client()

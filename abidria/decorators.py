@@ -1,12 +1,13 @@
 from .exceptions import InvalidEntityException, EntityDoesNotExistException, ConflictException, \
-        AbidriaException, UnauthorizedException
+        AbidriaException, NoLoggedException, NoPermissionException
 from .serializers import AbidriaExceptionSerializer
 
 exception_status_code_mapper = {
         InvalidEntityException: 422,
         EntityDoesNotExistException: 404,
         ConflictException: 409,
-        UnauthorizedException: 401,
+        NoLoggedException: 401,
+        NoPermissionException: 403,
         }
 
 

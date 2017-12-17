@@ -1,6 +1,7 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException, NoLoggedException, \
+        NoPermissionException
 from experiences.entities import Experience
 from experiences.interactors import GetAllExperiencesInteractor, CreateNewExperienceInteractor, \
         ModifyExperienceInteractor
@@ -10,13 +11,32 @@ class TestGetAllExperiences(object):
 
     def test_returns_repo_response(self):
         TestGetAllExperiences.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permission_validator_that_returns_true() \
                 .given_an_experience() \
                 .given_another_experience() \
                 .given_a_repo_that_returns_both_experiences() \
                 .when_interactor_is_executed() \
+                .then_validate_permissions_should_be_called_with_logged_person_id() \
                 .then_result_should_be_both_experiences()
 
+    def test_no_logged_raises_exception(self):
+        TestGetAllExperiences.ScenarioMaker() \
+                .given_a_permission_validator_that_raises_exception() \
+                .when_interactor_is_executed() \
+                .then_validate_permissions_should_be_called_with_logged_person_id() \
+                .then_should_raise_no_logged_exception()
+
     class ScenarioMaker(object):
+
+        def __init__(self):
+            self.logged_person_id = None
+            self.experience_repo = None
+            self.permissions_validator = None
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '0'
+            return self
 
         def given_an_experience(self):
             self.experience_a = Experience(id=1, title='A', description='some',
@@ -28,17 +48,41 @@ class TestGetAllExperiences(object):
                                            picture=None, author_id='1', author_username='usr')
             return self
 
+        def given_a_permission_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permission_validator_that_raises_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoLoggedException()
+            return self
+
         def given_a_repo_that_returns_both_experiences(self):
-            self.experiences_repo = Mock()
-            self.experiences_repo.get_all_experiences.return_value = [self.experience_a, self.experience_b]
+            self.experience_repo = Mock()
+            self.experience_repo.get_all_experiences.return_value = [self.experience_a, self.experience_b]
             return self
 
         def when_interactor_is_executed(self):
-            self.response = GetAllExperiencesInteractor(self.experiences_repo).execute()
+            try:
+                self.response = GetAllExperiencesInteractor(experience_repo=self.experience_repo,
+                                                            permissions_validator=self.permissions_validator) \
+                        .set_params(logged_person_id=self.logged_person_id).execute()
+            except Exception as e:
+                self.error = e
             return self
 
         def then_result_should_be_both_experiences(self):
             assert self.response == [self.experience_a, self.experience_b]
+            return self
+
+        def then_validate_permissions_should_be_called_with_logged_person_id(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id)
+            return self
+
+        def then_should_raise_no_logged_exception(self):
+            assert type(self.error) is NoLoggedException
             return self
 
 
@@ -46,31 +90,59 @@ class TestCreateNewExperience(object):
 
     def test_creates_and_returns_experience(self):
         TestCreateNewExperience.ScenarioMaker() \
+                .given_a_logged_person_id() \
                 .given_an_experience() \
                 .given_an_experience_repo_that_returns_that_experience_on_create() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_a_title() \
                 .given_a_description() \
                 .given_an_author_id() \
                 .given_an_experience_validator_that_accepts_them() \
                 .when_execute_interactor() \
                 .then_result_should_be_the_experience() \
+                .then_should_validate_permissions() \
                 .then_repo_create_method_should_be_called_with_params() \
                 .then_params_should_be_validated()
 
     def test_invalid_experience_returns_error_and_doesnt_create_it(self):
         TestCreateNewExperience.ScenarioMaker() \
+                .given_a_logged_person_id() \
                 .given_an_experience() \
                 .given_an_experience_repo() \
                 .given_a_title() \
                 .given_a_description() \
                 .given_an_author_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_an_experience_validator_that_raises_invalid_entity_exception() \
                 .when_execute_interactor() \
                 .then_should_raise_invalid_entity_exception() \
+                .then_should_validate_permissions() \
                 .then_params_should_be_validated() \
                 .then_repo_create_method_should_not_be_called()
 
+    def test_no_permissions_raises_exception(self):
+        TestCreateNewExperience.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_an_experience() \
+                .given_an_experience_repo() \
+                .given_a_title() \
+                .given_a_description() \
+                .given_an_author_id() \
+                .given_a_permissions_validator_that_raises_no_permission_exception() \
+                .given_an_experience_validator_that_raises_invalid_entity_exception() \
+                .when_execute_interactor() \
+                .then_should_raise_no_permissions_exception() \
+                .then_should_validate_permissions() \
+                .then_repo_create_method_should_not_be_called()
+
     class ScenarioMaker(object):
+
+        def __init__(self):
+            self.author_id = None
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '5'
+            return self
 
         def given_an_experience(self):
             self.experience = Experience(title='Title', description='', author_id='3')
@@ -97,6 +169,16 @@ class TestCreateNewExperience(object):
             self.experience_repo = Mock()
             return self
 
+        def given_a_permissions_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permissions_validator_that_raises_no_permission_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoPermissionException()
+            return self
+
         def given_an_experience_validator_that_accepts_them(self):
             self.experience_validator = Mock()
             self.experience_validator.validate_experience.return_value = True
@@ -111,9 +193,10 @@ class TestCreateNewExperience(object):
 
         def when_execute_interactor(self):
             try:
-                self.response = CreateNewExperienceInteractor(self.experience_repo, self.experience_validator) \
+                self.response = CreateNewExperienceInteractor(self.experience_repo,
+                                                              self.experience_validator, self.permissions_validator) \
                     .set_params(title=self.title, description=self.description,
-                                logged_person_id=self.author_id).execute()
+                                logged_person_id=self.logged_person_id).execute()
             except Exception as e:
                 self.error = e
             return self
@@ -130,7 +213,8 @@ class TestCreateNewExperience(object):
             return self
 
         def then_repo_create_method_should_be_called_with_params(self):
-            experience_params = Experience(title=self.title, description=self.description, author_id=self.author_id)
+            experience_params = Experience(title=self.title, description=self.description,
+                                           author_id=self.logged_person_id)
             self.experience_repo.create_experience.assert_called_once_with(experience_params)
             return self
 
@@ -139,8 +223,18 @@ class TestCreateNewExperience(object):
             return self
 
         def then_params_should_be_validated(self):
-            experience_params = Experience(title=self.title, description=self.description, author_id=self.author_id)
+            experience_params = Experience(title=self.title, description=self.description,
+                                           author_id=self.logged_person_id)
             self.experience_validator.validate_experience.assert_called_once_with(experience_params)
+            return self
+
+        def then_should_validate_permissions(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id, wants_to_create_content=True)
+            return self
+
+        def then_should_raise_no_permissions_exception(self):
+            assert type(self.error) is NoPermissionException
             return self
 
 
@@ -152,11 +246,13 @@ class TestModifyExperience(object):
                 .given_an_id() \
                 .given_a_description() \
                 .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_another_experience_updated_with_that_params() \
                 .given_an_experience_repo_that_returns_both_experiences_on_get_and_update() \
                 .given_an_experience_validator_that_accepts() \
                 .when_interactor_is_executed() \
                 .then_result_should_be_second_experience() \
+                .then_should_validate_permissions() \
                 .then_get_experience_should_be_called_with_id() \
                 .then_experience_validation_should_be_called_with_updated_experience() \
                 .then_update_experience_should_be_called_with_updated_experience()
@@ -166,12 +262,14 @@ class TestModifyExperience(object):
                 .given_an_id() \
                 .given_a_description() \
                 .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_an_experience() \
                 .given_another_experience_updated_with_that_params() \
                 .given_an_experience_repo_that_returns_that_experience_on_get() \
                 .given_an_experience_validator_that_raises_invalid_entity_exception() \
                 .when_interactor_is_executed() \
                 .then_should_raise_invalid_entity_exception() \
+                .then_should_validate_permissions() \
                 .then_get_experience_should_be_called_with_id() \
                 .then_experience_validation_should_be_called_with_updated_experience() \
                 .then_update_experience_should_be_not_called()
@@ -181,11 +279,26 @@ class TestModifyExperience(object):
                 .given_an_id() \
                 .given_a_description() \
                 .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_an_experience_repo_that_raises_entity_does_not_exist() \
                 .given_an_experience_validator() \
                 .when_interactor_is_executed() \
                 .then_should_raise_entity_does_not_exists() \
+                .then_should_validate_permissions() \
                 .then_get_experience_should_be_called_with_id() \
+                .then_update_experience_should_be_not_called()
+
+    def test_no_permissions_raises_expcetion(self):
+        TestModifyExperience.ScenarioMaker() \
+                .given_an_id() \
+                .given_a_description() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_raises_no_permissions_exception() \
+                .given_an_experience_repo_that_raises_entity_does_not_exist() \
+                .given_an_experience_validator() \
+                .when_interactor_is_executed() \
+                .then_should_raise_no_permissions_exception() \
+                .then_should_validate_permissions() \
                 .then_update_experience_should_be_not_called()
 
     class ScenarioMaker(object):
@@ -205,6 +318,16 @@ class TestModifyExperience(object):
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '2'
+            return self
+
+        def given_a_permissions_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permissions_validator_that_raises_no_permissions_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoPermissionException()
             return self
 
         def given_another_experience_updated_with_that_params(self):
@@ -246,7 +369,8 @@ class TestModifyExperience(object):
 
         def when_interactor_is_executed(self):
             try:
-                self.result = ModifyExperienceInteractor(self.experience_repo, self.experience_validator) \
+                self.result = ModifyExperienceInteractor(self.experience_repo, self.experience_validator,
+                                                         self.permissions_validator) \
                     .set_params(id=self.id, title=None, description=self.description,
                                 logged_person_id=self.logged_person_id).execute()
             except Exception as e:
@@ -282,4 +406,14 @@ class TestModifyExperience(object):
 
         def then_should_raise_entity_does_not_exists(self):
             assert type(self.error) is EntityDoesNotExistException
+            return self
+
+        def then_should_validate_permissions(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id,
+                                             has_permissions_to_modify_experience=self.id)
+            return self
+
+        def then_should_raise_no_permissions_exception(self):
+            assert type(self.error) is NoPermissionException
             return self

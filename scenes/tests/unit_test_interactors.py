@@ -1,6 +1,7 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
+from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException, NoLoggedException, \
+        NoPermissionException
 from scenes.interactors import GetScenesFromExperienceInteractor, CreateNewSceneInteractor, ModifySceneInteractor
 from scenes.entities import Scene
 
@@ -9,14 +10,42 @@ class TestGetScenesFromExperience(object):
 
     def test_returns_scenes(self):
         TestGetScenesFromExperience.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_two_scenes() \
                 .given_scene_repo_that_returns_both() \
                 .given_an_experience_id() \
                 .when_interactor_is_executed() \
+                .then_permissions_should_be_validated() \
                 .then_get_scenes_should_be_called_with_experience_id() \
                 .then_result_should_be_both_scenes()
 
+    def test_no_logged_returns_exception(self):
+        TestGetScenesFromExperience.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_raises_no_logged_exception() \
+                .given_two_scenes() \
+                .given_scene_repo_that_returns_both() \
+                .given_an_experience_id() \
+                .when_interactor_is_executed() \
+                .then_permissions_should_be_validated() \
+                .then_should_raise_no_permissions_exception()
+
     class ScenarioMaker(object):
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '4'
+            return self
+
+        def given_a_permissions_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permissions_validator_that_raises_no_logged_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoLoggedException()
+            return self
 
         def given_two_scenes(self):
             self.scene_a = Scene(id=2, title='', description='', picture=None, latitude=1, longitude=0, experience_id=1)
@@ -33,8 +62,12 @@ class TestGetScenesFromExperience(object):
             return self
 
         def when_interactor_is_executed(self):
-            self.result = GetScenesFromExperienceInteractor(self.scene_repo) \
-                    .set_params(experience_id=self.experience_id).execute()
+            try:
+                self.result = GetScenesFromExperienceInteractor(self.scene_repo,
+                                                                permissions_validator=self.permissions_validator) \
+                        .set_params(experience_id=self.experience_id, logged_person_id=self.logged_person_id).execute()
+            except Exception as e:
+                self.error = e
             return self
 
         def then_get_scenes_should_be_called_with_experience_id(self):
@@ -45,11 +78,22 @@ class TestGetScenesFromExperience(object):
             assert self.result == [self.scene_a, self.scene_b]
             return self
 
+        def then_permissions_should_be_validated(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id)
+            return self
+
+        def then_should_raise_no_permissions_exception(self):
+            assert type(self.error) is NoLoggedException
+            return self
+
 
 class TestCreateNewScene(object):
 
     def test_creates_and_returns_scene(self):
         TestCreateNewScene.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_a_title() \
                 .given_a_description() \
                 .given_a_latitude() \
@@ -59,12 +103,15 @@ class TestCreateNewScene(object):
                 .given_an_scene() \
                 .given_an_scene_repo_that_returns_scene_on_create() \
                 .when_interactor_is_executed() \
+                .then_validate_permissions_is_called_with_logged_person_id_and_experience_id() \
                 .then_validate_scene_is_called_with_previous_params() \
                 .then_create_scene_is_called_with_previous_params() \
                 .then_result_should_be_scene()
 
     def test_invalid_scene_returns_error_and_doesnt_create_it(self):
         TestCreateNewScene.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_a_title() \
                 .given_a_description() \
                 .given_a_latitude() \
@@ -73,11 +120,42 @@ class TestCreateNewScene(object):
                 .given_an_scene_validator_that_raises_invalid_params() \
                 .given_an_scene_repo() \
                 .when_interactor_is_executed() \
+                .then_validate_permissions_is_called_with_logged_person_id_and_experience_id() \
                 .then_validate_scene_is_called_with_previous_params() \
                 .then_create_scene_should_not_be_called() \
                 .then_should_raise_invalid_entity_exception()
 
+    def test_invalid_permissions_returns_error(self):
+        TestCreateNewScene.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_raises_no_permissions_exception() \
+                .given_a_title() \
+                .given_a_description() \
+                .given_a_latitude() \
+                .given_a_longitude() \
+                .given_an_experience_id() \
+                .given_an_scene_validator_that_raises_invalid_params() \
+                .given_an_scene_repo() \
+                .when_interactor_is_executed() \
+                .then_validate_permissions_is_called_with_logged_person_id_and_experience_id() \
+                .then_create_scene_should_not_be_called() \
+                .then_should_raise_no_permissions_exception()
+
     class ScenarioMaker(object):
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '8'
+            return self
+
+        def given_a_permissions_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permissions_validator_that_raises_no_permissions_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoPermissionException()
+            return self
 
         def given_a_title(self):
             self.title = 'Title'
@@ -124,11 +202,19 @@ class TestCreateNewScene(object):
 
         def when_interactor_is_executed(self):
             try:
-                self.result = CreateNewSceneInteractor(self.scene_repo, self.scene_validator) \
+                self.result = CreateNewSceneInteractor(self.scene_repo, self.scene_validator,
+                                                       self.permissions_validator) \
                     .set_params(title=self.title, description=self.description, latitude=self.latitude,
-                                longitude=self.longitude, experience_id=self.experience_id).execute()
+                                longitude=self.longitude, experience_id=self.experience_id,
+                                logged_person_id=self.logged_person_id).execute()
             except Exception as e:
                 self.error = e
+            return self
+
+        def then_validate_permissions_is_called_with_logged_person_id_and_experience_id(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id,
+                                             has_permissions_to_modify_experience=self.experience_id)
             return self
 
         def then_validate_scene_is_called_with_previous_params(self):
@@ -157,11 +243,17 @@ class TestCreateNewScene(object):
             assert str(self.error) == 'm'
             return self
 
+        def then_should_raise_no_permissions_exception(self):
+            assert type(self.error) is NoPermissionException
+            return self
+
 
 class TestModifyScene(object):
 
     def test_gets_modifies_not_none_params_and_returns_scene(self):
         TestModifyScene.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_an_scene() \
                 .given_an_scene_repo() \
                 .given_that_scene_repo_returns_that_scene_on_get() \
@@ -172,6 +264,7 @@ class TestModifyScene(object):
                 .given_a_description() \
                 .given_a_longitude() \
                 .when_interactor_is_executed() \
+                .then_permissions_should_be_validated() \
                 .then_get_scene_should_be_called_with_id() \
                 .then_scene_with_new_description_an_longitude_should_be_validated() \
                 .then_update_scene_should_be_called_with_new_description_an_longitude() \
@@ -179,6 +272,8 @@ class TestModifyScene(object):
 
     def test_invalid_scene_returns_error_and_doesnt_update_it(self):
         TestModifyScene.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_an_scene() \
                 .given_an_scene_repo() \
                 .given_that_scene_repo_returns_that_scene_on_get() \
@@ -187,6 +282,7 @@ class TestModifyScene(object):
                 .given_a_description() \
                 .given_a_longitude() \
                 .when_interactor_is_executed() \
+                .then_permissions_should_be_validated() \
                 .then_get_scene_should_be_called_with_id() \
                 .then_scene_with_new_description_an_longitude_should_be_validated() \
                 .then_update_scene_should_not_be_called() \
@@ -194,17 +290,34 @@ class TestModifyScene(object):
 
     def test_unexistent_scene_returns_entity_does_not_exist_error(self):
         TestModifyScene.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
                 .given_an_scene_repo_that_raises_entity_does_not_exist() \
                 .given_an_scene_validator_that_raises_invalid_params() \
                 .given_an_id() \
                 .given_a_description() \
                 .given_a_longitude() \
                 .when_interactor_is_executed() \
+                .then_permissions_should_be_validated() \
                 .then_get_scene_should_be_called_with_id() \
                 .then_update_scene_should_not_be_called() \
                 .then_should_raise_entity_does_not_exist()
 
     class ScenarioMaker(object):
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '8'
+            return self
+
+        def given_a_permissions_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permissions_validator_that_raises_no_permissions_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoPermissionException()
+            return self
 
         def given_an_scene(self):
             self.scene = Scene(id='1', title='Title', description='some', latitude=1, longitude=0, experience_id=1)
@@ -255,11 +368,18 @@ class TestModifyScene(object):
 
         def when_interactor_is_executed(self):
             try:
-                self.result = ModifySceneInteractor(self.scene_repo, self.scene_validator) \
+                self.result = ModifySceneInteractor(self.scene_repo, self.scene_validator, self.permissions_validator) \
                     .set_params(id=self.id, title=None, description=self.description, latitude=None,
-                                longitude=self.longitude, experience_id=1).execute()
+                                longitude=self.longitude, experience_id=1,
+                                logged_person_id=self.logged_person_id).execute()
             except Exception as e:
                 self.error = e
+            return self
+
+        def then_permissions_should_be_validated(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id,
+                                             has_permissions_to_modify_experience=1)
             return self
 
         def then_get_scene_should_be_called_with_id(self):

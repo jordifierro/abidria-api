@@ -10,7 +10,8 @@ class ScenesView(object):
 
     @serialize_exceptions
     def get(self, experience, logged_person_id=None):
-        scenes = self.get_scenes_from_experience_interactor.set_params(experience_id=experience).execute()
+        scenes = self.get_scenes_from_experience_interactor.set_params(experience_id=experience,
+                                                                       logged_person_id=logged_person_id).execute()
 
         body = MultipleScenesSerializer.serialize(scenes)
         status = 200
@@ -20,7 +21,8 @@ class ScenesView(object):
     def post(self, title, description, latitude, longitude, experience_id, logged_person_id=None):
         scene = self.create_new_scene_interactor.set_params(title=title, description=description,
                                                             latitude=float(latitude), longitude=float(longitude),
-                                                            experience_id=experience_id).execute()
+                                                            experience_id=experience_id,
+                                                            logged_person_id=logged_person_id).execute()
         body = SceneSerializer.serialize(scene)
         status = 201
         return body, status
@@ -39,7 +41,8 @@ class SceneView(object):
 
         scene = self.modify_scene_interactor.set_params(id=scene_id, title=title, description=description,
                                                         latitude=latitude, longitude=longitude,
-                                                        experience_id=experience_id).execute()
+                                                        experience_id=experience_id,
+                                                        logged_person_id=logged_person_id).execute()
         body = SceneSerializer.serialize(scene)
         status = 200
         return body, status

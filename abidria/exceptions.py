@@ -22,7 +22,7 @@ class ConflictException(AbidriaException):
     pass
 
 
-class UnauthorizedException(AbidriaException):
+class NoLoggedException(AbidriaException):
 
     def __init__(self):
         super().__init__(source='authentication', code='required', message='Authentication required')
@@ -32,3 +32,9 @@ class EntityDoesNotExistException(AbidriaException):
 
     def __init__(self):
         super().__init__(source='entity', code='not_found', message='Entity not found')
+
+
+class NoPermissionException(AbidriaException):
+
+    def __init__(self):
+        super().__init__(source='permission', code='denied', message='Permission denied')

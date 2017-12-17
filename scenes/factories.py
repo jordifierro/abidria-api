@@ -1,4 +1,4 @@
-from experiences.factories import create_experience_repo
+from experiences.factories import create_experience_repo, create_permissions_validator
 from .repositories import SceneRepo
 from .interactors import GetScenesFromExperienceInteractor, CreateNewSceneInteractor, ModifySceneInteractor
 from .validators import SceneValidator
@@ -14,15 +14,18 @@ def create_scene_validator():
 
 
 def create_get_scenes_from_experience_interactor():
-    return GetScenesFromExperienceInteractor(scene_repo=create_scene_repo())
+    return GetScenesFromExperienceInteractor(scene_repo=create_scene_repo(),
+                                             permissions_validator=create_permissions_validator())
 
 
 def create_create_new_scene_interactor():
-    return CreateNewSceneInteractor(scene_repo=create_scene_repo(), scene_validator=create_scene_validator())
+    return CreateNewSceneInteractor(scene_repo=create_scene_repo(), scene_validator=create_scene_validator(),
+                                    permissions_validator=create_permissions_validator())
 
 
 def create_modify_scene_interactor():
-    return ModifySceneInteractor(scene_repo=create_scene_repo(), scene_validator=create_scene_validator())
+    return ModifySceneInteractor(scene_repo=create_scene_repo(), scene_validator=create_scene_validator(),
+                                 permissions_validator=create_permissions_validator())
 
 
 def create_scenes_view(request, *args, **kwargs):

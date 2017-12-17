@@ -1,4 +1,4 @@
-from abidria.exceptions import InvalidEntityException
+from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
 
 
 class ExperienceValidator(object):
@@ -20,5 +20,28 @@ class ExperienceValidator(object):
 
         if experience.description is not None and type(experience.description) is not str:
             raise InvalidEntityException(source='description', code='wrong_type', message='Description must be string')
+
+        return True
+
+
+class PermissionsValidator(object):
+
+    def __init__(self, experience_repo, person_repo):
+        self.experience_repo = experience_repo
+        self.person_repo = person_repo
+
+    def validate_permissions(self, logged_person_id, wants_to_create_content=False,
+                             has_permissions_to_modify_experience=None):
+        if logged_person_id is None:
+            raise NoLoggedException()
+
+        if wants_to_create_content:
+            if not self.person_repo.get_person(id=logged_person_id).is_email_confirmed:
+                raise NoPermissionException()
+
+        if has_permissions_to_modify_experience is not None:
+            experience = self.experience_repo.get_experience(id=has_permissions_to_modify_experience)
+            if experience.author_id != logged_person_id:
+                raise NoPermissionException()
 
         return True

@@ -12,6 +12,7 @@ class TestScenesView(object):
 
     def test_get_returns_scenes_serialized_and_200(self):
         TestScenesView._ScenarioMaker() \
+                .given_a_logged_person_id() \
                 .given_an_scene() \
                 .given_another_scene() \
                 .given_an_interactor_that_returns_both_scenes() \
@@ -23,6 +24,7 @@ class TestScenesView(object):
 
     def test_post_returns_scene_serialized_and_200(self):
         TestScenesView._ScenarioMaker() \
+                .given_a_logged_person_id() \
                 .given_an_scene() \
                 .given_an_interactor_that_returns_that_scene() \
                 .given_a_title() \
@@ -47,6 +49,10 @@ class TestScenesView(object):
             self._longitude = None
             self._experience_id = None
             self._response = None
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '5'
+            return self
 
         def given_an_scene(self):
             pic = Picture(small_url='small.b', medium_url='medium.b', large_url='large.b')
@@ -92,23 +98,26 @@ class TestScenesView(object):
             view = ScenesView(create_new_scene_interactor=self._interactor_mock)
             self._body, self._status = view.post(title=self._title, description=self._description,
                                                  latitude=self._latitude, longitude=self._longitude,
-                                                 experience_id=self._experience_id)
+                                                 experience_id=self._experience_id,
+                                                 logged_person_id=self.logged_person_id)
             return self
 
         def when_get_is_called_with_this_experience_id(self):
             view = ScenesView(get_scenes_from_experience_interactor=self._interactor_mock)
-            self._body, self._status = view.get(experience=self._experience_id)
+            self._body, self._status = view.get(experience=self._experience_id, logged_person_id=self.logged_person_id)
             return self
 
         def then_interactor_is_called_with_experience_id(self):
-            self._interactor_mock.set_params.assert_called_once_with(experience_id=self._experience_id)
+            self._interactor_mock.set_params.assert_called_once_with(experience_id=self._experience_id,
+                                                                     logged_person_id=self.logged_person_id)
             return self
 
         def then_interactor_receives_these_params(self):
             self._interactor_mock.set_params.assert_called_once_with(title=self._title, description=self._description,
                                                                      latitude=float(self._latitude),
                                                                      longitude=float(self._longitude),
-                                                                     experience_id=self._experience_id)
+                                                                     experience_id=self._experience_id,
+                                                                     logged_person_id=self.logged_person_id)
             return self
 
         def then_response_status_is_200(self):
@@ -132,13 +141,14 @@ class TestSceneView(object):
 
     def test_patch_returns_scene_serialized_and_200(self):
         TestSceneView._ScenarioMaker() \
+                .given_a_logged_person_id() \
                 .given_an_scene() \
                 .given_an_interactor_that_returns_that_scene() \
                 .given_an_id() \
                 .given_a_description() \
                 .given_a_longitude() \
-                .when_patch_is_called_with_id_description_and_longitude() \
-                .then_interactor_receives_params_id_description_and_longitude() \
+                .when_patch_is_called_with_id_description_longitude_and_logged_person_id() \
+                .then_interactor_receives_params_id_description_longitude_and_logged_person_id() \
                 .then_response_status_is_200() \
                 .then_response_body_is_scene_serialized()
 
@@ -152,6 +162,11 @@ class TestSceneView(object):
             self._description = None
             self._longitude = None
             self._response = None
+            self._logged_person_id = None
+
+        def given_a_logged_person_id(self):
+            self._logged_person_id = '5'
+            return self
 
         def given_an_scene(self):
             self._scene = Scene(id='1', title='B', description='some',
@@ -174,17 +189,18 @@ class TestSceneView(object):
             self._longitude = Decimal('-4.1')
             return self
 
-        def when_patch_is_called_with_id_description_and_longitude(self):
+        def when_patch_is_called_with_id_description_longitude_and_logged_person_id(self):
             view = SceneView(modify_scene_interactor=self._interactor_mock)
-            self._body, self._status = view.patch(scene_id=self._id,
-                                                  description=self._description, longitude=self._longitude)
+            self._body, self._status = view.patch(scene_id=self._id, description=self._description,
+                                                  longitude=self._longitude, logged_person_id=self._logged_person_id)
             return self
 
-        def then_interactor_receives_params_id_description_and_longitude(self):
+        def then_interactor_receives_params_id_description_longitude_and_logged_person_id(self):
             self._interactor_mock.set_params.assert_called_once_with(id=self._id, title=None,
                                                                      description=self._description,
                                                                      latitude=None, longitude=float(self._longitude),
-                                                                     experience_id=None)
+                                                                     experience_id=None,
+                                                                     logged_person_id=self._logged_person_id)
             return self
 
         def then_response_status_is_200(self):

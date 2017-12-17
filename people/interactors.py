@@ -1,4 +1,4 @@
-from abidria.exceptions import EntityDoesNotExistException, ConflictException, UnauthorizedException, \
+from abidria.exceptions import EntityDoesNotExistException, ConflictException, NoLoggedException, \
         InvalidEntityException
 from people.entities import Person
 
@@ -55,7 +55,7 @@ class RegisterUsernameAndEmailInteractor(object):
 
     def execute(self):
         if self.logged_person_id is None:
-            raise UnauthorizedException()
+            raise NoLoggedException()
 
         person = self.person_repo.get_person(id=self.logged_person_id)
         if person.is_email_confirmed:
@@ -86,7 +86,7 @@ class ConfirmEmailInteractor(object):
 
     def execute(self):
         if self.logged_person_id is None:
-            raise UnauthorizedException()
+            raise NoLoggedException()
 
         try:
             person_id = self.confirmation_token_repo.get_person_id(confirmation_token=self.confirmation_token)

@@ -1,5 +1,6 @@
+from people.factories import create_person_repo
 from .repositories import ExperienceRepo
-from .validators import ExperienceValidator
+from .validators import ExperienceValidator, PermissionsValidator
 from .interactors import GetAllExperiencesInteractor, CreateNewExperienceInteractor, \
         ModifyExperienceInteractor
 from .views import ExperiencesView, ExperienceView
@@ -13,17 +14,25 @@ def create_experience_validator():
     return ExperienceValidator()
 
 
+def create_permissions_validator():
+    return PermissionsValidator(experience_repo=create_experience_repo(),
+                                person_repo=create_person_repo())
+
+
 def create_get_all_experiences_interactor():
-    return GetAllExperiencesInteractor(create_experience_repo())
+    return GetAllExperiencesInteractor(experience_repo=create_experience_repo(),
+                                       permissions_validator=create_permissions_validator())
 
 
 def create_create_new_experience_interactor():
-    return CreateNewExperienceInteractor(create_experience_repo(), create_experience_validator())
+    return CreateNewExperienceInteractor(create_experience_repo(), create_experience_validator(),
+                                         create_permissions_validator())
 
 
 def create_modify_experience_interactor():
     return ModifyExperienceInteractor(experience_repo=create_experience_repo(),
-                                      experience_validator=create_experience_validator())
+                                      experience_validator=create_experience_validator(),
+                                      permissions_validator=create_permissions_validator())
 
 
 def create_experiences_view(request, *args, **kwargs):
