@@ -11,9 +11,41 @@ from people.models import ORMPerson, ORMAuthToken
 
 class ExperiencesTestCase(TestCase):
 
-    def test_experiences_returns_all_experiences(self):
+    def test_mine_experiences_returns_my_experiences(self):
         orm_person = ORMPerson.objects.create(username='usr')
         orm_auth_token = ORMAuthToken.objects.create(person=orm_person)
+        exp_a = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
+        exp_b = ORMExperience.objects.create(title='Exp b', description='other description', author=orm_person)
+
+        client = Client()
+        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        response = client.get("{}?mine=true".format(reverse('experiences')), **auth_headers)
+
+        assert response.status_code == 200
+        body = json.loads(response.content)
+        assert body == [
+                           {
+                               'id': str(exp_b.id),
+                               'title': 'Exp b',
+                               'description': 'other description',
+                               'picture': None,
+                               'author_id': orm_person.id,
+                               'author_username': orm_person.username
+                           },
+                           {
+                               'id': str(exp_a.id),
+                               'title': 'Exp a',
+                               'description': 'some description',
+                               'picture': None,
+                               'author_id': orm_person.id,
+                               'author_username': orm_person.username
+                           },
+                       ]
+
+    def test_not_mine_experiences_returns_others_experiences(self):
+        orm_person = ORMPerson.objects.create(username='usr')
+        orm_person_b = ORMPerson.objects.create(username='nme')
+        orm_auth_token = ORMAuthToken.objects.create(person=orm_person_b)
         exp_a = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
         exp_b = ORMExperience.objects.create(title='Exp b', description='other description', author=orm_person)
 

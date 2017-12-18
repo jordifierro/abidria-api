@@ -12,6 +12,7 @@ class TestGetAllExperiences(object):
     def test_returns_repo_response(self):
         TestGetAllExperiences.ScenarioMaker() \
                 .given_a_logged_person_id() \
+                .given_mine_true() \
                 .given_a_permission_validator_that_returns_true() \
                 .given_an_experience() \
                 .given_another_experience() \
@@ -33,9 +34,14 @@ class TestGetAllExperiences(object):
             self.logged_person_id = None
             self.experience_repo = None
             self.permissions_validator = None
+            self.mine = None
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '0'
+            return self
+
+        def given_mine_true(self):
+            self.mine = True
             return self
 
         def given_an_experience(self):
@@ -67,7 +73,7 @@ class TestGetAllExperiences(object):
             try:
                 self.response = GetAllExperiencesInteractor(experience_repo=self.experience_repo,
                                                             permissions_validator=self.permissions_validator) \
-                        .set_params(logged_person_id=self.logged_person_id).execute()
+                        .set_params(mine=self.mine, logged_person_id=self.logged_person_id).execute()
             except Exception as e:
                 self.error = e
             return self
@@ -75,6 +81,10 @@ class TestGetAllExperiences(object):
         def then_result_should_be_both_experiences(self):
             assert self.response == [self.experience_a, self.experience_b]
             return self
+
+        def then_should_call_get_all_experience_with_logged_person_id_and_mine_params(self):
+            self.experience_repo.get_all_experiences.assert_called_once_with(mine=self.mine,
+                                                                             logged_person_id=self.logged_person_id)
 
         def then_validate_permissions_should_be_called_with_logged_person_id(self):
             self.permissions_validator.validate_permissions \

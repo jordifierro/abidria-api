@@ -21,7 +21,10 @@ For the moment, the api is only consumed by
 
 ## API Endpoints
 
-### `GET /experiences/`
+### `GET /experiences/?mine=false`
+_Request:_
+You can specify `mine` filter param to fetch only experiences you have created.
+Otherwise, will return all experiences but yours.
 
 _Response:_
 ```json

@@ -21,8 +21,13 @@ class ExperienceRepo(object):
                           author_id=db_experience.author.id,
                           author_username=db_experience.author.username)
 
-    def get_all_experiences(self):
-        db_experiences = ORMExperience.objects.select_related('author').all()
+    def get_all_experiences(self, logged_person_id, mine):
+        all_db_experiences = ORMExperience.objects.select_related('author').all()
+        if mine:
+            db_experiences = all_db_experiences.filter(author_id=logged_person_id)
+        else:
+            db_experiences = all_db_experiences.exclude(author_id=logged_person_id)
+
         experiences = []
         for db_experience in db_experiences:
             experiences.append(self._decode_db_experience(db_experience))

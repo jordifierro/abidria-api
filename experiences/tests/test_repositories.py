@@ -9,13 +9,29 @@ from people.models import ORMPerson
 
 class ExperienceRepoTestCase(TestCase):
 
-    def test_get_all_experiences_returns_all_experiences(self):
+    def test_get_all_experiences_with_mine_false(self):
         ExperienceRepoTestCase._ScenarioMaker() \
                 .given_a_person_in_db() \
-                .given_an_experience_in_db() \
-                .given_another_experience_in_db() \
-                .when_get_all_experiences() \
-                .then_repo_should_return_both_experiences()
+                .given_an_experience_created_by_first_person_in_db() \
+                .given_another_experience_created_by_first_person_in_db() \
+                .given_another_person_in_db() \
+                .given_an_experience_created_by_second_person_in_db() \
+                .given_another_experience_created_by_second_person_in_db() \
+                .given_logged_person_id_is_first_person_id() \
+                .when_get_all_experiences(mine=False) \
+                .then_repo_should_return_just_second_two_experience()
+
+    def test_get_all_experiences_with_mine_true(self):
+        ExperienceRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
+                .given_an_experience_created_by_first_person_in_db() \
+                .given_another_experience_created_by_first_person_in_db() \
+                .given_another_person_in_db() \
+                .given_an_experience_created_by_second_person_in_db() \
+                .given_another_experience_created_by_second_person_in_db() \
+                .given_logged_person_id_is_first_person_id() \
+                .when_get_all_experiences(mine=True) \
+                .then_repo_should_return_just_first_two_experience()
 
     def test_get_experience_returns_experience(self):
         ExperienceRepoTestCase._ScenarioMaker() \
@@ -62,6 +78,44 @@ class ExperienceRepoTestCase(TestCase):
             self._orm_person = ORMPerson.objects.create(username='usr')
             return self
 
+        def given_another_person_in_db(self):
+            self._second_orm_person = ORMPerson.objects.create(username='nme')
+            return self
+
+        def given_an_experience_created_by_first_person_in_db(self):
+            self._orm_experience_a = ORMExperience.objects.create(title='Exp a', description='some description',
+                                                                  author=self._orm_person)
+            self._experience_a = Experience(id=self._orm_experience_a.id, title='Exp a', description='some description',
+                                            author_id=self._orm_person.id, author_username=self._orm_person.username)
+            return self
+
+        def given_another_experience_created_by_first_person_in_db(self):
+            self._orm_experience_b = ORMExperience.objects.create(title='Exp b', description='some description',
+                                                                  author=self._orm_person)
+            self._experience_b = Experience(id=self._orm_experience_b.id, title='Exp b', description='some description',
+                                            author_id=self._orm_person.id, author_username=self._orm_person.username)
+            return self
+
+        def given_an_experience_created_by_second_person_in_db(self):
+            self._orm_experience_c = ORMExperience.objects.create(title='Exp c', description='description',
+                                                                  author=self._second_orm_person)
+            self._experience_c = Experience(id=self._orm_experience_c.id, title='Exp c', description='description',
+                                            author_id=self._second_orm_person.id,
+                                            author_username=self._second_orm_person.username)
+            return self
+
+        def given_another_experience_created_by_second_person_in_db(self):
+            self._orm_experience_d = ORMExperience.objects.create(title='Exp d', description='description',
+                                                                  author=self._second_orm_person)
+            self._experience_d = Experience(id=self._orm_experience_d.id, title='Exp d', description='description',
+                                            author_id=self._second_orm_person.id,
+                                            author_username=self._second_orm_person.username)
+            return self
+
+        def given_logged_person_id_is_first_person_id(self):
+            self.logged_person_id = self._orm_person.id
+            return self
+
         def given_an_experience_to_create(self):
             self._experience_to_create = Experience(id="", title='Exp a', description='some description',
                                                     author_id=self._orm_person.id)
@@ -88,8 +142,8 @@ class ExperienceRepoTestCase(TestCase):
                                             author_id=self._orm_person.id, author_username=self._orm_person.username)
             return self
 
-        def when_get_all_experiences(self):
-            self._result = ExperienceRepo().get_all_experiences()
+        def when_get_all_experiences(self, mine):
+            self._result = ExperienceRepo().get_all_experiences(logged_person_id=self.logged_person_id, mine=mine)
             return self
 
         def when_get_experience_with_its_id(self):
@@ -111,8 +165,12 @@ class ExperienceRepoTestCase(TestCase):
             self._result = ExperienceRepo().update_experience(self._updated_experience)
             return self
 
-        def then_repo_should_return_both_experiences(self):
-            assert self._result == [self._experience_a, self._experience_b]
+        def then_repo_should_return_just_first_two_experience(self):
+            assert self._result == [self._experience_b, self._experience_a]
+            return self
+
+        def then_repo_should_return_just_second_two_experience(self):
+            assert self._result == [self._experience_c, self._experience_d]
             return self
 
         def then_repo_should_return_experience(self):

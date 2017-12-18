@@ -9,8 +9,10 @@ class ExperiencesView(object):
         self.create_new_experience_interactor = create_new_experience_interactor
 
     @serialize_exceptions
-    def get(self, logged_person_id=None):
-        experiences = self.get_all_experiences_interactor.set_params(logged_person_id=logged_person_id).execute()
+    def get(self, mine=False, logged_person_id=None):
+        mine = mine == 'true'
+        experiences = self.get_all_experiences_interactor.set_params(mine=mine,
+                                                                     logged_person_id=logged_person_id).execute()
 
         body = MultipleExperiencesSerializer.serialize(experiences)
         status = 200
