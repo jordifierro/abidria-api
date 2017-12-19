@@ -54,7 +54,7 @@ class UploadScenePictureView(object):
         self.upload_scene_picture_interactor = upload_scene_picture_interactor
 
     @serialize_exceptions
-    def post(self, scene_id, picture, logged_person_id):
+    def post(self, picture, scene_id, logged_person_id):
         scene = self.upload_scene_picture_interactor.set_params(scene_id=scene_id, picture=picture,
                                                                 logged_person_id=logged_person_id).execute()
         body = SceneSerializer.serialize(scene)

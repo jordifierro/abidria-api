@@ -48,7 +48,7 @@ class UploadExperiencePictureView(object):
         self.upload_experience_picture_interactor = upload_experience_picture_interactor
 
     @serialize_exceptions
-    def post(self, experience_id, picture, logged_person_id):
+    def post(self, picture, experience_id, logged_person_id):
         experience = self.upload_experience_picture_interactor.set_params(experience_id=experience_id, picture=picture,
                                                                           logged_person_id=logged_person_id).execute()
         body = ExperienceSerializer.serialize(experience)

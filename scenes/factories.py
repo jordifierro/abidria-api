@@ -39,14 +39,14 @@ def create_upload_scene_picture_interactor():
                                         permissions_validator=create_scene_permissions_validator())
 
 
-def create_scenes_view(request, *args, **kwargs):
+def create_scenes_view(request, **kwargs):
     return ScenesView(get_scenes_from_experience_interactor=create_get_scenes_from_experience_interactor(),
                       create_new_scene_interactor=create_create_new_scene_interactor())
 
 
-def create_scene_view(request, *args, **kwargs):
+def create_scene_view(request, **kwargs):
     return SceneView(modify_scene_interactor=create_modify_scene_interactor())
 
 
-def create_upload_scene_picture_view(request, *args, **kwargs):
+def create_upload_scene_picture_view(request, **kwargs):
     return UploadScenePictureView(upload_scene_picture_interactor=create_upload_scene_picture_interactor())

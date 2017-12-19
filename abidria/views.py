@@ -18,7 +18,7 @@ class ViewWrapper(View):
         logged_person_id = self.authenticate(request, **kwargs)
         kwargs.update({'logged_person_id': logged_person_id})
 
-        body, status = self.view_creator_func(request, *args, **kwargs).get(**kwargs)
+        body, status = self.view_creator_func(request, **kwargs).get(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
     def post(self, request, *args, **kwargs):
@@ -29,9 +29,9 @@ class ViewWrapper(View):
 
         if self.upload_picture_name is not None:
             picture = request.FILES[self.upload_picture_name]
-            kwargs.update({'picture', picture})
-
-        body, status = self.view_creator_func(request, *args, **kwargs).post(**kwargs)
+            body, status = self.view_creator_func(request, **kwargs).post(picture, **kwargs)
+        else:
+            body, status = self.view_creator_func(request, **kwargs).post(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
     def patch(self, request, *args, **kwargs):
@@ -43,9 +43,9 @@ class ViewWrapper(View):
 
         if self.upload_picture_name is not None:
             picture = request.FILES[self.upload_picture_name]
-            kwargs.update({'picture', picture})
-
-        body, status = self.view_creator_func(request, *args, **kwargs).patch(**kwargs)
+            body, status = self.view_creator_func(request, **kwargs).patch(picture, **kwargs)
+        else:
+            body, status = self.view_creator_func(request, **kwargs).patch(**kwargs)
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
     def authenticate(self, request, **kwargs):

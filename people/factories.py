@@ -77,14 +77,14 @@ def create_confirm_email_interactor():
                                   person_repo=create_person_repo())
 
 
-def create_people_view(request, *args, **kwargs):
+def create_people_view(request, **kwargs):
     return PeopleView(
             create_guest_person_and_return_auth_token_interactor=create_guest_person_and_return_auth_token_interactor())
 
 
-def create_person_view(request, *args, **kwargs):
+def create_person_view(request, **kwargs):
     return PersonView(register_username_and_email_interactor=create_register_username_and_email_interactor(request))
 
 
-def create_email_confirmation_view(request, *args, **kwargs):
+def create_email_confirmation_view(request, **kwargs):
     return EmailConfirmationView(confirm_email_interactor=create_confirm_email_interactor())

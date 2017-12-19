@@ -40,14 +40,15 @@ def create_upload_experience_picture_interactor():
                                              permissions_validator=create_experience_permissions_validator())
 
 
-def create_experiences_view(request, *args, **kwargs):
+def create_experiences_view(request, **kwargs):
     return ExperiencesView(get_all_experiences_interactor=create_get_all_experiences_interactor(),
                            create_new_experience_interactor=create_create_new_experience_interactor())
 
 
-def create_experience_view(request, *args, **kwargs):
+def create_experience_view(request, **kwargs):
     return ExperienceView(modify_experience_interactor=create_modify_experience_interactor())
 
 
-def create_upload_experience_picture_view(request, *args, **kwargs):
-    return UploadExperiencePictureView(upload_experience_interactor=create_upload_experience_picture_interactor())
+def create_upload_experience_picture_view(request, **kwargs):
+    return UploadExperiencePictureView(
+            upload_experience_picture_interactor=create_upload_experience_picture_interactor())
