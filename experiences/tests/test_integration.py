@@ -18,7 +18,7 @@ class ExperiencesTestCase(TestCase):
         exp_b = ORMExperience.objects.create(title='Exp b', description='other description', author=orm_person)
 
         client = Client()
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         response = client.get("{}?mine=true".format(reverse('experiences')), **auth_headers)
 
         assert response.status_code == 200
@@ -50,7 +50,7 @@ class ExperiencesTestCase(TestCase):
         exp_b = ORMExperience.objects.create(title='Exp b', description='other description', author=orm_person)
 
         client = Client()
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         response = client.get(reverse('experiences'), **auth_headers)
 
         assert response.status_code == 200
@@ -80,7 +80,7 @@ class CreateExperienceTestCase(TestCase):
     def test_create_experience_creates_and_returns_experience(self):
         orm_person = ORMPerson.objects.create(username='usr.nm', is_email_confirmed=True)
         orm_auth_token = ORMAuthToken.objects.create(person_id=orm_person.id)
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         client = Client()
         response = client.post(reverse('experiences'),
                                {'title': 'Experience title', 'description': 'Some description'},
@@ -102,7 +102,7 @@ class CreateExperienceTestCase(TestCase):
     def test_wrong_attributes_doesnt_create_and_returns_error(self):
         orm_person = ORMPerson.objects.create(is_email_confirmed=True)
         orm_auth_token = ORMAuthToken.objects.create(person_id=orm_person.id)
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         client = Client()
         response = client.post(reverse('experiences'), {'title': '', 'description': 'Some description'}, **auth_headers)
 
@@ -122,7 +122,7 @@ class ModifyExperienceTestCase(TestCase):
     def test_modifies_and_returns_experience(self):
         orm_person = ORMPerson.objects.create(username='usr.nm')
         orm_auth_token = ORMAuthToken.objects.create(person_id=orm_person.id)
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         orm_experience = ORMExperience.objects.create(title='T', description='', author=orm_person)
 
         client = Client()
@@ -148,7 +148,7 @@ class ModifyExperienceTestCase(TestCase):
         orm_auth_token = ORMAuthToken.objects.create(person_id=orm_person.id)
         orm_experience = ORMExperience.objects.create(title='T', description='', author=orm_person)
 
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         client = Client()
         response = client.patch(reverse('experience', args=[orm_experience.id]),
                                 urllib.parse.urlencode({"title": "", "description": "Some description"}),

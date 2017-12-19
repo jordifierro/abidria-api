@@ -49,7 +49,7 @@ class ViewWrapper(View):
         return HttpResponse(json.dumps(body), status=status, content_type='application/json')
 
     def authenticate(self, request, **kwargs):
-        authentication_header = request.META.get('Authorization')
+        authentication_header = request.META.get('HTTP_AUTHORIZATION')
         if authentication_header is None:
             return None
 

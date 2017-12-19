@@ -152,7 +152,7 @@ class ModifyPersonTestCase(TestCase):
 
         def when_that_person_call_patch_people_me_with_that_params(self):
             client = Client()
-            auth_headers = {'Authorization': 'Token {}'.format(self.orm_auth_token.access_token), }
+            auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.orm_auth_token.access_token), }
             self.response = client.patch(reverse('person'),
                                          urllib.parse.urlencode({'username': self.username, 'email': self.email}),
                                          content_type='application/x-www-form-urlencoded',
@@ -276,7 +276,7 @@ class PostEmailConfirmationTestCase(TestCase):
 
         def when_post_email_confirmation(self):
             client = Client()
-            auth_headers = {'Authorization': 'Token {}'.format(self.orm_auth_token.access_token), }
+            auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.orm_auth_token.access_token), }
             self.response = client.post(reverse('email-confirmation'),
                                         urllib.parse.urlencode({'confirmation_token': self.confirmation_token}),
                                         content_type='application/x-www-form-urlencoded',

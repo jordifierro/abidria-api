@@ -23,7 +23,7 @@ class ExperienceDetailTestCase(TestCase):
                                           latitude=Decimal('5.6'), longitude=Decimal('-7.8'), experience=exp_c)
 
         client = Client()
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         response = client.get(reverse('scenes'), {'experience': str(exp_c.id)}, **auth_headers)
 
         assert response.status_code == 200
@@ -58,7 +58,7 @@ class CreateSceneTestCase(TestCase):
         experience = ORMExperience.objects.create(title='Exp', author=orm_person)
 
         client = Client()
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         response = client.post(reverse('scenes'), {'title': 'Scene title',
                                                    'description': 'Some description',
                                                    'latitude': 0.3,
@@ -87,7 +87,7 @@ class CreateSceneTestCase(TestCase):
         experience = ORMExperience.objects.create(title='Exp', author=orm_person)
 
         client = Client()
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         response = client.post(reverse('scenes'), {'title': '',
                                                    'description': 'Some description',
                                                    'latitude': 0.3,
@@ -119,7 +119,7 @@ class ModifySceneTestCase(TestCase):
                                             latitude=1, longitude=2, experience_id=experience.id)
 
         client = Client()
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         response = client.patch(reverse('scene', args=[orm_scene.id]),
                                 urllib.parse.urlencode({"description": "New description",
                                                         "latitude": 0.3, "longitude": 1.2}),
@@ -149,7 +149,7 @@ class ModifySceneTestCase(TestCase):
                                             latitude=1, longitude=2, experience_id=experience.id)
 
         client = Client()
-        auth_headers = {'Authorization': 'Token {}'.format(orm_auth_token.access_token), }
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
         response = client.patch(reverse('scene', args=[orm_scene.id]),
                                 urllib.parse.urlencode({"title": "",
                                                         "description": "Some description",
