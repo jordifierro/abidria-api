@@ -39,9 +39,9 @@ class EmailConfirmationView(object):
 
     @serialize_exceptions
     def post(self, logged_person_id, confirmation_token):
-        self.confirm_email_interactor.set_params(logged_person_id=logged_person_id,
-                                                 confirmation_token=confirmation_token).execute()
+        updated_person = self.confirm_email_interactor.set_params(logged_person_id=logged_person_id,
+                                                                  confirmation_token=confirmation_token).execute()
 
-        body = ''
-        status = 204
+        body = PersonSerializer.serialize(updated_person)
+        status = 200
         return body, status

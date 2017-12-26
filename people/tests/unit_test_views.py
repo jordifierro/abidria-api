@@ -127,10 +127,12 @@ class TestEmailConfirmationView(object):
         TestEmailConfirmationView._ScenarioMaker() \
                 .given_a_logged_person_id() \
                 .given_a_confirmation_token() \
+                .given_a_person() \
+                .given_an_interactor_that_returns_that_person() \
                 .when_post_is_called_with_that_params() \
                 .then_interactor_receives_that_params() \
-                .then_response_status_is_204() \
-                .then_response_body_should_be_empty()
+                .then_response_status_is_200() \
+                .then_response_body_should_be_that_person_serialized()
 
     class _ScenarioMaker(object):
 
@@ -149,6 +151,14 @@ class TestEmailConfirmationView(object):
             self.confirmation_token = 'ABC'
             return self
 
+        def given_a_person(self):
+            self.person = Person(id='8', is_registered=True, username='a', email='b', is_email_confirmed=False)
+            return self
+
+        def given_an_interactor_that_returns_that_person(self):
+            self.interactor_mock.execute.return_value = self.person
+            return self
+
         def when_post_is_called_with_that_params(self):
             view = EmailConfirmationView(confirm_email_interactor=self.interactor_mock)
             self.body, self.status = view.post(logged_person_id=self.logged_person_id,
@@ -160,10 +170,10 @@ class TestEmailConfirmationView(object):
                                                                     confirmation_token=self.confirmation_token)
             return self
 
-        def then_response_status_is_204(self):
-            assert self.status == 204
+        def then_response_status_is_200(self):
+            assert self.status == 200
             return self
 
-        def then_response_body_should_be_empty(self):
-            assert self.body == ''
+        def then_response_body_should_be_that_person_serialized(self):
+            assert self.body == PersonSerializer.serialize(self.person)
             return self

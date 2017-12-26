@@ -375,7 +375,15 @@ _(http headers)_
 
 _Response:_
 
-_204_
+_200_
+```json
+{
+    "is_registered": true,
+    "username": "user.name",
+    "email": "email@example.com",
+    "is_email_confirmed": true
+}
+```
 
 
 ## Documentation

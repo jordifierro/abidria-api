@@ -234,7 +234,7 @@ class PostEmailConfirmationTestCase(TestCase):
                 .given_an_auth_token_for_that_person() \
                 .given_a_confirmation_token_for_that_person() \
                 .when_post_email_confirmation() \
-                .then_response_should_be_204_empty_body() \
+                .then_response_should_be_200_and_person() \
                 .then_person_should_have_is_email_confirmed_true() \
                 .then_confirmation_token_should_be_removed()
 
@@ -283,9 +283,15 @@ class PostEmailConfirmationTestCase(TestCase):
                                         **auth_headers)
             return self
 
-        def then_response_should_be_204_empty_body(self):
+        def then_response_should_be_200_and_person(self):
             self.response.status_code == 204
-            self.response.content == ''
+            body = json.loads(self.response.content)
+            assert body == {
+                    'is_registered': True,
+                    'username': 'usr',
+                    'email': 'e@m.c',
+                    'is_email_confirmed': True
+                    }
             return self
 
         def then_person_should_have_is_email_confirmed_true(self):
