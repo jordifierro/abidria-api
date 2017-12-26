@@ -1,6 +1,6 @@
 from abidria.entities import Picture
 from abidria.exceptions import EntityDoesNotExistException
-from .models import ORMExperience
+from .models import ORMExperience, ORMSave
 from .entities import Experience
 
 
@@ -21,12 +21,17 @@ class ExperienceRepo(object):
                           author_id=db_experience.author.id,
                           author_username=db_experience.author.username)
 
-    def get_all_experiences(self, logged_person_id, mine):
-        all_db_experiences = ORMExperience.objects.select_related('author').all()
-        if mine:
-            db_experiences = all_db_experiences.filter(author_id=logged_person_id)
+    def get_all_experiences(self, logged_person_id, mine, saved=False):
+        if saved:
+            db_experiences = \
+                [save.experience for save
+                    in ORMSave.objects.select_related('experience').filter(person_id=logged_person_id)]
         else:
-            db_experiences = all_db_experiences.exclude(author_id=logged_person_id)
+            all_db_experiences = ORMExperience.objects.select_related('author').all()
+            if mine:
+                db_experiences = all_db_experiences.filter(author_id=logged_person_id)
+            else:
+                db_experiences = all_db_experiences.exclude(author_id=logged_person_id)
 
         experiences = []
         for db_experience in db_experiences:
@@ -60,3 +65,12 @@ class ExperienceRepo(object):
 
         orm_experience.save()
         return self._decode_db_experience(orm_experience)
+
+    def save_experience(self, person_id, experience_id):
+        if not ORMSave.objects.filter(person_id=person_id, experience_id=experience_id).exists():
+            ORMSave.objects.create(person_id=person_id, experience_id=experience_id)
+        return True
+
+    def unsave_experience(self, person_id, experience_id):
+        ORMSave.objects.filter(person_id=person_id, experience_id=experience_id).delete()
+        return True

@@ -25,3 +25,17 @@ class ORMExperience(models.Model):
 
 models.signals.post_delete.connect(pre_delete_delete_callback, sender=ORMExperience)
 models.signals.pre_save.connect(pre_save_delete_callback, sender=ORMExperience)
+
+
+class ORMSave(models.Model):
+    person = models.ForeignKey(ORMPerson, on_delete=models.CASCADE)
+    experience = models.ForeignKey(ORMExperience, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Save'
+        verbose_name_plural = 'Saves'
+
+    def __str__(self):
+        return "{} - {}".format(str(self.person), str(self.experience))
