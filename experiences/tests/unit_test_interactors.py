@@ -13,6 +13,7 @@ class TestGetAllExperiences(object):
         TestGetAllExperiences.ScenarioMaker() \
                 .given_a_logged_person_id() \
                 .given_mine_true() \
+                .given_saved_true() \
                 .given_a_permission_validator_that_returns_true() \
                 .given_an_experience() \
                 .given_another_experience() \
@@ -35,6 +36,7 @@ class TestGetAllExperiences(object):
             self.experience_repo = None
             self.permissions_validator = None
             self.mine = None
+            self.saved = None
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '0'
@@ -42,6 +44,10 @@ class TestGetAllExperiences(object):
 
         def given_mine_true(self):
             self.mine = True
+            return self
+
+        def given_saved_true(self):
+            self.saved = True
             return self
 
         def given_an_experience(self):
@@ -73,7 +79,7 @@ class TestGetAllExperiences(object):
             try:
                 self.response = GetAllExperiencesInteractor(experience_repo=self.experience_repo,
                                                             permissions_validator=self.permissions_validator) \
-                        .set_params(mine=self.mine, logged_person_id=self.logged_person_id).execute()
+                        .set_params(mine=self.mine, saved=self.saved, logged_person_id=self.logged_person_id).execute()
             except Exception as e:
                 self.error = e
             return self
@@ -83,7 +89,7 @@ class TestGetAllExperiences(object):
             return self
 
         def then_should_call_get_all_experience_with_logged_person_id_and_mine_params(self):
-            self.experience_repo.get_all_experiences.assert_called_once_with(mine=self.mine,
+            self.experience_repo.get_all_experiences.assert_called_once_with(mine=self.mine, saved=self.saved,
                                                                              logged_person_id=self.logged_person_id)
 
         def then_validate_permissions_should_be_called_with_logged_person_id(self):

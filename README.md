@@ -16,15 +16,18 @@ Later, she can register specifying just username and email.
 Posterior email confirmation is required to create content.
 There is no password, so login will be implemented using email token system.
 
+A `person` can `save` their favourite `experiences`.
+
 For the moment, the api is only consumed by
 [abidria-android](https://github.com/jordifierro/abidria-android) project.
 
 ## API Endpoints
 
-### `GET /experiences/?mine=false`
+### `GET /experiences`
 _Request:_
 You can specify `mine` filter param to fetch only experiences you have created.
-Otherwise, will return all experiences but yours.
+You can also specify `saved` filter param to fetch only experiences you have saved.
+Both params are set to `false` by default, you can ignore them.
 
 _Response:_
 ```json
@@ -126,6 +129,24 @@ _422_
     }
 }
 ```
+
+
+### `POST /experiences/<experience_id>/save/`
+
+Endpoint to save experience as favourite.
+
+_Response:_
+
+_201_
+
+### `DELETE /experiences/<experience_id>/save/`
+
+Endpoint to unsave experience as favourite.
+
+_Response:_
+
+_204_
+
 
 ### `POST /experiences/<experience_id>/picture/`
 

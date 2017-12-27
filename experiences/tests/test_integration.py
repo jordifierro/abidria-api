@@ -74,6 +74,31 @@ class ExperiencesTestCase(TestCase):
                            },
                        ]
 
+    def test_saved_experiences_returns_only_saved_scenes(self):
+        orm_person = ORMPerson.objects.create(username='usr')
+        orm_person_b = ORMPerson.objects.create(username='nme')
+        orm_auth_token = ORMAuthToken.objects.create(person=orm_person)
+        exp_a = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person_b)
+        ORMExperience.objects.create(title='Exp b', description='other description', author=orm_person_b)
+        ORMSave.objects.create(person=orm_person, experience=exp_a)
+
+        client = Client()
+        auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(orm_auth_token.access_token), }
+        response = client.get("{}?saved=true".format(reverse('experiences')), **auth_headers)
+
+        assert response.status_code == 200
+        body = json.loads(response.content)
+        assert body == [
+                           {
+                               'id': str(exp_a.id),
+                               'title': 'Exp a',
+                               'description': 'some description',
+                               'picture': None,
+                               'author_id': orm_person_b.id,
+                               'author_username': orm_person_b.username
+                           }
+                       ]
+
 
 class CreateExperienceTestCase(TestCase):
 

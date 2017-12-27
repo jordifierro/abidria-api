@@ -9,15 +9,17 @@ class GetAllExperiencesInteractor(object):
         self.experience_repo = experience_repo
         self.permissions_validator = permissions_validator
 
-    def set_params(self, mine, logged_person_id):
+    def set_params(self, mine, saved, logged_person_id):
         self.mine = mine
+        self.saved = saved
         self.logged_person_id = logged_person_id
         return self
 
     def execute(self):
         self.permissions_validator.validate_permissions(logged_person_id=self.logged_person_id)
 
-        return self.experience_repo.get_all_experiences(mine=self.mine, logged_person_id=self.logged_person_id)
+        return self.experience_repo.get_all_experiences(mine=self.mine, saved=self.saved,
+                                                        logged_person_id=self.logged_person_id)
 
 
 class CreateNewExperienceInteractor(object):

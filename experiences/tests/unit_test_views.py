@@ -22,9 +22,9 @@ class TestExperiencesView(object):
         interactor_mock.execute.return_value = [experience_a, experience_b]
 
         body, status = ExperiencesView(get_all_experiences_interactor=interactor_mock).get(logged_person_id='4',
-                                                                                           mine='true')
+                                                                                           mine='true', saved='true')
 
-        interactor_mock.set_params.assert_called_once_with(logged_person_id='4', mine=True)
+        interactor_mock.set_params.assert_called_once_with(logged_person_id='4', mine=True, saved=True)
         assert status == 200
         assert body == [
                            {
