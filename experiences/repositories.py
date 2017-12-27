@@ -31,7 +31,9 @@ class ExperienceRepo(object):
             if mine:
                 db_experiences = all_db_experiences.filter(author_id=logged_person_id)
             else:
-                db_experiences = all_db_experiences.exclude(author_id=logged_person_id)
+                saved_experience_ids = ORMSave.objects.values('experience_id').all()
+                db_experiences = all_db_experiences.exclude(author_id=logged_person_id) \
+                                                   .exclude(id__in=saved_experience_ids)
 
         experiences = []
         for db_experience in db_experiences:

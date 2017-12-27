@@ -17,6 +17,7 @@ class ExperienceRepoTestCase(TestCase):
                 .given_another_person_in_db() \
                 .given_an_experience_created_by_second_person_in_db() \
                 .given_another_experience_created_by_second_person_in_db() \
+                .given_a_third_experience_created_by_second_person_and_saved_by_first() \
                 .given_logged_person_id_is_first_person_id() \
                 .when_get_all_experiences(mine=False) \
                 .then_repo_should_return_just_second_two_experience()
@@ -149,6 +150,15 @@ class ExperienceRepoTestCase(TestCase):
             self.experience_d = Experience(id=self.orm_experience_d.id, title='Exp d', description='description',
                                            author_id=self.second_orm_person.id,
                                            author_username=self.second_orm_person.username)
+            return self
+
+        def given_a_third_experience_created_by_second_person_and_saved_by_first(self):
+            self.orm_experience_e = ORMExperience.objects.create(title='Exp e', description='description',
+                                                                 author=self.second_orm_person)
+            self.experience_e = Experience(id=self.orm_experience_e.id, title='Exp e', description='description',
+                                           author_id=self.second_orm_person.id,
+                                           author_username=self.second_orm_person.username)
+            ORMSave.objects.create(person=self.orm_person, experience=self.orm_experience_e)
             return self
 
         def given_logged_person_id_is_first_person_id(self):
