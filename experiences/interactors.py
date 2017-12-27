@@ -1,5 +1,6 @@
 from enum import Enum
 
+from abidria.exceptions import ConflictException
 from experiences.entities import Experience
 
 
@@ -108,6 +109,11 @@ class SaveUnsaveExperienceInteractor(object):
 
     def execute(self):
         self.permissions_validator.validate_permissions(logged_person_id=self.logged_person_id)
+
+        experience = self.experience_repo.get_experience(id=self.experience_id)
+        if experience.author_id == self.logged_person_id:
+            raise ConflictException(source='experience', code='self_save',
+                                    message='You cannot save your own experiences')
 
         if self.action is SaveUnsaveExperienceInteractor.Action.SAVE:
             self.experience_repo.save_experience(person_id=self.logged_person_id, experience_id=self.experience_id)
