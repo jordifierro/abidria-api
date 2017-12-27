@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core.urlresolvers import reverse
 
-from experiences.models import ORMExperience
+from experiences.models import ORMExperience, ORMSave
 from people.models import ORMPerson, ORMAuthToken
 
 
@@ -163,3 +163,67 @@ class ModifyExperienceTestCase(TestCase):
                                         'message': 'Title must be between 1 and 30 chars'
                                     }
                        }
+
+
+class SaveUnsaveExperienceTestCase(TestCase):
+
+    def test_save_post_returns_201_and_creates_save_db_entry(self):
+        SaveUnsaveExperienceTestCase.ScenarioMaker() \
+                .given_a_person_with_auth_token() \
+                .given_an_experience() \
+                .when_post_on_experience_save() \
+                .then_save_entry_should_be_created_on_db() \
+                .then_response_should_be_201()
+
+    def test_save_delete_returns_204_and_removes_save_db_entry(self):
+        SaveUnsaveExperienceTestCase.ScenarioMaker() \
+                .given_a_person_with_auth_token() \
+                .given_an_experience() \
+                .given_a_save_for_that_person_and_experience() \
+                .when_delete_on_experience_save() \
+                .then_save_entry_should_be_removed_from_db() \
+                .then_response_should_be_204()
+
+    class ScenarioMaker(object):
+
+        def given_a_person_with_auth_token(self):
+            self.orm_person = ORMPerson.objects.create()
+            self.orm_auth_token = ORMAuthToken.objects.create(person_id=self.orm_person.id)
+            return self
+
+        def given_an_experience(self):
+            orm_author = ORMPerson.objects.create()
+            self.orm_experience = ORMExperience.objects.create(title='T', description='', author=orm_author)
+            return self
+
+        def given_a_save_for_that_person_and_experience(self):
+            ORMSave.objects.create(person=self.orm_person, experience=self.orm_experience)
+            return self
+
+        def when_post_on_experience_save(self):
+            auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.orm_auth_token.access_token), }
+            client = Client()
+            self.response = client.post(reverse('experience-save', args=[self.orm_experience.id]), **auth_headers)
+            return self
+
+        def when_delete_on_experience_save(self):
+            auth_headers = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.orm_auth_token.access_token), }
+            client = Client()
+            self.response = client.delete(reverse('experience-save', args=[self.orm_experience.id]), **auth_headers)
+            return self
+
+        def then_save_entry_should_be_created_on_db(self):
+            assert ORMSave.objects.filter(person=self.orm_person, experience=self.orm_experience).exists()
+            return self
+
+        def then_save_entry_should_be_removed_from_db(self):
+            assert not ORMSave.objects.filter(person=self.orm_person, experience=self.orm_experience).exists()
+            return self
+
+        def then_response_should_be_201(self):
+            assert self.response.status_code == 201
+            return self
+
+        def then_response_should_be_204(self):
+            assert self.response.status_code == 204
+            return self

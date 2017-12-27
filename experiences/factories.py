@@ -2,8 +2,8 @@ from people.factories import create_person_permissions_validator
 from .repositories import ExperienceRepo
 from .validators import ExperienceValidator, ExperiencePermissionsValidator
 from .interactors import GetAllExperiencesInteractor, CreateNewExperienceInteractor, \
-        ModifyExperienceInteractor, UploadExperiencePictureInteractor
-from .views import ExperiencesView, ExperienceView, UploadExperiencePictureView
+        ModifyExperienceInteractor, UploadExperiencePictureInteractor, SaveUnsaveExperienceInteractor
+from .views import ExperiencesView, ExperienceView, UploadExperiencePictureView, SaveExperienceView
 
 
 def create_experience_repo():
@@ -40,6 +40,11 @@ def create_upload_experience_picture_interactor():
                                              permissions_validator=create_experience_permissions_validator())
 
 
+def create_save_unsave_experience_interactor():
+    return SaveUnsaveExperienceInteractor(experience_repo=create_experience_repo(),
+                                          permissions_validator=create_person_permissions_validator())
+
+
 def create_experiences_view(request, **kwargs):
     return ExperiencesView(get_all_experiences_interactor=create_get_all_experiences_interactor(),
                            create_new_experience_interactor=create_create_new_experience_interactor())
@@ -52,3 +57,7 @@ def create_experience_view(request, **kwargs):
 def create_upload_experience_picture_view(request, **kwargs):
     return UploadExperiencePictureView(
             upload_experience_picture_interactor=create_upload_experience_picture_interactor())
+
+
+def create_save_experience_view(request, **kwargs):
+    return SaveExperienceView(save_unsave_experience_interactor=create_save_unsave_experience_interactor())

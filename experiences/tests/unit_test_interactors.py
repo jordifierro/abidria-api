@@ -4,7 +4,7 @@ from abidria.exceptions import InvalidEntityException, EntityDoesNotExistExcepti
         NoPermissionException
 from experiences.entities import Experience
 from experiences.interactors import GetAllExperiencesInteractor, CreateNewExperienceInteractor, \
-        ModifyExperienceInteractor, UploadExperiencePictureInteractor
+        ModifyExperienceInteractor, UploadExperiencePictureInteractor, SaveUnsaveExperienceInteractor
 
 
 class TestGetAllExperiences(object):
@@ -524,4 +524,108 @@ class TestUploadExperiencePictureInteractor(object):
 
         def then_should_raise_no_permissions_exception(self):
             assert type(self.error) is NoPermissionException
+            return self
+
+
+class TestSaveUnsaveExperienceInteractor(object):
+
+    def test_unauthorized_raises_no_logged_exception(self):
+        TestSaveUnsaveExperienceInteractor.ScenarioMaker() \
+                .given_a_permissions_validator_that_raises_no_permissions_exception() \
+                .given_an_experience_repo_that_returns_true_on_save() \
+                .when_interactor_is_executed(action=SaveUnsaveExperienceInteractor.Action.SAVE) \
+                .then_should_not_call_repo_save_experience() \
+                .then_should_raise_no_logged_exception()
+
+    def test_save_calls_repo_save_and_returns_true(self):
+        TestSaveUnsaveExperienceInteractor.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
+                .given_an_experience_id() \
+                .given_an_experience_repo_that_returns_true_on_save() \
+                .when_interactor_is_executed(action=SaveUnsaveExperienceInteractor.Action.SAVE) \
+                .then_should_validate_permissions() \
+                .then_should_call_repo_save_experience_with_person_id() \
+                .then_should_return_true()
+
+    def test_unsave_calls_repo_unsave_and_returns_true(self):
+        TestSaveUnsaveExperienceInteractor.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_a_permissions_validator_that_returns_true() \
+                .given_an_experience_id() \
+                .given_an_experience_repo_that_returns_true_on_unsave() \
+                .when_interactor_is_executed(action=SaveUnsaveExperienceInteractor.Action.UNSAVE) \
+                .then_should_validate_permissions() \
+                .then_should_call_repo_unsave_experience_with_person_id() \
+
+
+    class ScenarioMaker(object):
+
+        def __init__(self):
+            self.experience_id = None
+            self.logged_person_id = None
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '9'
+            return self
+
+        def given_a_permissions_validator_that_returns_true(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.return_value = True
+            return self
+
+        def given_a_permissions_validator_that_raises_no_permissions_exception(self):
+            self.permissions_validator = Mock()
+            self.permissions_validator.validate_permissions.side_effect = NoLoggedException
+            return self
+
+        def given_an_experience_repo_that_returns_true_on_save(self):
+            self.experience_repo = Mock()
+            self.experience_repo.save_experience.return_value = True
+            return self
+
+        def given_an_experience_repo_that_returns_true_on_unsave(self):
+            self.experience_repo = Mock()
+            self.experience_repo.unsave_experience.return_value = True
+            return self
+
+        def given_an_experience_id(self):
+            self.experience_id = '5'
+            return self
+
+        def when_interactor_is_executed(self, action):
+            try:
+                interactor = SaveUnsaveExperienceInteractor(experience_repo=self.experience_repo,
+                                                            permissions_validator=self.permissions_validator)
+                self.result = interactor.set_params(action=action, experience_id=self.experience_id,
+                                                    logged_person_id=self.logged_person_id).execute()
+            except Exception as e:
+                self.error = e
+            return self
+
+        def then_should_validate_permissions(self):
+            self.permissions_validator.validate_permissions \
+                    .assert_called_once_with(logged_person_id=self.logged_person_id)
+            return self
+
+        def then_should_call_repo_save_experience_with_person_id(self):
+            self.experience_repo.save_experience.assert_called_once_with(experience_id=self.experience_id,
+                                                                         person_id=self.logged_person_id)
+            return self
+
+        def then_should_call_repo_unsave_experience_with_person_id(self):
+            self.experience_repo.unsave_experience.assert_called_once_with(experience_id=self.experience_id,
+                                                                           person_id=self.logged_person_id)
+            return self
+
+        def then_should_return_true(self):
+            assert self.result is True
+            return self
+
+        def then_should_not_call_repo_save_experience(self):
+            self.experience_repo.save_experience.assert_not_called()
+            return self
+
+        def then_should_raise_no_logged_exception(self):
+            assert type(self.error) is NoLoggedException
             return self

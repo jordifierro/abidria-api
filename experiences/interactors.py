@@ -1,3 +1,5 @@
+from enum import Enum
+
 from experiences.entities import Experience
 
 
@@ -84,3 +86,30 @@ class UploadExperiencePictureInteractor(object):
         self.permissions_validator.validate_permissions(logged_person_id=self.logged_person_id,
                                                         has_permissions_to_modify_experience=self.experience_id)
         return self.experience_repo.attach_picture_to_experience(experience_id=self.experience_id, picture=self.picture)
+
+
+class SaveUnsaveExperienceInteractor(object):
+
+    class Action(Enum):
+        SAVE = 1
+        UNSAVE = 2
+
+    def __init__(self, experience_repo, permissions_validator):
+        self.experience_repo = experience_repo
+        self.permissions_validator = permissions_validator
+
+    def set_params(self, action, experience_id, logged_person_id):
+        self.action = action
+        self.experience_id = experience_id
+        self.logged_person_id = logged_person_id
+        return self
+
+    def execute(self):
+        self.permissions_validator.validate_permissions(logged_person_id=self.logged_person_id)
+
+        if self.action is SaveUnsaveExperienceInteractor.Action.SAVE:
+            self.experience_repo.save_experience(person_id=self.logged_person_id, experience_id=self.experience_id)
+        elif self.action is SaveUnsaveExperienceInteractor.Action.UNSAVE:
+            self.experience_repo.unsave_experience(person_id=self.logged_person_id, experience_id=self.experience_id)
+
+        return True

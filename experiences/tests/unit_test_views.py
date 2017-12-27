@@ -2,8 +2,9 @@ from mock import Mock
 
 from abidria.entities import Picture
 from experiences.entities import Experience
-from experiences.views import ExperiencesView, ExperienceView, UploadExperiencePictureView
+from experiences.views import ExperiencesView, ExperienceView, UploadExperiencePictureView, SaveExperienceView
 from experiences.serializers import ExperienceSerializer
+from experiences.interactors import SaveUnsaveExperienceInteractor
 
 
 class TestExperiencesView(object):
@@ -156,3 +157,70 @@ class TestUploadExperiencePictureView(object):
 
         def then_response_body_is_experience_serialized(self):
             assert self._body == ExperienceSerializer.serialize(self._experience)
+
+
+class TestSaveExperienceView(object):
+
+    def test_post_returns_201(self):
+        TestSaveExperienceView.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_an_experience_id() \
+                .given_an_interactor_that_returns_true() \
+                .when_post_is_called() \
+                .then_interactor_receives_params_and_action_SAVE() \
+                .then_response_status_is_201()
+
+    def test_delete_returns_204(self):
+        TestSaveExperienceView.ScenarioMaker() \
+                .given_a_logged_person_id() \
+                .given_an_experience_id() \
+                .given_an_interactor_that_returns_true() \
+                .when_delete_is_called() \
+                .then_interactor_receives_params_and_action_UNSAVE() \
+                .then_response_status_is_204()
+
+    class ScenarioMaker(object):
+
+        def given_a_logged_person_id(self):
+            self.logged_person_id = '5'
+            return self
+
+        def given_an_experience_id(self):
+            self.experience_id = '6'
+            return self
+
+        def given_an_interactor_that_returns_true(self):
+            self.interactor_mock = Mock()
+            self.interactor_mock.execute.return_value = True
+            return self
+
+        def when_post_is_called(self):
+            view = SaveExperienceView(save_unsave_experience_interactor=self.interactor_mock)
+            self.body, self.status = view.post(experience_id=self.experience_id, logged_person_id=self.logged_person_id)
+            return self
+
+        def when_delete_is_called(self):
+            view = SaveExperienceView(save_unsave_experience_interactor=self.interactor_mock)
+            self.body, self.status = view.delete(experience_id=self.experience_id,
+                                                 logged_person_id=self.logged_person_id)
+            return self
+
+        def then_interactor_receives_params_and_action_SAVE(self):
+            self.interactor_mock.set_params.assert_called_once_with(action=SaveUnsaveExperienceInteractor.Action.SAVE,
+                                                                    experience_id=self.experience_id,
+                                                                    logged_person_id=self.logged_person_id)
+            return self
+
+        def then_interactor_receives_params_and_action_UNSAVE(self):
+            self.interactor_mock.set_params.assert_called_once_with(action=SaveUnsaveExperienceInteractor.Action.UNSAVE,
+                                                                    experience_id=self.experience_id,
+                                                                    logged_person_id=self.logged_person_id)
+            return self
+
+        def then_response_status_is_204(self):
+            assert self.status == 204
+            return self
+
+        def then_response_status_is_201(self):
+            assert self.status == 201
+            return self

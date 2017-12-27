@@ -1,5 +1,6 @@
 from abidria.decorators import serialize_exceptions
 from .serializers import MultipleExperiencesSerializer, ExperienceSerializer
+from .interactors import SaveUnsaveExperienceInteractor
 
 
 class ExperiencesView(object):
@@ -53,4 +54,28 @@ class UploadExperiencePictureView(object):
                                                                           logged_person_id=logged_person_id).execute()
         body = ExperienceSerializer.serialize(experience)
         status = 200
+        return body, status
+
+
+class SaveExperienceView(object):
+
+    def __init__(self, save_unsave_experience_interactor):
+        self.save_unsave_experience_interactor = save_unsave_experience_interactor
+
+    @serialize_exceptions
+    def post(self, experience_id, logged_person_id):
+        self.save_unsave_experience_interactor \
+                .set_params(action=SaveUnsaveExperienceInteractor.Action.SAVE,
+                            experience_id=experience_id, logged_person_id=logged_person_id).execute()
+        body = ''
+        status = 201
+        return body, status
+
+    @serialize_exceptions
+    def delete(self, experience_id, logged_person_id):
+        self.save_unsave_experience_interactor \
+                .set_params(action=SaveUnsaveExperienceInteractor.Action.UNSAVE,
+                            experience_id=experience_id, logged_person_id=logged_person_id).execute()
+        body = ''
+        status = 204
         return body, status
