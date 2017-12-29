@@ -25,7 +25,7 @@ class PersonView(object):
     @serialize_exceptions
     def patch(self, logged_person_id, username, email):
         person = self.register_username_and_email_interactor \
-                .set_params(logged_person_id=logged_person_id, username=username, email=email).execute()
+            .set_params(logged_person_id=logged_person_id, username=username, email=email).execute()
 
         body = PersonSerializer.serialize(person)
         status = 200

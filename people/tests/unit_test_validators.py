@@ -81,7 +81,6 @@ class TestPersonValidator(object):
         wrong_usernames = ['.asdf', 'asdf.', '_asdf', 'asdf_', 'as..df', 'as_.df', 'as._df', 'as__df',
                            'asdf.', 'asdf_', 'asdfA', 'asdf#', 'asdf?', 'asdf/']
         for username in wrong_usernames:
-            print(username)
             TestPersonValidator.ScenarioMaker() \
                 .given_a_username(username) \
                 .given_an_email('e@m.c') \
