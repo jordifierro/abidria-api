@@ -31,7 +31,7 @@ class ExperienceRepo(object):
             if mine:
                 db_experiences = all_db_experiences.filter(author_id=logged_person_id)
             else:
-                saved_experience_ids = ORMSave.objects.values('experience_id').all()
+                saved_experience_ids = ORMSave.objects.values('experience_id').filter(person_id=logged_person_id)
                 db_experiences = all_db_experiences.exclude(author_id=logged_person_id) \
                                                    .exclude(id__in=saved_experience_ids)
 

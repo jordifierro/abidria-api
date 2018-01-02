@@ -18,9 +18,10 @@ class ExperienceRepoTestCase(TestCase):
                 .given_an_experience_created_by_second_person_in_db() \
                 .given_another_experience_created_by_second_person_in_db() \
                 .given_a_third_experience_created_by_second_person_and_saved_by_first() \
+                .given_a_fourth_experience_created_by_second_person_and_saved_by_second() \
                 .given_logged_person_id_is_first_person_id() \
                 .when_get_all_experiences(mine=False) \
-                .then_repo_should_return_just_second_two_experience()
+                .then_repo_should_return_just_second_two_experience_and_fourth()
 
     def test_get_all_experiences_with_mine_true(self):
         ExperienceRepoTestCase.ScenarioMaker() \
@@ -161,6 +162,15 @@ class ExperienceRepoTestCase(TestCase):
             ORMSave.objects.create(person=self.orm_person, experience=self.orm_experience_e)
             return self
 
+        def given_a_fourth_experience_created_by_second_person_and_saved_by_second(self):
+            self.orm_experience_f = ORMExperience.objects.create(title='Exp f', description='description',
+                                                                 author=self.second_orm_person)
+            self.experience_f = Experience(id=self.orm_experience_f.id, title='Exp f', description='description',
+                                           author_id=self.second_orm_person.id,
+                                           author_username=self.second_orm_person.username)
+            ORMSave.objects.create(person=self.second_orm_person, experience=self.orm_experience_f)
+            return self
+
         def given_logged_person_id_is_first_person_id(self):
             self.logged_person_id = self.orm_person.id
             return self
@@ -241,6 +251,10 @@ class ExperienceRepoTestCase(TestCase):
 
         def then_repo_should_return_just_first_two_experience(self):
             assert self.result == [self.experience_b, self.experience_a]
+            return self
+
+        def then_repo_should_return_just_second_two_experience_and_fourth(self):
+            assert self.result == [self.experience_c, self.experience_d, self.experience_f]
             return self
 
         def then_repo_should_return_just_second_two_experience(self):
