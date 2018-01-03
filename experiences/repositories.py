@@ -6,7 +6,7 @@ from .entities import Experience
 
 class ExperienceRepo(object):
 
-    def _decode_db_experience(self, db_experience):
+    def _decode_db_experience(self, db_experience, is_mine=False, is_saved=False):
         if not db_experience.picture:
             picture = None
         else:
@@ -19,9 +19,11 @@ class ExperienceRepo(object):
                           description=db_experience.description,
                           picture=picture,
                           author_id=db_experience.author.id,
-                          author_username=db_experience.author.username)
+                          author_username=db_experience.author.username,
+                          is_mine=is_mine,
+                          is_saved=is_saved)
 
-    def get_all_experiences(self, logged_person_id, mine, saved=False):
+    def get_all_experiences(self, logged_person_id, mine=False, saved=False):
         if saved:
             db_experiences = \
                 [save.experience for save
@@ -37,13 +39,13 @@ class ExperienceRepo(object):
 
         experiences = []
         for db_experience in db_experiences:
-            experiences.append(self._decode_db_experience(db_experience))
+            experiences.append(self._decode_db_experience(db_experience, mine, saved))
         return experiences
 
-    def get_experience(self, id):
+    def get_experience(self, id, logged_person_id=None):
         try:
             db_experience = ORMExperience.objects.select_related('author').get(id=id)
-            return self._decode_db_experience(db_experience)
+            return self._decode_db_experience(db_experience, is_mine=(logged_person_id == db_experience.author_id))
         except ORMExperience.DoesNotExist:
             raise EntityDoesNotExistException()
 
@@ -51,7 +53,7 @@ class ExperienceRepo(object):
         db_experience = ORMExperience.objects.create(title=experience.title,
                                                      description=experience.description,
                                                      author_id=experience.author_id)
-        return self._decode_db_experience(db_experience)
+        return self._decode_db_experience(db_experience, is_mine=True)
 
     def attach_picture_to_experience(self, experience_id, picture):
         experience = ORMExperience.objects.get(id=experience_id)
@@ -66,7 +68,7 @@ class ExperienceRepo(object):
         orm_experience.description = experience.description
 
         orm_experience.save()
-        return self._decode_db_experience(orm_experience)
+        return self._decode_db_experience(orm_experience, is_mine=True)
 
     def save_experience(self, person_id, experience_id):
         if not ORMSave.objects.filter(person_id=person_id, experience_id=experience_id).exists():

@@ -30,7 +30,9 @@ class ExperiencesTestCase(TestCase):
                                'description': 'other description',
                                'picture': None,
                                'author_id': orm_person.id,
-                               'author_username': orm_person.username
+                               'author_username': orm_person.username,
+                               'is_mine': True,
+                               'is_saved': False
                            },
                            {
                                'id': str(exp_a.id),
@@ -38,7 +40,9 @@ class ExperiencesTestCase(TestCase):
                                'description': 'some description',
                                'picture': None,
                                'author_id': orm_person.id,
-                               'author_username': orm_person.username
+                               'author_username': orm_person.username,
+                               'is_mine': True,
+                               'is_saved': False
                            },
                        ]
 
@@ -62,7 +66,9 @@ class ExperiencesTestCase(TestCase):
                                'description': 'some description',
                                'picture': None,
                                'author_id': orm_person.id,
-                               'author_username': orm_person.username
+                               'author_username': orm_person.username,
+                               'is_mine': False,
+                               'is_saved': False
                            },
                            {
                                'id': str(exp_b.id),
@@ -70,7 +76,9 @@ class ExperiencesTestCase(TestCase):
                                'description': 'other description',
                                'picture': None,
                                'author_id': orm_person.id,
-                               'author_username': orm_person.username
+                               'author_username': orm_person.username,
+                               'is_mine': False,
+                               'is_saved': False
                            },
                        ]
 
@@ -95,7 +103,9 @@ class ExperiencesTestCase(TestCase):
                                'description': 'some description',
                                'picture': None,
                                'author_id': orm_person_b.id,
-                               'author_username': orm_person_b.username
+                               'author_username': orm_person_b.username,
+                               'is_mine': False,
+                               'is_saved': True
                            }
                        ]
 
@@ -121,7 +131,9 @@ class CreateExperienceTestCase(TestCase):
                            'description': 'Some description',
                            'picture': None,
                            'author_id': orm_person.id,
-                           'author_username': orm_person.username
+                           'author_username': orm_person.username,
+                           'is_mine': True,
+                           'is_saved': False
                        }
 
     def test_wrong_attributes_doesnt_create_and_returns_error(self):
@@ -165,7 +177,9 @@ class ModifyExperienceTestCase(TestCase):
                            'description': 'New description',
                            'picture': None,
                            'author_id': orm_person.id,
-                           'author_username': orm_person.username
+                           'author_username': orm_person.username,
+                           'is_mine': True,
+                           'is_saved': False
                        }
 
     def test_wrong_attributes_doesnt_update_and_returns_error(self):

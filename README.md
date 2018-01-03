@@ -40,13 +40,21 @@ _Response:_
             "small_url": "https://experiences/8c29.small.jpg",
             "medium_url": "https://experiences/8c29.medium.jpg",
             "large_url": "https://experiences/8c29.large.jpg"
-        }
+        },
+        "author_id": "3",
+        "author_username": "usr.nam",
+        "is_mine": false,
+        "is_saved": false
     },
     {
         "id": "3",
         "title": "Magic Castle of Lost Swamps",
         "description": "Don't even try to go there!",
-        "picture": null
+        "picture": null,
+        "author_id": "5",
+        "author_username": "da_usr",
+        "is_mine": false,
+        "is_saved": false
     }
 ]
 ```
@@ -70,6 +78,10 @@ _201_
     "title": "My travel",
     "description": "and other adventures",
     "picture": null,
+    "author_id": "8",
+    "author_username": "my.name",
+    "is_mine": true,
+    "is_saved": false
 }
 ```
 
@@ -105,6 +117,10 @@ _200_
     "title": "MainSquare",
     "description": "A new description",
     "picture": null,
+    "author_id": "8",
+    "author_username": "my.name",
+    "is_mine": true,
+    "is_saved": false
 }
 ```
 
@@ -167,6 +183,10 @@ _200_
         "medium_url": "https://scenes/37d6.medium.jpeg",
         "large_url": "https://scenes/37d6.large.jpeg"
     },
+    "author_id": "8",
+    "author_username": "my.name",
+    "is_mine": true,
+    "is_saved": false
 }
 ```
 

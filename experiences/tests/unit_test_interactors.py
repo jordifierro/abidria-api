@@ -269,7 +269,7 @@ class TestModifyExperience(object):
                 .when_interactor_is_executed() \
                 .then_result_should_be_second_experience() \
                 .then_should_validate_permissions() \
-                .then_get_experience_should_be_called_with_id() \
+                .then_get_experience_should_be_called_with_id_and_logged_person_id() \
                 .then_experience_validation_should_be_called_with_updated_experience() \
                 .then_update_experience_should_be_called_with_updated_experience()
 
@@ -286,7 +286,7 @@ class TestModifyExperience(object):
                 .when_interactor_is_executed() \
                 .then_should_raise_invalid_entity_exception() \
                 .then_should_validate_permissions() \
-                .then_get_experience_should_be_called_with_id() \
+                .then_get_experience_should_be_called_with_id_and_logged_person_id() \
                 .then_experience_validation_should_be_called_with_updated_experience() \
                 .then_update_experience_should_be_not_called()
 
@@ -301,7 +301,7 @@ class TestModifyExperience(object):
                 .when_interactor_is_executed() \
                 .then_should_raise_entity_does_not_exists() \
                 .then_should_validate_permissions() \
-                .then_get_experience_should_be_called_with_id() \
+                .then_get_experience_should_be_called_with_id_and_logged_person_id() \
                 .then_update_experience_should_be_not_called()
 
     def test_no_permissions_raises_expcetion(self):
@@ -348,7 +348,8 @@ class TestModifyExperience(object):
 
         def given_another_experience_updated_with_that_params(self):
             self.updated_experience = Experience(id=self.experience.id, title=self.experience.title,
-                                                 description=self.description, author_id=self.experience.author_id)
+                                                 description=self.description, author_id=self.experience.author_id,
+                                                 author_username=self.experience.author_username)
             return self
 
         def given_an_experience_repo_that_returns_both_experiences_on_get_and_update(self):
@@ -390,6 +391,7 @@ class TestModifyExperience(object):
                     .set_params(id=self.id, title=None, description=self.description,
                                 logged_person_id=self.logged_person_id).execute()
             except Exception as e:
+                print(e)
                 self.error = e
             return self
 
@@ -397,8 +399,9 @@ class TestModifyExperience(object):
             assert self.result == self.updated_experience
             return self
 
-        def then_get_experience_should_be_called_with_id(self):
-            self.experience_repo.get_experience.assert_called_once_with(id=self.id)
+        def then_get_experience_should_be_called_with_id_and_logged_person_id(self):
+            self.experience_repo.get_experience \
+                    .assert_called_once_with(id=self.id, logged_person_id=self.logged_person_id)
             return self
 
         def then_experience_validation_should_be_called_with_updated_experience(self):

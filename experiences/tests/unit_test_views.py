@@ -3,51 +3,79 @@ from mock import Mock
 from abidria.entities import Picture
 from experiences.entities import Experience
 from experiences.views import ExperiencesView, ExperienceView, UploadExperiencePictureView, SaveExperienceView
-from experiences.serializers import ExperienceSerializer
+from experiences.serializers import ExperienceSerializer, MultipleExperiencesSerializer
 from experiences.interactors import SaveUnsaveExperienceInteractor
 
 
 class TestExperiencesView(object):
 
     def test_returns_experiences_serialized_and_200(self):
-        picture_a = Picture(small_url='small.a', medium_url='medium.a', large_url='large.a')
-        experience_a = Experience(id=1, title='A', description='some', picture=picture_a,
-                                  author_id='4', author_username='usr')
-        picture_b = Picture(small_url='small.b', medium_url='medium.b', large_url='large.b')
-        experience_b = Experience(id=2, title='B', description='other', picture=picture_b,
-                                  author_id='5', author_username='nms')
+        TestExperiencesView.ScenarioMaker() \
+                .given_an_experience_a() \
+                .given_an_experience_b() \
+                .given_an_interactor_that_returns_that_experiences() \
+                .when_get_experiences(logged_person_id='9', mine='false', saved='false') \
+                .then_should_call_interactor_set_params(logged_person_id='9', mine=False, saved=False) \
+                .then_status_code_should_be_200() \
+                .then_response_body_should_be_experiences_serialized()
 
-        interactor_mock = Mock()
-        interactor_mock.set_params.return_value = interactor_mock
-        interactor_mock.execute.return_value = [experience_a, experience_b]
+    def test_mine_returns_experiences_serialized_and_200(self):
+        TestExperiencesView.ScenarioMaker() \
+                .given_an_experience_a() \
+                .given_an_experience_b() \
+                .given_an_interactor_that_returns_that_experiences() \
+                .when_get_experiences(logged_person_id='9', mine='true', saved='false') \
+                .then_should_call_interactor_set_params(logged_person_id='9', mine=True, saved=False) \
+                .then_status_code_should_be_200() \
+                .then_response_body_should_be_experiences_serialized()
 
-        body, status = ExperiencesView(get_all_experiences_interactor=interactor_mock).get(logged_person_id='4',
-                                                                                           mine='true', saved='true')
+    def test_saved_returns_experiences_serialized_and_200(self):
+        TestExperiencesView.ScenarioMaker() \
+                .given_an_experience_a() \
+                .given_an_experience_b() \
+                .given_an_interactor_that_returns_that_experiences() \
+                .when_get_experiences(logged_person_id='9', mine='false', saved='true') \
+                .then_should_call_interactor_set_params(logged_person_id='9', mine=False, saved=True) \
+                .then_status_code_should_be_200() \
+                .then_response_body_should_be_experiences_serialized()
 
-        interactor_mock.set_params.assert_called_once_with(logged_person_id='4', mine=True, saved=True)
-        assert status == 200
-        assert body == [
-                           {
-                               'id': '1',
-                               'title': 'A',
-                               'description': 'some',
-                               'picture': {'small_url': 'small.a',
-                                           'medium_url': 'medium.a',
-                                           'large_url': 'large.a'},
-                               'author_id': '4',
-                               'author_username': 'usr'
-                           },
-                           {
-                               'id': '2',
-                               'title': 'B',
-                               'description': 'other',
-                               'picture': {'small_url': 'small.b',
-                                           'medium_url': 'medium.b',
-                                           'large_url': 'large.b'},
-                               'author_id': '5',
-                               'author_username': 'nms'
-                           },
-                       ]
+    class ScenarioMaker(object):
+
+        def given_an_experience_a(self):
+            picture_a = Picture(small_url='small.a', medium_url='medium.a', large_url='large.a')
+            self.experience_a = Experience(id=1, title='A', description='some', picture=picture_a,
+                                           author_id='4', author_username='usr')
+            return self
+
+        def given_an_experience_b(self):
+            picture_b = Picture(small_url='small.b', medium_url='medium.b', large_url='large.b')
+            self.experience_b = Experience(id=2, title='B', description='other', picture=picture_b,
+                                           author_id='5', author_username='nms')
+            return self
+
+        def given_an_interactor_that_returns_that_experiences(self):
+            self.interactor_mock = Mock()
+            self.interactor_mock.set_params.return_value = self.interactor_mock
+            self.interactor_mock.execute.return_value = [self.experience_a, self.experience_b]
+            return self
+
+        def when_get_experiences(self, logged_person_id, mine, saved):
+            self.body, self.status = ExperiencesView(get_all_experiences_interactor=self.interactor_mock) \
+                    .get(logged_person_id=logged_person_id, mine=mine, saved=saved)
+            return self
+
+        def then_should_call_interactor_set_params(self, logged_person_id, mine, saved):
+            self.interactor_mock.set_params.assert_called_once_with(logged_person_id=logged_person_id,
+                                                                    mine=mine, saved=saved)
+            return self
+
+        def then_status_code_should_be_200(self):
+            assert self.status == 200
+            return self
+
+        def then_response_body_should_be_experiences_serialized(self):
+            assert self.body == MultipleExperiencesSerializer.serialize([self.experience_a, self.experience_b])
+            return self
 
     def test_post_returns_experience_serialized_and_200(self):
         experience = Experience(id='1', title='B', description='some', author_id='6', author_username='usr')
@@ -67,7 +95,9 @@ class TestExperiencesView(object):
                            'description': 'some',
                            'picture': None,
                            'author_id': '6',
-                           'author_username': 'usr'
+                           'author_username': 'usr',
+                           'is_mine': False,
+                           'is_saved': False
                        }
 
 
@@ -91,7 +121,9 @@ class TestExperienceView(object):
                            'description': 'some',
                            'picture': None,
                            'author_id': '8',
-                           'author_username': 'usrnm'
+                           'author_username': 'usrnm',
+                           'is_mine': False,
+                           'is_saved': False
                        }
 
 

@@ -61,12 +61,11 @@ class ModifyExperienceInteractor(object):
     def execute(self):
         self.permissions_validator.validate_permissions(logged_person_id=self.logged_person_id,
                                                         has_permissions_to_modify_experience=self.id)
-        experience = self.experience_repo.get_experience(id=self.id)
+        experience = self.experience_repo.get_experience(id=self.id, logged_person_id=self.logged_person_id)
 
         new_title = self.title if self.title is not None else experience.title
         new_description = self.description if self.description is not None else experience.description
-        updated_experience = Experience(id=experience.id, title=new_title,
-                                        description=new_description, author_id=experience.author_id)
+        updated_experience = experience.builder().title(new_title).description(new_description).build()
 
         self.experience_validator.validate_experience(updated_experience)
 
