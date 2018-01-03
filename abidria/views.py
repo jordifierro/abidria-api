@@ -56,7 +56,8 @@ class ViewWrapper(View):
         kwargs.update({'logged_person_id': logged_person_id})
 
         body, status = self.view_creator_func(request, **kwargs).delete(**kwargs)
-        return HttpResponse(json.dumps(body), status=status, content_type='application/json')
+        content = json.dumps(body) if body is not None else ''
+        return HttpResponse(content, status=status, content_type='application/json')
 
     def authenticate(self, request, **kwargs):
         authentication_header = request.META.get('HTTP_AUTHORIZATION')

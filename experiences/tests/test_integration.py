@@ -251,4 +251,5 @@ class SaveUnsaveExperienceTestCase(TestCase):
 
         def then_response_should_be_204(self):
             assert self.response.status_code == 204
+            assert len(self.response.content) == 0
             return self

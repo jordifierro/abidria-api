@@ -77,6 +77,6 @@ class SaveExperienceView(object):
         self.save_unsave_experience_interactor \
                 .set_params(action=SaveUnsaveExperienceInteractor.Action.UNSAVE,
                             experience_id=experience_id, logged_person_id=logged_person_id).execute()
-        body = ''
+        body = None
         status = 204
         return body, status
