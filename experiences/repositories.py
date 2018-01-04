@@ -59,7 +59,7 @@ class ExperienceRepo:
         experience = ORMExperience.objects.get(id=experience_id)
         experience.picture = picture
         experience.save()
-        return self._decode_db_experience(experience)
+        return self._decode_db_experience(experience, is_mine=True)
 
     def update_experience(self, experience):
         orm_experience = ORMExperience.objects.get(id=experience.id)
