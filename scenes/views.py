@@ -2,7 +2,7 @@ from abidria.decorators import serialize_exceptions
 from .serializers import MultipleScenesSerializer, SceneSerializer
 
 
-class ScenesView(object):
+class ScenesView:
 
     def __init__(self, get_scenes_from_experience_interactor=None, create_new_scene_interactor=None):
         self.get_scenes_from_experience_interactor = get_scenes_from_experience_interactor
@@ -28,7 +28,7 @@ class ScenesView(object):
         return body, status
 
 
-class SceneView(object):
+class SceneView:
 
     def __init__(self, modify_scene_interactor=None):
         self.modify_scene_interactor = modify_scene_interactor
@@ -48,7 +48,7 @@ class SceneView(object):
         return body, status
 
 
-class UploadScenePictureView(object):
+class UploadScenePictureView:
 
     def __init__(self, upload_scene_picture_interactor=None):
         self.upload_scene_picture_interactor = upload_scene_picture_interactor

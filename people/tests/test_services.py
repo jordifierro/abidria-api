@@ -19,7 +19,7 @@ class TestMailerService(TestCase):
                 .when_send_ask_confirmation_mail_is_called() \
                 .then_django_send_mail_should_be_called_with_correct_processed_params()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.response = None

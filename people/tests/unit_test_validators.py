@@ -5,7 +5,7 @@ from people.validators import ClientSecretKeyValidator, PersonValidator, PersonP
 from people.entities import Person
 
 
-class TestClientSecretKeyValidator(object):
+class TestClientSecretKeyValidator:
 
     def test_valid_key(self):
         TestClientSecretKeyValidator._ScenarioMaker() \
@@ -19,7 +19,7 @@ class TestClientSecretKeyValidator(object):
                 .when_key_is_validated('B') \
                 .then_should_raise_invalid_entity_execption()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.validator = None
@@ -48,7 +48,7 @@ class TestClientSecretKeyValidator(object):
             return self
 
 
-class TestPersonValidator(object):
+class TestPersonValidator:
 
     def test_valid_person(self):
         TestPersonValidator.ScenarioMaker() \
@@ -152,7 +152,7 @@ class TestPersonValidator(object):
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_not_allowed_email()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.username = None
@@ -219,7 +219,7 @@ class TestPersonValidator(object):
             return self
 
 
-class TestPermissionsValidator(object):
+class TestPermissionsValidator:
 
     def test_no_logged_person(self):
         TestPermissionsValidator.ScenarioMaker() \
@@ -250,7 +250,7 @@ class TestPermissionsValidator(object):
                 .then_should_call_person_repo_get_with_logged_person_id() \
                 .then_should_return_true()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.logged_person_id = None

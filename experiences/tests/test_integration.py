@@ -223,7 +223,7 @@ class SaveUnsaveExperienceTestCase(TestCase):
                 .then_save_entry_should_be_removed_from_db() \
                 .then_response_should_be_204()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_person_with_auth_token(self):
             self.orm_person = ORMPerson.objects.create()

@@ -1,4 +1,4 @@
-class Scene(object):
+class Scene:
 
     def __init__(self, title, description, latitude, longitude, experience_id, id=None, picture=None):
         self._title = title

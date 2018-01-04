@@ -5,7 +5,7 @@ from people.views import PeopleView, PersonView, EmailConfirmationView
 from people.serializers import AuthTokenSerializer, PersonSerializer
 
 
-class TestPeopleView(object):
+class TestPeopleView:
 
     def test_post_returns_auth_token_serialized_and_201(self):
         TestPeopleView._ScenarioMaker() \
@@ -17,7 +17,7 @@ class TestPeopleView(object):
                 .then_response_status_is_201() \
                 .then_response_body_is_auth_token_serialized()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.interactor_mock = Mock()
@@ -56,7 +56,7 @@ class TestPeopleView(object):
             return self
 
 
-class TestPersonView(object):
+class TestPersonView:
 
     def test_patch_returns_person_serialized_and_200(self):
         TestPersonView._ScenarioMaker() \
@@ -70,7 +70,7 @@ class TestPersonView(object):
                 .then_response_status_is_200() \
                 .then_response_body_should_be_that_person_serialized()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.interactor_mock = Mock()
@@ -121,7 +121,7 @@ class TestPersonView(object):
             return self
 
 
-class TestEmailConfirmationView(object):
+class TestEmailConfirmationView:
 
     def test_post_returns_204(self):
         TestEmailConfirmationView._ScenarioMaker() \
@@ -134,7 +134,7 @@ class TestEmailConfirmationView(object):
                 .then_response_status_is_200() \
                 .then_response_body_should_be_that_person_serialized()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.interactor_mock = Mock()

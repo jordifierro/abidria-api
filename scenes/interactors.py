@@ -1,7 +1,7 @@
 from .entities import Scene
 
 
-class GetScenesFromExperienceInteractor(object):
+class GetScenesFromExperienceInteractor:
 
     def __init__(self, scene_repo, permissions_validator):
         self.scene_repo = scene_repo
@@ -17,7 +17,7 @@ class GetScenesFromExperienceInteractor(object):
         return self.scene_repo.get_scenes(experience_id=self.experience_id)
 
 
-class CreateNewSceneInteractor(object):
+class CreateNewSceneInteractor:
 
     def __init__(self, scene_repo, scene_validator, permissions_validator):
         self.scene_repo = scene_repo
@@ -42,7 +42,7 @@ class CreateNewSceneInteractor(object):
         return self.scene_repo.create_scene(scene)
 
 
-class ModifySceneInteractor(object):
+class ModifySceneInteractor:
 
     def __init__(self, scene_repo, scene_validator, permissions_validator):
         self.scene_repo = scene_repo
@@ -78,7 +78,7 @@ class ModifySceneInteractor(object):
         return self.scene_repo.update_scene(updated_scene)
 
 
-class UploadScenePictureInteractor(object):
+class UploadScenePictureInteractor:
 
     def __init__(self, scene_repo, permissions_validator):
         self.scene_repo = scene_repo

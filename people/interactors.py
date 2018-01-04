@@ -3,7 +3,7 @@ from abidria.exceptions import EntityDoesNotExistException, ConflictException, N
 from people.entities import Person
 
 
-class CreateGuestPersonAndReturnAuthTokenInteractor(object):
+class CreateGuestPersonAndReturnAuthTokenInteractor:
 
     def __init__(self, client_secret_key_validator, person_repo, auth_token_repo):
         self.client_secret_key_validator = client_secret_key_validator
@@ -22,7 +22,7 @@ class CreateGuestPersonAndReturnAuthTokenInteractor(object):
         return self.auth_token_repo.create_auth_token(person_id=created_guest_person.id)
 
 
-class AuthenticateInteractor(object):
+class AuthenticateInteractor:
 
     def __init__(self, auth_token_repo):
         self.auth_token_repo = auth_token_repo
@@ -39,7 +39,7 @@ class AuthenticateInteractor(object):
             return None
 
 
-class RegisterUsernameAndEmailInteractor(object):
+class RegisterUsernameAndEmailInteractor:
 
     def __init__(self, person_validator, person_repo, confirmation_token_repo, mailer_service):
         self.person_validator = person_validator
@@ -73,7 +73,7 @@ class RegisterUsernameAndEmailInteractor(object):
         return updated_person
 
 
-class ConfirmEmailInteractor(object):
+class ConfirmEmailInteractor:
 
     def __init__(self, person_repo, confirmation_token_repo):
         self.person_repo = person_repo

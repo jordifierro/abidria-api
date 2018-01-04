@@ -4,7 +4,7 @@ from .models import ORMScene
 from .entities import Scene
 
 
-class SceneRepo(object):
+class SceneRepo:
 
     def get_scenes(self, experience_id):
         db_scenes = ORMScene.objects.filter(experience_id=experience_id)

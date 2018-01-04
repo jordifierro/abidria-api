@@ -7,7 +7,7 @@ from people.interactors import CreateGuestPersonAndReturnAuthTokenInteractor, Au
         RegisterUsernameAndEmailInteractor, ConfirmEmailInteractor
 
 
-class TestCreateGuestPersonAndReturnAuthToken(object):
+class TestCreateGuestPersonAndReturnAuthToken:
 
     def test_creates_guest_person_and_returns_auth_token(self):
         TestCreateGuestPersonAndReturnAuthToken._ScenarioMaker() \
@@ -33,7 +33,7 @@ class TestCreateGuestPersonAndReturnAuthToken(object):
                 .then_person_repo_create_guest_person_should_not_be_called() \
                 .then_create_auth_token_should_not_be_called()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.person = None
@@ -115,7 +115,7 @@ class TestCreateGuestPersonAndReturnAuthToken(object):
             return self
 
 
-class TestAuthenticateInteractor(object):
+class TestAuthenticateInteractor:
 
     def test_correct_access_token_returns_person_id(self):
         TestAuthenticateInteractor.ScenarioMaker() \
@@ -133,7 +133,7 @@ class TestAuthenticateInteractor(object):
                 .when_authenticate_interactor_is_executed() \
                 .then_should_return_none()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.result = None
@@ -176,7 +176,7 @@ class TestAuthenticateInteractor(object):
             return self
 
 
-class TestRegisterUsernameAndEmailInteractor(object):
+class TestRegisterUsernameAndEmailInteractor:
 
     def test_correct_username_and_email_updates_person_and_returns_it(self):
         TestRegisterUsernameAndEmailInteractor.ScenarioMaker() \
@@ -248,7 +248,7 @@ class TestRegisterUsernameAndEmailInteractor(object):
                 .then_should_not_send_email_with_confirmation_token() \
 
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.logged_person_id = None
@@ -410,7 +410,7 @@ class TestRegisterUsernameAndEmailInteractor(object):
             return self
 
 
-class TestConfirmEmailInteractor(object):
+class TestConfirmEmailInteractor:
 
     def test_confirm_email_returns_person_confirmed(self):
         TestConfirmEmailInteractor.ScenarioMaker() \
@@ -452,7 +452,7 @@ class TestConfirmEmailInteractor(object):
                 .then_should_not_delete_all_confirmation_tokens_for_that_person() \
                 .then_should_not_call_person_repo_update()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.result = None

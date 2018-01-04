@@ -1,4 +1,4 @@
-class Picture(object):
+class Picture:
 
     def __init__(self, small_url, medium_url, large_url):
         self._small_url = small_url

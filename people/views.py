@@ -2,7 +2,7 @@ from abidria.decorators import serialize_exceptions
 from .serializers import AuthTokenSerializer, PersonSerializer
 
 
-class PeopleView(object):
+class PeopleView:
 
     def __init__(self, create_guest_person_and_return_auth_token_interactor=None):
         self.create_guest_person_and_return_auth_token_interactor = create_guest_person_and_return_auth_token_interactor
@@ -17,7 +17,7 @@ class PeopleView(object):
         return body, status
 
 
-class PersonView(object):
+class PersonView:
 
     def __init__(self, register_username_and_email_interactor=None):
         self.register_username_and_email_interactor = register_username_and_email_interactor
@@ -32,7 +32,7 @@ class PersonView(object):
         return body, status
 
 
-class EmailConfirmationView(object):
+class EmailConfirmationView:
 
     def __init__(self, confirm_email_interactor=None):
         self.confirm_email_interactor = confirm_email_interactor

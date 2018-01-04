@@ -2,7 +2,7 @@ from abidria.exceptions import InvalidEntityException, EntityDoesNotExistExcepti
 from abidria.decorators import serialize_exceptions
 
 
-class TestSerializeExpceptionsDecorator(object):
+class TestSerializeExpceptionsDecorator:
 
     def test_invalid_entity_expceptions_returns_serialized_and_422(self):
         def raiser_func():

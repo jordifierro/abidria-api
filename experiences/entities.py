@@ -1,4 +1,4 @@
-class Experience(object):
+class Experience:
 
     def __init__(self, title, description, author_id,
                  author_username=None, id=None, picture=None, is_mine=False, is_saved=False):
@@ -49,7 +49,7 @@ class Experience(object):
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
-    class Builder(object):
+    class Builder:
 
         def __init__(self, experience):
             self._id = experience.id

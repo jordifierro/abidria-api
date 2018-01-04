@@ -103,7 +103,7 @@ class ExperienceRepoTestCase(TestCase):
                 .then_result_should_be_true() \
                 .then_save_should_be_deleted_from_db()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.orm_person = None

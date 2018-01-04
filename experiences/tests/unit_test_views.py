@@ -7,7 +7,7 @@ from experiences.serializers import ExperienceSerializer, MultipleExperiencesSer
 from experiences.interactors import SaveUnsaveExperienceInteractor
 
 
-class TestExperiencesView(object):
+class TestExperiencesView:
 
     def test_returns_experiences_serialized_and_200(self):
         TestExperiencesView.ScenarioMaker() \
@@ -39,7 +39,7 @@ class TestExperiencesView(object):
                 .then_status_code_should_be_200() \
                 .then_response_body_should_be_experiences_serialized()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_an_experience_a(self):
             picture_a = Picture(small_url='small.a', medium_url='medium.a', large_url='large.a')
@@ -101,7 +101,7 @@ class TestExperiencesView(object):
                        }
 
 
-class TestExperienceView(object):
+class TestExperienceView:
 
     def test_patch_returns_experience_serialized_and_200(self):
         experience = Experience(id='1', title='B', description='some', author_id='8', author_username='usrnm')
@@ -127,7 +127,7 @@ class TestExperienceView(object):
                        }
 
 
-class TestUploadExperiencePictureView(object):
+class TestUploadExperiencePictureView:
 
     def test_post_returns_experience_serialized_and_200(self):
         TestUploadExperiencePictureView._ScenarioMaker() \
@@ -141,7 +141,7 @@ class TestUploadExperiencePictureView(object):
                 .then_response_status_is_200() \
                 .then_response_body_is_experience_serialized()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self._interactor_mock = Mock()
@@ -191,7 +191,7 @@ class TestUploadExperiencePictureView(object):
             assert self._body == ExperienceSerializer.serialize(self._experience)
 
 
-class TestSaveExperienceView(object):
+class TestSaveExperienceView:
 
     def test_post_returns_201(self):
         TestSaveExperienceView.ScenarioMaker() \
@@ -211,7 +211,7 @@ class TestSaveExperienceView(object):
                 .then_interactor_receives_params_and_action_UNSAVE() \
                 .then_response_status_is_204()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '5'

@@ -4,7 +4,7 @@ from abidria.exceptions import ConflictException
 from experiences.entities import Experience
 
 
-class GetAllExperiencesInteractor(object):
+class GetAllExperiencesInteractor:
 
     def __init__(self, experience_repo, permissions_validator):
         self.experience_repo = experience_repo
@@ -23,7 +23,7 @@ class GetAllExperiencesInteractor(object):
                                                         logged_person_id=self.logged_person_id)
 
 
-class CreateNewExperienceInteractor(object):
+class CreateNewExperienceInteractor:
 
     def __init__(self, experience_repo, experience_validator, permissions_validator):
         self.experience_repo = experience_repo
@@ -44,7 +44,7 @@ class CreateNewExperienceInteractor(object):
         return self.experience_repo.create_experience(experience)
 
 
-class ModifyExperienceInteractor(object):
+class ModifyExperienceInteractor:
 
     def __init__(self, experience_repo, experience_validator, permissions_validator):
         self.experience_repo = experience_repo
@@ -72,7 +72,7 @@ class ModifyExperienceInteractor(object):
         return self.experience_repo.update_experience(updated_experience)
 
 
-class UploadExperiencePictureInteractor(object):
+class UploadExperiencePictureInteractor:
 
     def __init__(self, experience_repo, permissions_validator):
         self.experience_repo = experience_repo
@@ -90,7 +90,7 @@ class UploadExperiencePictureInteractor(object):
         return self.experience_repo.attach_picture_to_experience(experience_id=self.experience_id, picture=self.picture)
 
 
-class SaveUnsaveExperienceInteractor(object):
+class SaveUnsaveExperienceInteractor:
 
     class Action(Enum):
         SAVE = 1

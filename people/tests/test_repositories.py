@@ -31,7 +31,7 @@ class PersonRepoTestCase(TestCase):
                 .then_result_should_be_that_person() \
 
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.response = None
@@ -113,7 +113,7 @@ class AuthTokenRepoTestCase(TestCase):
                 .when_get_auth_token_with_wrong_access_token() \
                 .then_should_raise_entity_does_not_exist()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.person = None
@@ -201,7 +201,7 @@ class ConfirmationTokenRepoTestCase(TestCase):
                 .when_get_person_id_for_that_confirmation_token() \
                 .then_should_raise_entity_does_not_exist()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.person = None

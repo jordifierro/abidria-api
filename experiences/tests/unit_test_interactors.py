@@ -7,7 +7,7 @@ from experiences.interactors import GetAllExperiencesInteractor, CreateNewExperi
         ModifyExperienceInteractor, UploadExperiencePictureInteractor, SaveUnsaveExperienceInteractor
 
 
-class TestGetAllExperiences(object):
+class TestGetAllExperiences:
 
     def test_returns_repo_response(self):
         TestGetAllExperiences.ScenarioMaker() \
@@ -29,7 +29,7 @@ class TestGetAllExperiences(object):
                 .then_validate_permissions_should_be_called_with_logged_person_id() \
                 .then_should_raise_no_logged_exception()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.logged_person_id = None
@@ -102,7 +102,7 @@ class TestGetAllExperiences(object):
             return self
 
 
-class TestCreateNewExperience(object):
+class TestCreateNewExperience:
 
     def test_creates_and_returns_experience(self):
         TestCreateNewExperience.ScenarioMaker() \
@@ -151,7 +151,7 @@ class TestCreateNewExperience(object):
                 .then_should_validate_permissions() \
                 .then_repo_create_method_should_not_be_called()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.author_id = None
@@ -254,7 +254,7 @@ class TestCreateNewExperience(object):
             return self
 
 
-class TestModifyExperience(object):
+class TestModifyExperience:
 
     def test_gets_modifies_not_none_params_and_returns_experience(self):
         TestModifyExperience.ScenarioMaker() \
@@ -317,7 +317,7 @@ class TestModifyExperience(object):
                 .then_should_validate_permissions() \
                 .then_update_experience_should_be_not_called()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_an_experience(self):
             self.experience = Experience(id='1', title='Title', description='some',
@@ -438,7 +438,7 @@ class TestModifyExperience(object):
             return self
 
 
-class TestUploadExperiencePictureInteractor(object):
+class TestUploadExperiencePictureInteractor:
 
     def test_validates_permissions_and_attach_picture_to_experience(self):
         TestUploadExperiencePictureInteractor.ScenarioMaker() \
@@ -465,7 +465,7 @@ class TestUploadExperiencePictureInteractor(object):
                 .then_should_not_call_repo_attach_picture_to_experience() \
                 .then_should_raise_no_permissions_exception()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '9'
@@ -536,7 +536,7 @@ class TestUploadExperiencePictureInteractor(object):
             return self
 
 
-class TestSaveUnsaveExperienceInteractor(object):
+class TestSaveUnsaveExperienceInteractor:
 
     def test_unauthorized_raises_no_logged_exception(self):
         TestSaveUnsaveExperienceInteractor.ScenarioMaker() \
@@ -582,7 +582,7 @@ class TestSaveUnsaveExperienceInteractor(object):
                 .then_should_call_repo_unsave_experience_with_person_id() \
 
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.experience_id = None

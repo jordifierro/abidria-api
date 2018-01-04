@@ -1,4 +1,4 @@
-class AuthTokenSerializer(object):
+class AuthTokenSerializer:
 
     @staticmethod
     def serialize(auth_token):
@@ -9,7 +9,7 @@ class AuthTokenSerializer(object):
                }
 
 
-class PersonSerializer(object):
+class PersonSerializer:
 
     @staticmethod
     def serialize(person):

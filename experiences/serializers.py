@@ -1,14 +1,14 @@
 from abidria.serializers import PictureSerializer
 
 
-class MultipleExperiencesSerializer(object):
+class MultipleExperiencesSerializer:
 
     @staticmethod
     def serialize(experiences):
         return [ExperienceSerializer.serialize(experience) for experience in experiences]
 
 
-class ExperienceSerializer(object):
+class ExperienceSerializer:
 
     @staticmethod
     def serialize(experience):

@@ -4,7 +4,7 @@ from django.core import mail
 from django.conf import settings
 
 
-class MailerService(object):
+class MailerService:
 
     def __init__(self, request):
         self.request = request

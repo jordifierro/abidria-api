@@ -1,4 +1,4 @@
-class PictureSerializer(object):
+class PictureSerializer:
 
     @staticmethod
     def serialize(picture):
@@ -12,7 +12,7 @@ class PictureSerializer(object):
                }
 
 
-class AbidriaExceptionSerializer(object):
+class AbidriaExceptionSerializer:
 
     @staticmethod
     def serialize(exception):

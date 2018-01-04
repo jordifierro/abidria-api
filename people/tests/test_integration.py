@@ -29,7 +29,7 @@ class CreatePersonTestCase(TestCase):
                 .then_response_body_should_be_an_error() \
 
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.orm_person = None
@@ -113,7 +113,7 @@ class ModifyPersonTestCase(TestCase):
                 .then_person_not_should_be_updated() \
                 .then_ask_confirmation_email_should_not_be_sent()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self.orm_person = None
@@ -248,7 +248,7 @@ class PostEmailConfirmationTestCase(TestCase):
                 .then_response_body_should_be_invalide_token_error() \
                 .then_person_should_have_is_email_confirmed_false()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.orm_person = None

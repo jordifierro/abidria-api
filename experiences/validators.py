@@ -1,7 +1,7 @@
 from abidria.exceptions import InvalidEntityException, NoPermissionException
 
 
-class ExperienceValidator(object):
+class ExperienceValidator:
 
     MIN_TITLE_LENGHT = 1
     MAX_TITLE_LENGHT = 30
@@ -24,7 +24,7 @@ class ExperienceValidator(object):
         return True
 
 
-class ExperiencePermissionsValidator(object):
+class ExperiencePermissionsValidator:
 
     def __init__(self, experience_repo, person_permissions_validator):
         self.experience_repo = experience_repo

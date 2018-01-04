@@ -3,7 +3,7 @@ import re
 from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
 
 
-class ClientSecretKeyValidator(object):
+class ClientSecretKeyValidator:
 
     def __init__(self, valid_client_secret_key):
         self.valid_client_secret_key = valid_client_secret_key
@@ -16,7 +16,7 @@ class ClientSecretKeyValidator(object):
             return True
 
 
-class PersonValidator(object):
+class PersonValidator:
 
     USERNAME_MIN_LENGTH = 3
     USERNAME_MAX_LENGTH = 20
@@ -47,7 +47,7 @@ class PersonValidator(object):
         return True
 
 
-class PersonPermissionsValidator(object):
+class PersonPermissionsValidator:
 
     def __init__(self, person_repo):
         self.person_repo = person_repo

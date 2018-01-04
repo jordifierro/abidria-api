@@ -3,7 +3,7 @@ from .serializers import MultipleExperiencesSerializer, ExperienceSerializer
 from .interactors import SaveUnsaveExperienceInteractor
 
 
-class ExperiencesView(object):
+class ExperiencesView:
 
     def __init__(self, get_all_experiences_interactor=None, create_new_experience_interactor=None):
         self.get_all_experiences_interactor = get_all_experiences_interactor
@@ -29,7 +29,7 @@ class ExperiencesView(object):
         return body, status
 
 
-class ExperienceView(object):
+class ExperienceView:
 
     def __init__(self, modify_experience_interactor=None):
         self.modify_experience_interactor = modify_experience_interactor
@@ -44,7 +44,7 @@ class ExperienceView(object):
         return body, status
 
 
-class UploadExperiencePictureView(object):
+class UploadExperiencePictureView:
 
     def __init__(self, upload_experience_picture_interactor=None):
         self.upload_experience_picture_interactor = upload_experience_picture_interactor
@@ -58,7 +58,7 @@ class UploadExperiencePictureView(object):
         return body, status
 
 
-class SaveExperienceView(object):
+class SaveExperienceView:
 
     def __init__(self, save_unsave_experience_interactor):
         self.save_unsave_experience_interactor = save_unsave_experience_interactor

@@ -3,7 +3,7 @@ from .models import ORMPerson, ORMAuthToken, ORMConfirmationToken
 from .entities import Person, AuthToken
 
 
-class PersonRepo(object):
+class PersonRepo:
 
     def get_person(self, id):
         try:
@@ -33,7 +33,7 @@ class PersonRepo(object):
                       is_email_confirmed=db_person.is_email_confirmed)
 
 
-class AuthTokenRepo(object):
+class AuthTokenRepo:
 
     def create_auth_token(self, person_id):
         created_orm_auth_token = ORMAuthToken.objects.create(person_id=person_id)
@@ -52,7 +52,7 @@ class AuthTokenRepo(object):
                          refresh_token=str(db_auth_token.refresh_token))
 
 
-class ConfirmationTokenRepo(object):
+class ConfirmationTokenRepo:
 
     def get_person_id(self, confirmation_token):
         try:

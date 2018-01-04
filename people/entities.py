@@ -1,4 +1,4 @@
-class Person(object):
+class Person:
 
     def __init__(self, id=None, is_registered=False, username=None, email=None, is_email_confirmed=None):
         self._id = id
@@ -34,7 +34,7 @@ class Person(object):
         return not self == other
 
 
-class AuthToken(object):
+class AuthToken:
 
     def __init__(self, person_id, access_token, refresh_token):
         self._person_id = person_id

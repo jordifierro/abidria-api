@@ -1,14 +1,14 @@
 from abidria.serializers import PictureSerializer
 
 
-class MultipleScenesSerializer(object):
+class MultipleScenesSerializer:
 
     @staticmethod
     def serialize(scenes):
         return [SceneSerializer.serialize(scene) for scene in scenes]
 
 
-class SceneSerializer(object):
+class SceneSerializer:
 
     @staticmethod
     def serialize(scene):

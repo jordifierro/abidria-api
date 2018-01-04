@@ -4,7 +4,7 @@ from .models import ORMExperience, ORMSave
 from .entities import Experience
 
 
-class ExperienceRepo(object):
+class ExperienceRepo:
 
     def _decode_db_experience(self, db_experience, is_mine=False, is_saved=False):
         if not db_experience.picture:

@@ -8,7 +8,7 @@ from scenes.views import ScenesView, SceneView, UploadScenePictureView
 from scenes.serializers import SceneSerializer, MultipleScenesSerializer
 
 
-class TestScenesView(object):
+class TestScenesView:
 
     def test_get_returns_scenes_serialized_and_200(self):
         TestScenesView._ScenarioMaker() \
@@ -37,7 +37,7 @@ class TestScenesView(object):
                 .then_response_status_is_201() \
                 .then_response_body_is_scene_serialized()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self._interactor_mock = Mock()
@@ -137,7 +137,7 @@ class TestScenesView(object):
             return self
 
 
-class TestSceneView(object):
+class TestSceneView:
 
     def test_patch_returns_scene_serialized_and_200(self):
         TestSceneView._ScenarioMaker() \
@@ -152,7 +152,7 @@ class TestSceneView(object):
                 .then_response_status_is_200() \
                 .then_response_body_is_scene_serialized()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self._interactor_mock = Mock()
@@ -211,7 +211,7 @@ class TestSceneView(object):
             assert self._body == SceneSerializer.serialize(self._scene)
 
 
-class TestUploadScenePictureView(object):
+class TestUploadScenePictureView:
 
     def test_post_returns_scene_serialized_and_200(self):
         TestUploadScenePictureView._ScenarioMaker() \
@@ -225,7 +225,7 @@ class TestUploadScenePictureView(object):
                 .then_response_status_is_200() \
                 .then_response_body_is_scene_serialized()
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self._interactor_mock = Mock()

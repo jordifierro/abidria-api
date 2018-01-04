@@ -7,7 +7,7 @@ from scenes.interactors import GetScenesFromExperienceInteractor, CreateNewScene
 from scenes.entities import Scene
 
 
-class TestGetScenesFromExperience(object):
+class TestGetScenesFromExperience:
 
     def test_returns_scenes(self):
         TestGetScenesFromExperience.ScenarioMaker() \
@@ -32,7 +32,7 @@ class TestGetScenesFromExperience(object):
                 .then_permissions_should_be_validated() \
                 .then_should_raise_no_permissions_exception()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '4'
@@ -89,7 +89,7 @@ class TestGetScenesFromExperience(object):
             return self
 
 
-class TestCreateNewScene(object):
+class TestCreateNewScene:
 
     def test_creates_and_returns_scene(self):
         TestCreateNewScene.ScenarioMaker() \
@@ -142,7 +142,7 @@ class TestCreateNewScene(object):
                 .then_create_scene_should_not_be_called() \
                 .then_should_raise_no_permissions_exception()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '8'
@@ -249,7 +249,7 @@ class TestCreateNewScene(object):
             return self
 
 
-class TestModifyScene(object):
+class TestModifyScene:
 
     def test_gets_modifies_not_none_params_and_returns_scene(self):
         TestModifyScene.ScenarioMaker() \
@@ -304,7 +304,7 @@ class TestModifyScene(object):
                 .then_update_scene_should_not_be_called() \
                 .then_should_raise_entity_does_not_exist()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '8'
@@ -421,7 +421,7 @@ class TestModifyScene(object):
             return self
 
 
-class TestUploadScenePictureInteractor(object):
+class TestUploadScenePictureInteractor:
 
     def test_validates_permissions_and_attach_picture_to_scene(self):
         TestUploadScenePictureInteractor.ScenarioMaker() \
@@ -448,7 +448,7 @@ class TestUploadScenePictureInteractor(object):
                 .then_should_not_call_repo_attach_picture_to_scene() \
                 .then_should_raise_no_permissions_exception()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '9'

@@ -5,7 +5,7 @@ from scenes.validators import SceneValidator, ScenePermissionsValidator
 from scenes.entities import Scene
 
 
-class TestSceneValidator(object):
+class TestSceneValidator:
 
     def test_valid_scene_returns_true(self):
         TestSceneValidator._ScenarioMaker() \
@@ -119,7 +119,7 @@ class TestSceneValidator(object):
                 .then_error_should_be_raise(source='experience_id', code='does_not_exist',
                                             message='Experience does not exist')
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self._experience_repo = Mock()
@@ -157,7 +157,7 @@ class TestSceneValidator(object):
             return self
 
 
-class TestScenePermissionsValidator(object):
+class TestScenePermissionsValidator:
 
     def test_get_scene_and_calls_experience_permissions_validator(self):
         TestScenePermissionsValidator.ScenarioMaker() \
@@ -172,7 +172,7 @@ class TestScenePermissionsValidator(object):
                 .then_should_call_experience_permissions_validator_with_experience_id_and_logged_person_id() \
                 .then_should_return_true()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def given_a_logged_person_id(self):
             self.logged_person_id = '5'

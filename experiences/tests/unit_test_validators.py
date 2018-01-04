@@ -5,7 +5,7 @@ from experiences.validators import ExperienceValidator, ExperiencePermissionsVal
 from experiences.entities import Experience
 
 
-class TestExperienceValidator(object):
+class TestExperienceValidator:
 
     def test_valid_experience_returns_true(self):
         TestExperienceValidator._ScenarioMaker() \
@@ -55,7 +55,7 @@ class TestExperienceValidator(object):
                 .then_error_should_be_raised(source='author', code='empty_attribute',
                                              message='Author cannot be empty')
 
-    class _ScenarioMaker(object):
+    class _ScenarioMaker:
 
         def __init__(self):
             self._experience_repo = Mock()
@@ -87,7 +87,7 @@ class TestExperienceValidator(object):
             return self
 
 
-class TestPermissionsValidator(object):
+class TestPermissionsValidator:
 
     def test_no_person_permissions(self):
         TestPermissionsValidator.ScenarioMaker() \
@@ -121,7 +121,7 @@ class TestPermissionsValidator(object):
                 .then_should_call_repo_get_experience_with_experience_id() \
                 .then_should_return_true()
 
-    class ScenarioMaker(object):
+    class ScenarioMaker:
 
         def __init__(self):
             self.experience_repo = None

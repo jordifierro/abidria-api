@@ -1,7 +1,7 @@
 from abidria.exceptions import InvalidEntityException, EntityDoesNotExistException
 
 
-class SceneValidator(object):
+class SceneValidator:
 
     MIN_TITLE_LENGHT = 1
     MAX_TITLE_LENGHT = 30
@@ -54,7 +54,7 @@ class SceneValidator(object):
         return True
 
 
-class ScenePermissionsValidator(object):
+class ScenePermissionsValidator:
 
     def __init__(self, scene_repo, experience_permissions_validator):
         self.scene_repo = scene_repo
