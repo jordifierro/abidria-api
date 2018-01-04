@@ -10,6 +10,7 @@ from people.factories import create_people_view, create_person_view, create_emai
 
 from .views import ViewWrapper
 
+app_name = 'abidria'
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 

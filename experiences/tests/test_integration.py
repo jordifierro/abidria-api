@@ -3,7 +3,7 @@ import urllib.parse
 
 from django.test import TestCase
 from django.test import Client
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from experiences.models import ORMExperience, ORMSave
 from people.models import ORMPerson, ORMAuthToken
