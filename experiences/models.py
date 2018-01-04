@@ -13,7 +13,9 @@ class ORMExperience(models.Model):
                                         'medium': (640, 640),
                                         'small': (320, 320)},
                             blank=True)
-    author = models.ForeignKey(ORMPerson, null=True, on_delete=models.CASCADE)
+    author = models.ForeignKey(ORMPerson, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Experience'

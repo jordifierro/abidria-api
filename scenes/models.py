@@ -15,7 +15,9 @@ class ORMScene(models.Model):
                             blank=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=8)
     longitude = models.DecimalField(max_digits=11, decimal_places=8)
-    experience = models.ForeignKey(ORMExperience, blank=True, null=True)
+    experience = models.ForeignKey(ORMExperience, on_delete=models.CASCADE)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = 'Scene'

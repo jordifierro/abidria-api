@@ -14,12 +14,13 @@ class ExperienceRepoTestCase(TestCase):
     def test_get_all_scenes_of_an_experience(self):
         orm_person = ORMPerson.objects.create(username='usr')
         orm_exp = ORMExperience.objects.create(title='Exp a', description='some description', author=orm_person)
+        orm_exp_2 = ORMExperience.objects.create(title='B', description='', author=orm_person)
         orm_sce_1 = ORMScene.objects.create(title='S1', description='desc 1', latitude=Decimal('1.2'),
                                             longitude=Decimal('-3.4'), experience=orm_exp)
         orm_sce_2 = ORMScene.objects.create(title='S2', description='desc 2', latitude=Decimal('5.6'),
                                             longitude=Decimal('-7.8'), experience=orm_exp)
         ORMScene.objects.create(title='other', description='not belongs to experience',
-                                latitude=Decimal('5.6'), longitude=Decimal('-7.8'))
+                                latitude=Decimal('5.6'), longitude=Decimal('-7.8'), experience=orm_exp_2)
 
         result = SceneRepo().get_scenes(experience_id=orm_exp.id)
 
