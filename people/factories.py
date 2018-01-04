@@ -42,8 +42,10 @@ def create_person_validator():
     forbidden_email_domains_json = open('people/forbidden_email_domains.json')
     forbidden_email_domains = json.load(forbidden_email_domains_json)
 
+    person_repo = create_person_repo()
+
     return PersonValidator(project_name=project_name, forbidden_usernames=forbidden_usernames,
-                           forbidden_email_domains=forbidden_email_domains)
+                           forbidden_email_domains=forbidden_email_domains, person_repo=person_repo)
 
 
 def create_mailer_service(request):

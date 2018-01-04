@@ -113,6 +113,17 @@ class ModifyPersonTestCase(TestCase):
                 .then_person_not_should_be_updated() \
                 .then_ask_confirmation_email_should_not_be_sent()
 
+    def test_already_used_mail_returns_error(self):
+        ModifyPersonTestCase._ScenarioMaker() \
+                .given_a_guest_person_in_db_with_auth_token() \
+                .given_an_email() \
+                .given_a_username() \
+                .given_another_confirmed_person_with_that_email() \
+                .when_that_person_call_patch_people_me_with_that_params() \
+                .then_response_body_should_be_422_with_invalid_email() \
+                .then_person_not_should_be_updated() \
+                .then_ask_confirmation_email_should_not_be_sent()
+
     class _ScenarioMaker:
 
         def __init__(self):
@@ -140,6 +151,10 @@ class ModifyPersonTestCase(TestCase):
 
         def given_another_confirmation_token_for_that_person(self):
             self.orm_confirmation_token_2 = ORMConfirmationToken.objects.create(person_id=self.orm_person.id)
+            return self
+
+        def given_another_confirmed_person_with_that_email(self):
+            ORMPerson.objects.create(username='oo', email=self.email, is_registered=True, is_email_confirmed=True)
             return self
 
         def given_a_username(self):
@@ -213,12 +228,23 @@ class ModifyPersonTestCase(TestCase):
                     }
             return self
 
+        def then_response_body_should_be_422_with_invalid_email(self):
+            body = json.loads(self.response.content)
+            assert body == {
+                    'error': {
+                        'source': 'email',
+                        'code': 'not_allowed',
+                        'message': 'Email not allowed'
+                        }
+                    }
+            return self
+
         def then_person_not_should_be_updated(self):
             orm_updated_person = ORMPerson.objects.get(id=self.orm_person.id)
             assert orm_updated_person.username != self.username
             assert orm_updated_person.email != self.email
-            assert orm_updated_person.is_registered is True
-            assert orm_updated_person.is_email_confirmed is True
+            assert orm_updated_person.is_registered == self.orm_person.is_registered
+            assert orm_updated_person.is_email_confirmed == self.orm_person.is_email_confirmed
             return self
 
         def then_ask_confirmation_email_should_not_be_sent(self):

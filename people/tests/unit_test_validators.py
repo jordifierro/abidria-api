@@ -1,6 +1,7 @@
 from mock import Mock
 
-from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
+from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException, \
+        EntityDoesNotExistException
 from people.validators import ClientSecretKeyValidator, PersonValidator, PersonPermissionsValidator
 from people.entities import Person
 
@@ -55,6 +56,7 @@ class TestPersonValidator:
                 .given_a_username('usr') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_result_should_be_true()
@@ -64,6 +66,7 @@ class TestPersonValidator:
                 .given_a_username('aa') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_size_username()
@@ -73,6 +76,7 @@ class TestPersonValidator:
                 .given_a_username('a'*21) \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_size_username()
@@ -85,6 +89,7 @@ class TestPersonValidator:
                 .given_a_username(username) \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_username()
@@ -94,6 +99,7 @@ class TestPersonValidator:
                 .given_a_username('ban') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_username()
@@ -103,6 +109,7 @@ class TestPersonValidator:
                 .given_a_username('asdf_abidria_asdf') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_username()
@@ -112,6 +119,7 @@ class TestPersonValidator:
                 .given_a_username('usr') \
                 .given_an_email('e@@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
@@ -121,6 +129,7 @@ class TestPersonValidator:
                 .given_a_username('usr') \
                 .given_an_email('') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
@@ -130,6 +139,7 @@ class TestPersonValidator:
                 .given_a_username('usr') \
                 .given_an_email('e@m') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
@@ -139,6 +149,7 @@ class TestPersonValidator:
                 .given_a_username('usr') \
                 .given_an_email('em.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_wrong_email()
@@ -148,6 +159,27 @@ class TestPersonValidator:
                 .given_a_username('usr') \
                 .given_an_email('e@m.c') \
                 .given_a_person_with_that_params() \
+                .given_a_repo_that_raises_entity_does_not_exists() \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c', 'm.c']) \
+                .when_person_is_validated() \
+                .then_should_raise_invalid_entity_exception_for_not_allowed_email()
+
+    def test_already_used_username(self):
+        TestPersonValidator.ScenarioMaker() \
+                .given_a_username('usr') \
+                .given_an_email('e@m.c') \
+                .given_a_person_with_that_params() \
+                .given_a_repo_that_returns_a_person_when_get_by_username() \
+                .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c', 'm.c']) \
+                .when_person_is_validated() \
+                .then_should_raise_invalid_entity_exception_for_username()
+
+    def test_already_used_email(self):
+        TestPersonValidator.ScenarioMaker() \
+                .given_a_username('usr') \
+                .given_an_email('e@m.c') \
+                .given_a_person_with_that_params() \
+                .given_a_repo_that_returns_a_person_when_get_by_email() \
                 .given_a_person_validator_with_forbidden_usernames_and_email_domains(['ban'], ['i.c', 'm.c']) \
                 .when_person_is_validated() \
                 .then_should_raise_invalid_entity_exception_for_not_allowed_email()
@@ -176,7 +208,33 @@ class TestPersonValidator:
         def given_a_person_validator_with_forbidden_usernames_and_email_domains(self, forbidden_usernames,
                                                                                 forbidden_email_domains):
             self.validator = PersonValidator(project_name='abidria', forbidden_usernames=forbidden_usernames,
-                                             forbidden_email_domains=forbidden_email_domains)
+                                             forbidden_email_domains=forbidden_email_domains,
+                                             person_repo=self.person_repo)
+            return self
+
+        def given_a_repo_that_raises_entity_does_not_exists(self):
+            self.person_repo = Mock()
+            self.person_repo.get_person.side_effect = EntityDoesNotExistException
+            return self
+
+        def given_a_repo_that_returns_a_person_when_get_by_username(self):
+            def fake_get_person(username=None, email=None):
+                if username is not None:
+                    return self.person
+                raise EntityDoesNotExistException()
+
+            self.person_repo = Mock()
+            self.person_repo.get_person = fake_get_person
+            return self
+
+        def given_a_repo_that_returns_a_person_when_get_by_email(self):
+            def fake_get_person(username=None, email=None):
+                if email is not None:
+                    return self.person
+                raise EntityDoesNotExistException()
+
+            self.person_repo = Mock()
+            self.person_repo.get_person = fake_get_person
             return self
 
         def when_person_is_validated(self):

@@ -1,6 +1,7 @@
 import re
 
-from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException
+from abidria.exceptions import InvalidEntityException, NoLoggedException, NoPermissionException, \
+        EntityDoesNotExistException
 
 
 class ClientSecretKeyValidator:
@@ -22,10 +23,11 @@ class PersonValidator:
     USERNAME_MAX_LENGTH = 20
     USERNAME_REGEX = '(?!\.)(?!\_)(?!.*?\.\.)(?!.*?\.\_)(?!.*?\_\.)(?!.*?\_\_)(?!.*\.$)(?!.*\_$)[a-z0-9_.]+$'
 
-    def __init__(self, project_name, forbidden_usernames, forbidden_email_domains):
+    def __init__(self, project_name, forbidden_usernames, forbidden_email_domains, person_repo):
         self.project_name = project_name
         self.forbidden_usernames = forbidden_usernames
         self.forbidden_email_domains = forbidden_email_domains
+        self.person_repo = person_repo
 
     def validate(self, person):
         if len(person.username) < PersonValidator.USERNAME_MIN_LENGTH or \
@@ -38,11 +40,21 @@ class PersonValidator:
             raise InvalidEntityException(source='username', code='not_allowed', message='Username not allowed')
         if person.username in self.forbidden_usernames:
             raise InvalidEntityException(source='username', code='not_allowed', message='Username not allowed')
+        try:
+            self.person_repo.get_person(username=person.username)
+            raise InvalidEntityException(source='username', code='not_allowed', message='Username not allowed')
+        except EntityDoesNotExistException:
+            pass
 
         if not re.match(r"[^@]+@[^@]+\.[^@]+", person.email):
             raise InvalidEntityException(source='email', code='wrong', message='Email is wrong')
         if person.email.split('@')[-1] in self.forbidden_email_domains:
             raise InvalidEntityException(source='email', code='not_allowed', message='Email not allowed')
+        try:
+            self.person_repo.get_person(email=person.email)
+            raise InvalidEntityException(source='email', code='not_allowed', message='Email not allowed')
+        except EntityDoesNotExistException:
+            pass
 
         return True
 

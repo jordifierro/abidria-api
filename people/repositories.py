@@ -5,9 +5,15 @@ from .entities import Person, AuthToken
 
 class PersonRepo:
 
-    def get_person(self, id):
+    def get_person(self, id=None, username=None, email=None):
         try:
-            return self._decode_db_person(ORMPerson.objects.get(id=id))
+            if id is not None:
+                return self._decode_db_person(ORMPerson.objects.get(id=id))
+            elif username is not None:
+                return self._decode_db_person(ORMPerson.objects.get(username=username))
+            else:
+                return self._decode_db_person(ORMPerson.objects.get(email=email))
+
         except ORMPerson.DoesNotExist:
             raise EntityDoesNotExistException
 

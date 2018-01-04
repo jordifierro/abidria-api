@@ -28,8 +28,19 @@ class PersonRepoTestCase(TestCase):
         PersonRepoTestCase._ScenarioMaker() \
                 .given_a_person_in_db() \
                 .when_get_person_with_her_id() \
-                .then_result_should_be_that_person() \
+                .then_result_should_be_that_person()
 
+    def test_get_person_by_username(self):
+        PersonRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
+                .when_get_person_with_her_username() \
+                .then_result_should_be_that_person()
+
+    def test_get_person_by_email(self):
+        PersonRepoTestCase._ScenarioMaker() \
+                .given_a_person_in_db() \
+                .when_get_person_with_her_email() \
+                .then_result_should_be_that_person()
 
     class _ScenarioMaker:
 
@@ -53,6 +64,14 @@ class PersonRepoTestCase(TestCase):
 
         def when_get_person_with_her_id(self):
             self.result = PersonRepo().get_person(id=self.orm_person.id)
+            return self
+
+        def when_get_person_with_her_username(self):
+            self.result = PersonRepo().get_person(username=self.orm_person.username)
+            return self
+
+        def when_get_person_with_her_email(self):
+            self.result = PersonRepo().get_person(email=self.orm_person.email)
             return self
 
         def when_update_person_entity(self):
